@@ -1,9 +1,11 @@
 # coding: utf-8
 """
 """
+# stdlib imports
 import xml.etree.ElementTree as ET
 
 
+# local imports
 from ibflex import schemata
 from ibflex.schemata import elementSchemata
 

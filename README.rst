@@ -11,8 +11,6 @@ beyond the Python standard library.
 
 Installation
 ============
-This should work:
-
 ::
 
     pip install git+https://github.com/csingley/ibflex
@@ -40,20 +38,20 @@ Usage example:
 
 Flex Data Format
 ================
-Generate Flex statements through `Interactive Brokers account management.`_ 
+Generate Flex statements through `Interactive Brokers account management`_ .
+Reports > Activities > Flex Queries
 
 ``ibflex`` is designed to parse whatever you throw at it without additional
 configuration, with one major shortcoming: without providing additional
 information out of band, it is difficult to distinguish US-style date
-formats (MM/dd) from European-style date formats (dd/MM).
+formats (mm/dd) from European-style date formats (dd/mm).
 
-** DO YOURSELF A FAVOR AND CONFIGURE FLEX QUERIES TO USE ISO8601 DATE FORMATS
-(YYYY-MM-dd) **
+** DO YOURSELF A FAVOR: CONFIGURE FLEX QUERIES TO USE ISO8601 EXTENDED FORMATS
+FOR DATE (YYYY-mm-dd) AND TIME (HH:MM:SS) **
 
 
 Resources
 =========
-
 * Interactive Brokers `Activity Flex Query Reference`_
 
 .. _Interactive Brokers account management: https://gdcdyn.interactivebrokers.com/sso/Login 

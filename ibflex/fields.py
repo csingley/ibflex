@@ -5,7 +5,11 @@
 import sys
 import decimal
 import datetime
-from xml.sax import saxutils
+
+
+# local imports
+from ibflex import fieldutils
+from ibflex.fieldutils import FlexFieldError
 
 
 PYVERSION = sys.version_info[0]
@@ -15,89 +19,82 @@ PYVERSION = sys.version_info[0]
 # we'll retain Py2K semantics
 if PYVERSION > 2:
     unicode = str
-    basestring = str
-
-
-class FlexTypeWarning(UserWarning):
-    """ Base class for warnings in this module """
-    pass
 
 
 class Field(object):
     """
+    Base type convertor/validator class.
+
+    Pass validation parameters to __init__() as args/kwargs
+    when defining a Schema subclass.
     """
     def __init__(self, *args, **kwargs):
         self.required = kwargs.pop('required', False)
         args, kwargs = self._init(*args, **kwargs)
         if args or kwargs:
-            raise ValueError("Unknown args for '%s'- args: %r; kwargs: %r"
-                             % (self.__class__.__name__, args, kwargs))
+            raise FlexFieldError("Unknown args for '%s'- args: %r; kwargs: %r"
+                                 % (self.__class__.__name__, args, kwargs))
 
     def _init(self, *args, **kwargs):
         """ Define in subclass """
         return args, kwargs
 
     def convert(self, value):
-        value = value or None
+        """
+        Convert empty strings to None and enforce ``required`` parameter
+        """
+        if value == '':
+            value = None
         if value is None:
             if self.required:
-                raise ValueError("Value is required")
+                raise FlexFieldError("Value is required")
             else:
                 return None
         return self._convert(value)
 
     def _convert(self, value):
+        """ Define in subclass """
         raise NotImplementedError
 
     def __repr__(self):
-        repr = "<{} required={}>"
+        repr = "<{}(required={})>"
         return repr.format(self.__class__.__name__, self.required)
-
-
-class Boolean(Field):
-    mapping = {'Y': True, 'N': False}
-
-    def _convert(self, value):
-        # Pass through values already converted to bool
-        if isinstance(value, bool):
-            return value
-        try:
-            return self.mapping[value]
-        except KeyError as e:
-            raise ValueError("%s is not one of the allowed values %s" % (
-                e.args[0], self.mapping.keys(), ))
 
 
 class String(Field):
     def _convert(self, value):
-        value = unicode(value)
-
-        # Unescape XML control characters,
-        return saxutils.unescape(value,
-                                 {'&nbsp;': ' ', '&apos;': "'", '%quot;': '"'}
-                                 )
+        return unicode(value)
 
 
 class Integer(Field):
     def _convert(self, value):
-        return int(value)
+        try:
+            return int(value)
+        except ValueError:
+            msg = "{} can't be converted to an integer"
+            raise FlexFieldError(msg.format(value))
+
+
+class Boolean(Field):
+    """ IB sends 'Y'/'N' for True/False """
+    mapping = {'Y': True, 'N': False}
+
+    def _convert(self, value):
+        try:
+            return self.mapping[value]
+        except KeyError as err:
+            msg = "{} is not one of the allowed values {}"
+            raise FlexFieldError(msg.format(err.args[0], self.mapping.keys()))
 
 
 class Decimal(Field):
-    def _init(self, *args, **kwargs):
-        precision = 2
-        if args:
-            precision = args[0]
-            args = args[1:]
-        self.precision = decimal.Decimal('0.' + '0'*(precision-1) + '1')
-        return args, kwargs
-
+    """ IB writes numbers with comma separators """
     def _convert(self, value):
-        # IB writes numbers with comma separators
-        value = value.replace(',', '')
-        value = decimal.Decimal(value)
-
-        return value.quantize(self.precision)
+        try:
+            return decimal.Decimal(value.replace(',', ''))
+        except decimal.InvalidOperation:
+            msg = "Can't convert {} to Decimal"
+            raise FlexFieldError(msg.format(value))
 
 
 class OneOf(Field):
@@ -108,144 +105,79 @@ class OneOf(Field):
     def _convert(self, value):
         if value in self.valid:
             return value
-        raise ValueError("'%s' is not OneOf %r" % (value, self.valid))
+        raise FlexFieldError("'%s' is not OneOf %r" % (value, self.valid))
 
 
 class List(Field):
     """
-    IB sends lists comma-delimited without enclosing brackets.
+    IB sends lists as comma-delimited strings, without enclosing brackets.
     """
     def _init(self, *args, **kwargs):
         self.valid = kwargs.pop('valid', None)
         return args, kwargs
+
+    def convert(self, value):
+        """
+        Convert empty string to empty list and enforce ``required`` parameter
+        """
+        if value in ('', None):
+            value = []
+        if value == []:
+            if self.required:
+                raise FlexFieldError("Value is required")
+            else:
+                return value 
+        return self._convert(value)
 
     def _convert(self, value):
         values = [v.strip() for v in value.split(',')]
         if self.valid:
             for val in values:
                 if val not in self.valid:
-                    raise ValueError  # FIXME
+                    msg = "{} is not one of the valid values: {}"
+                    raise FlexFieldError(msg.format(val, self.valid))
         return values
 
-
-def parse_isodate(value, dayfirst):
-    """
-    Parse ISO8601 format date strings (yyyy-MM-dd) into year, month, day.
-
-    Args: value - type str
-          dayfirst - ignored here
-    Returns: 3-tuple (year, month, day), all type int
-    """
-    year = int(value[:4])
-    month = int(value[5:7])
-    day = int(value[8:])
-    return year, month, day
-
-
-def parse_yyyyMMdd(value, dayfirst):
-    """
-    Parse yyyyMMdd format date strings into year, month, day.
-
-    Args: value - type str
-          dayfirst - ignored here
-    Returns: 3-tuple (year, month, day), all type int
-    """
-    year = int(value[:4])
-    month = int(value[4:6])
-    day = int(value[6:])
-    return year, month, day
-
-
-def parse_MMddyyyy(value, dayfirst):
-    """
-    Parse MM/dd/yyyy (or dd/MM/yyyy) format date strings into year, month, day.
-
-    Args: value - type str
-          dayfirst - type bool; False: MM/dd/yyyy; True: dd/MM/yyyy
-    Returns: 3-tuple (year, month, day), all type int
-    """
-    month = int(value[:2])
-    day = int(value[3:4])
-    year = int(value[6:])
-
-    if dayfirst:
-        day, month = month, day
-
-    return year, month, day
-
-
-def prepend_century(year):
-    """
-    Turn a 2-digit year into a 4-digit year.
-
-    Args: 2-digit int
-    Returns: type int
-    """
-    assert 0 <= year < 100
-    century = {True: 1900, False: 2000}[year > 68]
-    return century + int(year)
-
-
-def parse_MMddyy(value, dayfirst):
-    """
-    Parse MM/dd/yy (or dd/MM/yy) format date strings into year, month, day.
-
-    Args: value - type str
-          dayfirst - type bool; False: MM/dd/yy; True: dd/MM/yy
-    Returns: 3-tuple (year, month, day), all type int
-    """
-    month = int(value[:2])
-    day = int(value[3:5])
-    year = prepend_century(int(value[6:]))
-
-    if dayfirst:
-        day, month = month, day
-    return year, month, day
-
-
-def parse_ddMMMyy(value, dayfirst):
-    """
-    Parse dd-MMM-yy format date strings (e.g. '13-JUL-97')
-    into year, month, day.
-
-    Args: value - type str
-          dayfirst - ignored here
-    Returns: 3-tuple (year, month, day), all type int
-    """
-    day = int(value[:2])
-    month = {'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
-             'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12}[value[3:6]]
-    year = prepend_century(int(value[7:]))
-    return year, month, day
+    def __repr__(self):
+        repr = "<{}({}, required={})>"
+        return repr.format(self.__class__.__name__, ','.join(self.valid),
+                           self.required)
 
 
 class Date(Field):
     """
     Format-agnostic date string.
+
+    We can't easily distinguish between e.g. MM/dd/yyyy and dd/MM/yyyy,
+    so this is configured by setting the ``dayfirst`` class attribute,
+    which by default is American style (MM/dd) not Euro style (dd/MM).
+
+    Seriously though, just configure Flex queries for ISO format (YYYY-MM-dd).
     """
-    # date_parsers is a nested dict keyed first by string length, then by
-    # count of '/' within the date string.  We can't easily distinguish
-    # between e.g. MM/dd/yyyy and dd/MM/yyyy, so this is configured by
-    # setting Date.dayfirst, which by default is American style (MM/dd)
-    # not Euro style (dd/MM).
-    #
-    # Seriously though, just configure Flex queries for ISO format (YYYY-MM-dd)
-    date_parsers = {8: {0: parse_yyyyMMdd, 2: parse_MMddyy},
-                    9: {0: parse_ddMMMyy},
-                    10: {0: parse_isodate, 2: parse_MMddyyyy}}
     dayfirst = False
 
     @classmethod
     def parse(cls, value):
-        parser = cls.date_parsers[len(value)][value.count('/')]
+        parser = fieldutils.date_parsers[len(value)][value.count('/')]
         return parser(value, cls.dayfirst)
 
     def _convert(self, value):
         return datetime.date(*self.parse(value))
 
 
-def first_hit(make_parser, value, separators):
+class EuroDate(Date):
     """
+    Format-agnostic date string, using Euro style dd/MM date formats.
+
+    This isn't used in any Schema; it's just for testing.
+    """
+    dayfirst = True
+
+
+def first_hit(make_parser, separators, value):
+    """
+    Feed each of the given separators to make_parser(); use the resulting
+    function to parse() the given value.  Return the first valid result.
     """
     value = value or None
     if value is not None:
@@ -258,7 +190,8 @@ def first_hit(make_parser, value, separators):
             except:
                 pass
         if not valid:
-            raise ValueError  # FIXME
+            msg = "{} can't be parsed by any of the separators: {}"
+            raise FlexFieldError(msg.format(value, separators))
     return value
 
 
@@ -271,21 +204,34 @@ class Time(Field):
     @staticmethod
     def make_parser(separator):
         """
-        Factory returning a function
+        Factory returning a function that splits input string according to the
+        given separator, and returns a series of integers
+        (hour, minute, second)
         """
-        def fn(value):
-            valid = separator == '' or value.count(separator) == 2
-            if not valid:
-                raise ValueError  # FIXME
-            hours = int(value[:2])
-            minutes = int(value[2 + len(separator):4 + len(separator)])
-            seconds = int(value[4 + 2 * len(separator):])
-            return hours, minutes, seconds
-        return fn
+        if separator == '':
+            def parse(value):
+                if len(value) != 6:
+                    msg = "{} can't be parsed as a time".format(value)
+                    raise FlexFieldError(msg)
+                hours = value[:2]
+                minutes = value[2:4]
+                seconds = value[4:]
+                return int(hours), int(minutes), int(seconds)
+        else:
+            def parse(value):
+                if value.count(separator) != 2:
+                    msg = "{} can't be parsed as a time".format(value)
+                    raise FlexFieldError(msg)
+                hours, minutes, seconds = value.split(separator)
+                if not (len(hours) == len(minutes) == len(seconds) == 2):
+                    msg = "{} can't be parsed as a time".format(value)
+                    raise FlexFieldError(msg)
+                return int(hours), int(minutes), int(seconds)
+        return parse
 
     @classmethod
     def parse(cls, value):
-        return first_hit(cls.make_parser, value, cls.separators)
+        return first_hit(cls.make_parser, cls.separators, value)
 
     def _convert(self, value):
         return datetime.time(*self.parse(value))
@@ -296,25 +242,50 @@ class DateTime(Field):
     Format-agnostic datetime string.
     """
     separators = [';', ',', ' ', '']
+    dateField = Date
 
-    @staticmethod
-    def make_parser(separator):
+    @classmethod
+    def make_parser(cls, separator):
         """
-        Factory returning a function
+        Factory returning a function that splits input string into date & time
+        according to the given separator, and returns a series of integers
+        (year, month, day, hour, minute, second)
         """
-        def fn(value):
-            valid = separator == '' or value.count(separator) == 1
-            if not valid:
-                raise ValueError  # FIXME
-            date, time = value.split(separator)
-            return Date.parse(date) + Time.parse(time)
-        return fn
+        if separator == '':
+            def parse(value):
+                for sep in Time.separators:
+                    try:
+                        parse_time = Time.make_parser(sep)
+                        timeLength = 6 + 2*len(sep)
+                        time = value[-timeLength:]
+                        time = parse_time(time)
+                        date = value[:-timeLength]
+                        return cls.dateField.parse(date) + time
+                    except:
+                        continue
+                msg = "{} can't be parsed as a datetime".format(value)
+                raise FlexFieldError(msg)
+        else:
+            def parse(value):
+                if value.count(separator) != 1:
+                    msg = "{} can't be parsed as a datetime".format(value)
+                    raise FlexFieldError(msg)
+                date, time = value.split(separator)
+                return cls.dateField.parse(date) + Time.parse(time)
+        return parse
 
     def _convert(self, value):
-        if not value:  # Falsy values, e.g. '', None, [] are not valid
-            raise self.fail('invalid')
         if len(value) < 12:
             # Just a date, with no time info
-            return datetime.datetime(*Date.parse(value))
+            return datetime.datetime(*self.dateField.parse(value))
         else:
-            return datetime.datetime(*first_hit(self.make_parser, value, self.separators))
+            return datetime.datetime(*first_hit(self.make_parser, self.separators, value))
+
+
+class EuroDateTime(DateTime):
+    """
+    Format-agnostic datetime string, using Euro style dd/MM date formats.
+
+    This isn't used in any Schema; it's just for testing.
+    """
+    dateField = EuroDate

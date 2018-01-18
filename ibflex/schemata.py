@@ -5,42 +5,45 @@ data, as parsed by ElementTree.
 
 https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm#reportguide/activity_flex_query_reference.htm
 """
+# stdlib imports
 import itertools
 
 
+# local imports
 from ibflex.fields import (
     Field, Boolean, String, Integer, Decimal, OneOf, Time, Date, DateTime, List
 )
+from ibflex.fieldutils import CURRENCY_CODES
+
+
+class FlexSchemaError(Exception):
+    """ Base class for errors in this module """
+    pass
 
 
 class SchemaMetaclass(type):
     """
-    Metaclass for Schema class.  Binds the declared fields to a ``fields``
-    attribute, which is a dictionary mapping attribute names to field objects.
+    Metaclass for Schema class.  Removes the fields declared on Schema
+    subclasses, and rebinds them to a ``fields`` attribute, which is a dict
+    mapping attribute names to field objects.
     """
     def __new__(metacls, clsname, bases, attrs):
-        # Partition attrs into Field subclass instances and others
-        def isfield(item):
-            return isinstance(item[1], Field)
+        # Create the class
+        cls = super(SchemaMetaclass, metacls).__new__(metacls, clsname, bases, attrs)
 
-        a1, a2 = itertools.tee(attrs.items())
-        fields_, nonfields = filter(isfield, a1), itertools.filterfalse(isfield, a2)
+        # Collect inherited Fields into fields attribute
+        # Iterate through MRO in reverse to preserve correct inheritance order
+        fields_ = {}
+        for base in cls.__mro__[:0:-1]:
+            for name in dir(base):
+                attr = getattr(base, name)
+                if isinstance(attr, Field):
+                    fields_[name] = attr
 
-        # Create the class stripped of Field attributes
-        cls = super(SchemaMetaclass, metacls).__new__(metacls, clsname, bases, dict(nonfields))
+        # Collect declared Fields into fields attribute
+        fields_.update({k: v for k, v in attrs.items() if isinstance(v, Field)})
 
-        # Collect the Fields into fields attribute
-        cls.fields = dict(fields_)
-
-        # Collect Fields from inherited mixins
-        def get_fields(cls):
-            attrs = filter(isfield,
-                           [(attr, getattr(cls, attr)) for attr in dir(cls)])
-            return dict(attrs)
-
-        mixin_fields = map(get_fields, cls.__mro__[:0:-1])
-        for fields in mixin_fields:
-            cls.fields.update(fields)
+        cls.fields = fields_
         return cls
 
 
@@ -56,33 +59,9 @@ class Schema(metaclass=SchemaMetaclass):
         if data:
             msg = "{} schema doesn't define {}".format(cls.__name__,
                                                        list(data.keys()))
-            raise ValueError(msg)
+            raise FlexSchemaError(msg)
         return output
 
-
-# Currency codes
-ISO4217 = ('AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG',
-           'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND',
-           'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYR', 'BZD', 'CAD',
-           'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY', 'COP', 'COU',
-           'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD',
-           'EEK', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL',
-           'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK',
-           'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD',
-           'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD',
-           'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LTL', 'LVL',
-           'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRO',
-           'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN',
-           'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP',
-           'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR',
-           'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD',
-           'STD', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP',
-           'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'USN', 'USS',
-           'UYI', 'UYU', 'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG',
-           'XAU', 'XBA', 'XBB', 'XBC', 'XBD', 'XCD', 'XDR', 'XOF', 'XPD',
-           'XPF', 'XPT', 'XTS', 'XXX', 'YER', 'ZAR', 'ZMK', 'ZWL')
-
-CURRENCY_CODES = ISO4217 + ('CNH', 'BASE_SUMMARY')
 
 ###############################################################################
 # MIXINS
@@ -112,9 +91,9 @@ class SecurityMixin(object):
     issuer = String()
     multiplier = Decimal()
     strike = Decimal()
-    expiry = String()
+    expiry = Date()
     putCall = String()
-    principalAdjustFactor = String()
+    principalAdjustFactor = Decimal()
 
 
 class TradeMixin(AccountMixin, CurrencyMixin, SecurityMixin):
@@ -137,23 +116,18 @@ class TradeMixin(AccountMixin, CurrencyMixin, SecurityMixin):
     netCash = Decimal()
     closePrice = Decimal()
     openCloseIndicator = OneOf("O", "C", "C;O")
-    notes = String()
+    notes = List()
     cost = Decimal()
     fifoPnlRealized = Decimal()
     fxPnl = Decimal()
     mtmPnl = Decimal()
     origTradePrice = Decimal()
-    # origTradeDate = Date()
     origTradeDate = Date()
     origTradeID = String()
     origOrderID = String()
     clearingFirmID = String()
     transactionID = String()
-    # Despite the name, openDateTime actually contains only date.
-    # openDateTime = Date()
     openDateTime = DateTime()
-    # Despite the name, holdingPeriodDateTime actually contains only date.
-    # holdingPeriodDateTime = Date()
     holdingPeriodDateTime = DateTime()
     whenRealized = DateTime()
     whenReopened = DateTime()
