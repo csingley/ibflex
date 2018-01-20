@@ -18,124 +18,115 @@ class FlexParserError(Exception):
     pass
 
 
-class FlexResponseParser(object):
-    def __init__(self, source):
-        self.source = source
+def parse(source):
+    tree = ET.ElementTree()
+    tree.parse(source)
+    root = tree.getroot()
+    return parse_response(root)
 
-    def parse(self):
-        tree = ET.ElementTree()
-        tree.parse(self.source)
-        root = tree.getroot()
-        return self.parse_response(root)
 
-    @classmethod
-    def parse_response(cls, elem):
-        response = schemata.FlexQueryResponse.convert(elem)
-        flexStmts = elem.findall('FlexStatements')
+def parse_response(elem):
+    response = schemata.FlexQueryResponse.convert(elem)
+    flexStmts = elem.findall('FlexStatements')
 
+    # Sanity check
+    if len(flexStmts) != 1:
+        msg = ("FlexQueryResponse must contain exactly 1 FlexStatements, "
+               "not {}")
+        raise FlexParserError(msg.format(len(flexStmts)))
+
+    response['FlexStatements'] = parse_stmts(flexStmts[0])
+    return response
+
+
+def parse_stmts(elem):
+    attrs = schemata.FlexStatements.convert(elem)
+    count = attrs['count']
+    flexStmt = elem.findall('FlexStatement')
+
+    # Sanity check
+    if len(flexStmt) != count:
+        msg = ("FlexStatements declares count={} "
+               "but contains {} FlexStatement elements")
+        raise FlexParserError(msg.format(count, len(flexStmt)))
+
+    return [parse_stmt(stmt) for stmt in flexStmt]
+
+
+def parse_stmt(elem):
+    stmt = schemata.FlexStatement.convert(elem)
+    children = dict([parse_stmt_child(child) for child in elem])
+    stmt.update(children)
+    return stmt
+
+
+def parse_stmt_child(elem):
+    # If the tag isn't one of the special cases defined in ``parsers``,
+    # by default treat it as a list container
+    parser = stmt_child_parsers.get(elem.tag, parse_list)
+    return parser(elem)
+
+
+def parse_acctinfo(elem):
+    return 'AccountInformation', schemata.AccountInformation.convert(elem)
+
+
+def parse_rates(elem):
+    return 'ConversionRates', dict(parse_rate(rate) for rate in elem)
+
+
+def parse_rate(elem):
+    """
+    Use input schema to convert element.
+
+    Return duple of ((currency, date), rate) suitable for use
+    as a dict item.
+    """
+    rate = schemata.ConversionRate.convert(elem)
+    return (rate['fromCurrency'], rate['reportDate']), rate['rate']
+
+
+def parse_fxpos(elem):
+    if len(elem) == 0:
+        items = []
+    else:
         # Sanity check
-        if len(flexStmts) != 1:
-            msg = ("FlexQueryResponse must contain exactly 1 FlexStatements, "
-                   "not {}")
-            raise FlexParserError(msg.format(len(flexStmts)))
-        response['FlexStatements'] = cls.parse_stmts(flexStmts[0])
+        if len(elem) != 1:
+            msg = "<{}> has more than 1 child: {}".format(
+                elem.tag,
+                ', '.join(["<{}>".format(child.tag) for child in elem])
+            )
+            raise FlexParserError(msg)
+        fxLots = elem[0]
+        if fxLots.tag != 'FxLots':
+            msg = "<{}> can only contain <FxLots>, not <{}>"
+            raise FlexParserError(msg.format(elem.tag, fxLots))
 
-        return response
+        attrName, items = parse_list(fxLots)
 
-    @classmethod
-    def parse_stmts(cls, elem):
-        attrs = schemata.FlexStatements.convert(elem)
-        count = attrs['count']
-        flexStmt = elem.findall('FlexStatement')
+    return 'FxPositions', items
 
-        # Sanity check
-        if len(flexStmt) != count:
-            msg = ("FlexStatements declares count={} "
-                   "but contains {} FlexStatement elements")
-            raise FlexParserError(msg.format(count, len(flexStmt)))
 
-        return [cls.parse_stmt(stmt) for stmt in flexStmt]
+def parse_list(elem):
+    """
+    Use container tag to look up conversion schema for contained items.
 
-    @classmethod
-    def parse_stmt(cls, elem):
-        stmt = schemata.FlexStatement.convert(elem)
-        children = dict([cls.parse_stmt_child(child) for child in elem])
-        stmt.update(children)
-        return stmt
+    Return duple of (container tag, list of converted items).
+    """
+    tag = elem.tag
+    try:
+        schema = elementSchemata[tag]
+    except KeyError:
+        msg = "Don't know the schema to parse items in {}"
+        raise FlexParserError(msg.format(tag))
+    items = [schema.convert(item) for item in elem]
+    return tag, items
 
-    @classmethod
-    def parse_stmt_child(cls, elem):
-        parser = cls.stmt_child_parser(elem)
-        return parser(elem)
 
-    @classmethod
-    def stmt_child_parser(cls, elem):
-        # If the tag isn't one of the special cases defined in ``parsers``,
-        # by default treat it as a list container
-        parsers = {'AccountInformation': cls.parse_acctinfo,
-                   'ConversionRates': cls.parse_rates,
-                   'FxPositions': cls.parse_fxpos, }
-        return parsers.get(elem.tag, cls.parse_list)
+stmt_child_parsers = {'AccountInformation': parse_acctinfo,
+                      'ConversionRates': parse_rates,
+                      'FxPositions': parse_fxpos, }
 
-    @staticmethod
-    def parse_acctinfo(elem):
-        return 'AccountInformation', schemata.AccountInformation.convert(elem)
-
-    @classmethod
-    def parse_rates(cls, elem):
-        return 'ConversionRates', dict(cls.parse_rate(rate) for rate in elem)
-
-    @staticmethod
-    def parse_rate(elem):
-        """
-        Use input schema to convert element.
-
-        Return duple of ((currency, date), rate) suitable for use
-        as a dict item.
-        """
-        rate = schemata.ConversionRate.convert(elem)
-        return (rate['fromCurrency'], rate['reportDate']), rate['rate']
-
-    @classmethod
-    def parse_fxpos(cls, elem):
-        if len(elem) == 0:
-            items = []
-        else:
-            # Sanity check
-            if len(elem) != 1:
-                msg = "<{}> has more than 1 child: {}".format(
-                    elem.tag,
-                    ', '.join(["<{}>".format(child.tag) for child in elem])
-                )
-                raise FlexParserError(msg)
-            fxLots = elem[0]
-            if fxLots.tag != 'FxLots':
-                msg = "<{}> can only contain <FxLots>, not <{}>"
-                raise FlexParserError(msg.format(elem.tag, fxLots))
-
-            attrName, items = cls.parse_list(fxLots)
-
-        return 'FxPositions', items
-
-    @staticmethod
-    def parse_list(elem):
-        """
-        Use container tag to look up conversion schema for contained items.
-
-        Return duple of (container tag, list of converted items).
-        """
-        tag = elem.tag
-        try:
-            schema = elementSchemata[tag]
-        except KeyError:
-            msg = "Don't know the schema to parse items in {}"
-            raise FlexParserError(msg.format(tag))
-        items = [schema.convert(item) for item in elem]
-        return tag, items
-
-    # subparsers = {'AccountInformation': parse_acctinfo,
-                  # 'ConversionRates': parse_rates,
-                  # 'FxPositions': parse_fxpos, }
 
 ##############################################################################
 # CLI SCRIPT
@@ -150,8 +141,7 @@ def main():
 
     for file in args.file:
         print(file)
-        parser = FlexResponseParser(file)
-        response = parser.parse()
+        response = parse(file)
         # print(response)
         for stmt in response['FlexStatements']:
             for trade in stmt['Trades']:
