@@ -55,13 +55,13 @@ def parse_stmts(elem):
 
 def parse_stmt(elem):
     stmt = schemata.FlexStatement.convert(elem)
-    children = dict([parse_stmt_child(child) for child in elem])
+    children = dict(parse_stmt_child(child) for child in elem)
     stmt.update(children)
     return stmt
 
 
 def parse_stmt_child(elem):
-    # If the tag isn't one of the special cases defined in ``parsers``,
+    # If the tag isn't one of the special cases defined in stmt_child_parsers,
     # by default treat it as a list container
     parser = stmt_child_parsers.get(elem.tag, parse_list)
     return parser(elem)

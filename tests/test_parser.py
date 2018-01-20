@@ -12,12 +12,11 @@ from ibflex import fields, schemata, parser
 
 class FlexParserTestCase(unittest.TestCase):
     # @patch('xml.etree.ElementTree.ElementTree')
-    # @patch.object(parser.FlexResponseParser, 'parse_response')
+    # @patch('parser.parse_response')
     # def testParse(self, mock_etree, mock_parse_response_method):
         # instance = mock_etree.return_value
         # instance.parse.return_value = 'FOO'
-        # parser_ = parser.FlexResponseParser('foo')
-        # parser_.parse()
+        # parser.parse('foo')
         # print(mock_etree.mock_calls)
         # print(instance.parse.mock_calls)
 
@@ -63,6 +62,16 @@ class FlexParserTestCase(unittest.TestCase):
 
     def testParseStmt(self):
         pass
+
+    # @patch('ibflex.parser.parse_acctinfo')
+    # def testParseStmtChild(self, mock_parse_acctinfo):
+        # """
+        # parse_stmt_child() looks up the Element.tag in stmt_child_parsers,
+        # passes the Element to the looked-up parser, and returns the result.
+        # """
+        # element = ET.Element('AccountInformation')
+        # output = parser.parse_stmt_child(element)
+        # print(output)
 
     @patch.object(schemata.AccountInformation, 'convert', return_value=sentinel.dict)
     def testParseAcctInfo(self, mock_convert_method):
@@ -183,6 +192,14 @@ class FlexParserTestCase(unittest.TestCase):
         ET.SubElement(data, 'Item', {'foo': 'hello', 'bar': '1', 'baz': 'Y'})
         with self.assertRaises(parser.FlexParserError):
             parser.parse_list(data)
+
+    def testStmtChildParsers(self):
+        self.assertEqual(parser.stmt_child_parsers['AccountInformation'],
+                         parser.parse_acctinfo)
+        self.assertEqual(parser.stmt_child_parsers['ConversionRates'],
+                         parser.parse_rates)
+        self.assertEqual(parser.stmt_child_parsers['FxPositions'],
+                         parser.parse_fxpos)
 
 
 if __name__ == '__main__':
