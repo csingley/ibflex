@@ -116,7 +116,7 @@ class TradeMixin(AccountMixin, CurrencyMixin, SecurityMixin):
     netCash = Decimal()
     closePrice = Decimal()
     openCloseIndicator = OneOf("O", "C", "C;O")
-    notes = List()
+    notes = List(separator=';')
     cost = Decimal()
     fifoPnlRealized = Decimal()
     fxPnl = Decimal()

@@ -99,6 +99,7 @@ class Decimal(Field):
 
 class OneOf(Field):
     def _init(self, *args, **kwargs):
+        # args are sequence of valid values
         self.valid = set(args)
         return (), kwargs
 
@@ -110,9 +111,16 @@ class OneOf(Field):
 
 class List(Field):
     """
-    IB sends lists as comma-delimited strings, without enclosing brackets.
+    IB sends lists as comma- or string-delimited strings.
     """
+    separator = ','
+
     def _init(self, *args, **kwargs):
+        # If present, `separator` kwarg overrides default separator (the comma)
+        separator = kwargs.pop('separator', None)
+        if separator:
+            self.separator = separator
+        # If present, `valid` kwarg is sequence of valid values
         self.valid = kwargs.pop('valid', None)
         return args, kwargs
 
@@ -130,7 +138,7 @@ class List(Field):
         return self._convert(value)
 
     def _convert(self, value):
-        values = [v.strip() for v in value.split(',')]
+        values = [v.strip() for v in value.split(self.separator)]
         if self.valid:
             for val in values:
                 if val not in self.valid:

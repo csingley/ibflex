@@ -120,6 +120,10 @@ class ListTestCase(FieldTestCase):
     values = [('foo, bar,1,2', ['foo', 'bar', '1', '2']), ('foo', ['foo'])]
     badValue = ['Foo,bar,1,2', ]
 
+    def testExtraArgs(self):
+        with self.assertRaises(fields.FlexFieldError):
+            self.field('foo')
+
     def testNotRequired(self):
         instance = self.field(required=False)
         self.assertEqual(instance.convert(None), [])
@@ -128,12 +132,16 @@ class ListTestCase(FieldTestCase):
         instance = self.field(required=False)
         self.assertEqual(instance.convert(''), [])
 
-
     def testValid(self):
         instance = self.field(valid=['foo', 'bar'])
         self.assertEqual(instance.convert('bar,foo'), ['bar', 'foo'])
         with self.assertRaises(fields.FlexFieldError):
             instance.convert('foo,bar, baz')
+
+    def testSeparator(self):
+        instance = self.field(separator=';')
+        self.assertEqual(instance.convert('foo;bar'), ['foo', 'bar'])
+        self.assertEqual(instance.convert('bar,foo'), [ 'bar,foo'])
 
 
 class DateTestCase(FieldTestCase):
