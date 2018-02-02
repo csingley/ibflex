@@ -47,8 +47,6 @@ setup(
 
     packages=find_packages(),
 
-    install_requires=['requests'],
-
     package_data={
         'ibflex': ['README.rst', 'tests/*'],
     },

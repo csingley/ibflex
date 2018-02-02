@@ -124,7 +124,7 @@ def download(token, query_id):
                 else:
                     raise ValueError  # FIXME
             else:
-                print(response)
+                return response
                 raise ValueError  # FIXME
         return response
     elif status == 'Fail':
