@@ -142,9 +142,10 @@ def main():
     from argparse import ArgumentParser
     description = 'Download Flex brokerage statement from Interactive Brokers'
     argparser = ArgumentParser(description=description)
-    argparser.add_argument('--token', '-t',
+    argparser.add_argument('--token', '-t', required=True,
                            help='Current Flex Web Service token')
-    argparser.add_argument('--query', '-q', help='Flex Query ID#')
+    argparser.add_argument('--query', '-q', required=True,
+                           help='Flex Query ID#')
     args = argparser.parse_args()
 
     statement = download(args.token, args.query)
