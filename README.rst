@@ -140,6 +140,7 @@ them:
 
 
 You can also just execute client.main() as a script:
+
 .. code:: bash
 
     $ python client.py -t 111111111111111111111111 -q 111111 > 2018-01_ibkr.xml
@@ -156,7 +157,7 @@ Resources
 =========
 * Interactive Brokers `Activity Flex Query Reference`_
 * Interactive Brokers `FlexWeb Service Reference`_
-* `capgains` - package that uses ibflex (inter alia) to calculate realized gains
+* `capgains`_ - package that uses ibflex (inter alia) to calculate realized gains
 * `ib-flex-analyzer`_ - Analyze your Interactive Brokers Flex XML reports with pandas
 
 .. _Pull requests: https://github.com/csingley/ibflex/pull/new/master

@@ -148,7 +148,7 @@ def main():
     args = argparser.parse_args()
 
     statement = download(args.token, args.query)
-    print(statement)
+    print(statement.decode())
 
 
 if __name__ == '__main__':
