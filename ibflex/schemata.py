@@ -507,6 +507,40 @@ class Trade(Schema, TradeMixin):
     isAPIOrder = Boolean()
 
 
+class TradeConfirmation(Schema, TradeMixin):
+    """ Wrapped in <TradeConfirms> """
+    buySell = OneOf("BUY", "BUY (Ca.)", "SELL", "SELL (Ca.)")
+    levelOfDetail = OneOf("SYMBOL_SUMMARY", "ORDER", "EXECUTION")
+    commissionCurrency = OneOf(*CURRENCY_CODES)
+    price = Decimal()
+    thirdPartyClearingCommission = Decimal()
+    orderID = Decimal()
+    allocatedTo = String()
+    thirdPartyRegulatoryCommission = Decimal()
+    dateTime = DateTime()
+    brokerExecutionCommission = Decimal()
+    thirdPartyExecutionCommission = Decimal()
+    amount = Decimal()
+    otherCommission = Decimal()
+    commission = Decimal()
+    brokerClearingCommission = Decimal()
+    ibOrderID = String()
+    ibExecID = String()
+    execID = String()
+    brokerageOrderID = String()
+    orderReference = String()
+    volatilityOrderLink = String()
+    exchOrderId = String()
+    extExecID = String()
+    # Despite the name, orderTime actually contains both date & time data.
+    orderTime = DateTime()
+    changeInPrice = Decimal()
+    changeInQuantity = Decimal()
+    orderType = OneOf("LMT", "MKT", "MOC")
+    traderID = String()
+    isAPIOrder = Boolean()
+
+
 class OptionEAE(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
     """
     Option Exercise, Assignment, or Expiration
@@ -659,6 +693,7 @@ elementSchemata = {
     "ComplexPositions": None,
     "FxLots": FxLot,
     "Trades": Trade,
+    "TradeConfirms": TradeConfirmation,
     "TransactionTaxes": None,
     "OptionEAE": OptionEAE,
     "TradeTransfers": TradeTransfer,
