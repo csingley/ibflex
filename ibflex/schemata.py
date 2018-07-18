@@ -683,8 +683,8 @@ class ConversionRate(Schema):
     rate = Decimal()
 
 
-class PriorPeriodPosition(Schema, TradeMixin):
-    """ Wrapped in <SecuritiesInfo> """
+class PriorPeriodPosition(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
+    """ Wrapped in <PriorPeriodPositions> """
     priorMtmPnl = Decimal()
     date = Date()
     price = Decimal()
