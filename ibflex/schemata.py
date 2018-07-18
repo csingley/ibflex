@@ -192,7 +192,7 @@ class AccountInformation(Schema):
     tradingPermissions = List(
         valid=["Stocks", "Options", "Mutual Funds", "Futures", "Forex",
                "Bonds", "CFDs", "IBG Notes", "Warrants", "US Treasury Bills",
-               "Futures Options", "Single-Stock Futures", "Stock Loan",
+               "Futures Options", "SSF", "Stock Loan",
                "Stock Borrow"])
     dateOpened = Date()
     dateFunded = Date()
@@ -672,6 +672,7 @@ class SecurityInfo(Schema, SecurityMixin):
     maturity = String()
     issueDate = Date()
     code = List()
+    type = String()
 
 
 class ConversionRate(Schema):
@@ -680,6 +681,13 @@ class ConversionRate(Schema):
     fromCurrency = OneOf(*CURRENCY_CODES)
     toCurrency = OneOf(*CURRENCY_CODES)
     rate = Decimal()
+
+
+class PriorPeriodPosition(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
+    """ Wrapped in <PriorPeriodPositions> """
+    priorMtmPnl = Decimal()
+    date = Date()
+    price = Decimal()
 
 
 # Map of list container tag to element schema
@@ -712,4 +720,5 @@ elementSchemata = {
     "OpenDividendAccruals": OpenDividendAccrual,
     "SecuritiesInfo": SecurityInfo,
     "ConversionRates": ConversionRate,
+    "PriorPeriodPositions": PriorPeriodPosition,
 }
