@@ -690,6 +690,24 @@ class PriorPeriodPosition(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
     price = Decimal()
 
 
+class MTMPerformanceSummaryUnderlying(Schema, AccountMixin, SecurityMixin):
+    """ Wrapped in <MTMPerformanceSummaryInBase> """
+    listingExchange = String()
+    underlyingSecurityID = String()
+    underlyingListingExchange = String()
+    reportDate = Date()
+    prevCloseQuantity = Decimal()
+    prevClosePrice = Decimal()
+    closeQuantity = Decimal()
+    closePrice = Decimal()
+    transactionMtm = Decimal()
+    priorOpenMtm = Decimal()
+    commissions = Decimal()
+    other = Decimal()
+    total = Decimal()
+    code = List()
+
+    
 # Map of list container tag to element schema
 elementSchemata = {
     "EquitySummaryInBase": EquitySummaryByReportDateInBase,
@@ -721,4 +739,5 @@ elementSchemata = {
     "SecuritiesInfo": SecurityInfo,
     "ConversionRates": ConversionRate,
     "PriorPeriodPositions": PriorPeriodPosition,
+    "MTMPerformanceSummaryInBase": MTMPerformanceSummaryUnderlying
 }
