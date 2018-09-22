@@ -123,9 +123,14 @@ def parse_list(elem):
     return tag, items
 
 
+def parse_nav(elem):
+    return 'ChangeinNAV', schemata.ChangeInNAV.convert(elem)
+
+
 stmt_child_parsers = {'AccountInformation': parse_acctinfo,
                       'ConversionRates': parse_rates,
-                      'FxPositions': parse_fxpos, }
+                      'FxPositions': parse_fxpos,
+                      'ChangeInNAV': parse_nav}
 
 
 ##############################################################################

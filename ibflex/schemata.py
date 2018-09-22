@@ -690,6 +690,66 @@ class PriorPeriodPosition(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
     price = Decimal()
 
 
+class MTMPerformanceSummaryUnderlying(Schema, AccountMixin, SecurityMixin):
+    """ Wrapped in <MTMPerformanceSummaryInBase> """
+    listingExchange = String()
+    underlyingSecurityID = String()
+    underlyingListingExchange = String()
+    reportDate = Date()
+    prevCloseQuantity = Decimal()
+    prevClosePrice = Decimal()
+    closeQuantity = Decimal()
+    closePrice = Decimal()
+    transactionMtm = Decimal()
+    priorOpenMtm = Decimal()
+    commissions = Decimal()
+    other = Decimal()
+    total = Decimal()
+    code = List()
+
+    
+class ChangeInNAV(Schema, AccountMixin):
+    """ Wrapped in <FlexStatement> """
+    fromDate = Date()
+    toDate = Date()
+    startingValue = Decimal()
+    mtm = Decimal()
+    realized = Decimal()
+    changeInUnrealized = Decimal()
+    costAdjustments = Decimal()
+    transferredPnlAdjustments = Decimal()
+    depositsWithdrawals = Decimal()
+    internalCashTransfers = Decimal()
+    assetTransfers = Decimal()
+    debitCardActivity = Decimal()
+    billPay = Decimal()
+    dividends = Decimal()
+    withholdingTax = Decimal()
+    withholding871m = Decimal()
+    withholdingTaxCollected = Decimal()
+    changeInDividendAccruals = Decimal()
+    interest = Decimal()
+    changeInInterestAccruals = Decimal()
+    advisorFees = Decimal()
+    clientFees = Decimal()
+    otherFees = Decimal()
+    feesReceivables = Decimal()
+    commissions = Decimal()
+    commissionReceivables = Decimal()
+    forexCommissions = Decimal()
+    transactionTax = Decimal()
+    taxReceivables = Decimal()
+    salesTax = Decimal()
+    softDollars = Decimal()
+    netFxTrading = Decimal()
+    fxTranslation = Decimal()
+    linkingAdjustments = Decimal()
+    other = Decimal()
+    endingValue = Decimal()
+    twr = Decimal()
+    corporateActionProceeds = Decimal()
+    
+    
 # Map of list container tag to element schema
 elementSchemata = {
     "EquitySummaryInBase": EquitySummaryByReportDateInBase,
@@ -721,4 +781,6 @@ elementSchemata = {
     "SecuritiesInfo": SecurityInfo,
     "ConversionRates": ConversionRate,
     "PriorPeriodPositions": PriorPeriodPosition,
+    "MTMPerformanceSummaryInBase": MTMPerformanceSummaryUnderlying,
+    "ChangeInNAV": ChangeInNAV
 }
