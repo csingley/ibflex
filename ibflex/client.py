@@ -8,6 +8,7 @@ https://www.interactivebrokers.com/en/software/am/am/reports/flex_web_service_ve
 import xml.etree.ElementTree as ET
 from datetime import datetime
 import time
+import sys
 
 
 # 3rd party imports
