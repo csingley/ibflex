@@ -124,7 +124,7 @@ def parse_list(elem):
 
 
 def parse_nav(elem):
-    return 'ChangeinNAV', schemata.ChangeInNAV.convert(elem)
+    return 'ChangeInNAV', schemata.ChangeInNAV.convert(elem)
 
 
 stmt_child_parsers = {'AccountInformation': parse_acctinfo,
