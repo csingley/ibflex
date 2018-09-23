@@ -70,12 +70,28 @@ ResponseSchemata = {'Success': ResponseSuccessSchema,
                     'Fail': ResponseFailureSchema}
 
 
+def requests_get_timeout(url):
+    response = None
+    req_count = 1
+    while(not response):
+        try:
+            response = requests.get(url,
+                                    params={'v': '3', 't': token, 'q': query_id},
+                                    headers={'user-agent': 'Java'},
+                                    timeout=5*req_count)
+        except requests.exceptions.Timeout:
+            if(req_count<3):
+                req_count += 1
+                print('Request Timeout, re-sending...')
+            else:
+                sys.exit('Request Timeout, exiting.')
+
+    return response
+
+
 def send_request(token, query_id, url=None):
     url = url or REQUEST_URL
-    response = requests.get(url,
-                            params={'v': '3', 't': token, 'q': query_id},
-                            headers={'user-agent': 'Java'},
-                           )
+    response = requests_get_timeout(url)
     response = ET.fromstring(response.content)
     assert response.tag == 'FlexStatementResponse'
     timestamp = response.attrib['timestamp']
@@ -96,10 +112,7 @@ def send_request(token, query_id, url=None):
 
 def get_statement(token, reference_code, url=None):
     url = url or STMT_URL
-    statement = requests.get(url,
-                             params={'v': '3', 't': token, 'q': reference_code},
-                             headers={'user-agent': 'Java'},
-                            )
+    statement = requests_get_timeout(url)
     return statement.content
 
 
