@@ -71,7 +71,7 @@ ResponseSchemata = {'Success': ResponseSuccessSchema,
                     'Fail': ResponseFailureSchema}
 
 
-def requests_get_timeout(url):
+def requests_get_timeout(url, token, query_id):
     response = None
     req_count = 1
     while(not response):
@@ -92,7 +92,7 @@ def requests_get_timeout(url):
 
 def send_request(token, query_id, url=None):
     url = url or REQUEST_URL
-    response = requests_get_timeout(url)
+    response = requests_get_timeout(url, token, query_id)
     response = ET.fromstring(response.content)
     assert response.tag == 'FlexStatementResponse'
     timestamp = response.attrib['timestamp']
@@ -113,7 +113,7 @@ def send_request(token, query_id, url=None):
 
 def get_statement(token, reference_code, url=None):
     url = url or STMT_URL
-    statement = requests_get_timeout(url)
+    statement = requests_get_timeout(url, token, reference_code)
     return statement.content
 
 
