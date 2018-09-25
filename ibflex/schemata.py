@@ -249,14 +249,19 @@ class EquitySummaryByReportDateInBase(Schema, AccountMixin):
     fdicInsuredBankSweepAccount = Decimal()
     fdicInsuredBankSweepAccountLong = Decimal()
     fdicInsuredBankSweepAccountShort = Decimal()
+    fdicInsuredBankSweepAccountCashComponent = Decimal()
     fdicInsuredAccountInterestAccruals = Decimal()
     fdicInsuredAccountInterestAccrualsLong = Decimal()
     fdicInsuredAccountInterestAccrualsShort = Decimal()
+    fdicInsuredAccountInterestAccrualsComponent = Decimal()
     total = Decimal()
     totalLong = Decimal()
     totalShort = Decimal()
+    brokerInterestAccrualsComponent = Decimal()
+    brokerCashComponent = Decimal()
+    cfdUnrealizedPl = Decimal()
 
-
+    
 class CashReportCurrency(Schema, AccountMixin):
     """ Wrapped in <CashReport> """
     currency = OneOf(*CURRENCY_CODES)
@@ -539,8 +544,14 @@ class TradeConfirmation(Schema, TradeMixin):
     orderType = OneOf("LMT", "MKT", "MOC")
     traderID = String()
     isAPIOrder = Boolean()
+    code = List()
+    tax = Decimal()
+    listingExchange = String()
+    underlyingListingExchange = String()
+    settleDate = String()
+    underlyingSecurityID = String()
 
-
+    
 class OptionEAE(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
     """
     Option Exercise, Assignment, or Expiration
