@@ -544,8 +544,14 @@ class TradeConfirmation(Schema, TradeMixin):
     orderType = OneOf("LMT", "MKT", "MOC")
     traderID = String()
     isAPIOrder = Boolean()
+    code = List()
+    tax = Decimal()
+    listingExchange = String()
+    underlyingListingExchange = String()
+    settleDate = String()
+    underlyingSecurityID = String()
 
-
+    
 class OptionEAE(Schema, AccountMixin, CurrencyMixin, SecurityMixin):
     """
     Option Exercise, Assignment, or Expiration
