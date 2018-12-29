@@ -6,13 +6,13 @@ __here__ = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(__here__, 'README.rst'), 'r') as f:
     long_description = f.read()
 
-version = '0.11'
+version = '0.12'
 
 setup(
     name='ibflex',
     version=version,
-    download_url='https://github.com/csingley/ibflex/tarball/master',
-    #  download_url='https://github.com/csingley/ibflex/releases/tag/' + version,
+    #  download_url='https://github.com/csingley/ibflex/tarball/master',
+    download_url='https://github.com/csingley/ibflex/releases/tag/' + version,
     description=('Parse Interactive Brokers Flex XML reports and convert '
                  'to Python data types'),
     long_description=long_description,
