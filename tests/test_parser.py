@@ -107,7 +107,8 @@ class FlexParserTestCase(unittest.TestCase):
         self.assertIn(sentinel.rate2, conversion)
 
     @patch.object(schemata.ConversionRate, 'convert',
-                  return_value={'fromCurrency': sentinel.currency,
+                  return_value={'fromCurrency': sentinel.fromCurrency,
+                                'toCurrency': sentinel.toCurrency,
                                 'reportDate': sentinel.reportDate,
                                 'rate': sentinel.rate})
     def testParseRate(self, mock_convert_method):
@@ -120,9 +121,10 @@ class FlexParserTestCase(unittest.TestCase):
         key, rate = output
 
         self.assertIsInstance(key, tuple)
-        self.assertEqual(len(key), 2)
-        currency, reportDate = key
-        self.assertIs(currency, sentinel.currency)
+        self.assertEqual(len(key), 3)
+        fromCurrency, toCurrency, reportDate = key
+        self.assertIs(fromCurrency, sentinel.fromCurrency)
+        self.assertIs(toCurrency, sentinel.toCurrency)
         self.assertIs(reportDate, sentinel.reportDate)
 
         self.assertIs(rate, sentinel.rate)

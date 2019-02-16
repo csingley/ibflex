@@ -164,7 +164,7 @@ class EquitySummaryByReportDateInBaseTestCase(unittest.TestCase):
     def testConvert(self):
         output = self.schema.convert(self.data)
         self.assertIsInstance(output, dict)
-        self.assertEqual(len(output), 55)
+        self.assertEqual(len(output), 64)
 
         self.assertEqual(output['accountId'], 'U123456')
         self.assertEqual(output['acctAlias'], "ibflex test")
@@ -215,12 +215,21 @@ class EquitySummaryByReportDateInBaseTestCase(unittest.TestCase):
         self.assertEqual(output['fdicInsuredBankSweepAccount'], decimal.Decimal("0"))
         self.assertEqual(output['fdicInsuredBankSweepAccountLong'], decimal.Decimal("0"))
         self.assertEqual(output['fdicInsuredBankSweepAccountShort'], decimal.Decimal("0"))
+        self.assertEqual(output['fdicInsuredBankSweepAccountCashComponent'], None)
+        self.assertEqual(output['fdicInsuredBankSweepAccountCashComponentLong'], None)
+        self.assertEqual(output['fdicInsuredBankSweepAccountCashComponentShort'], None)
         self.assertEqual(output['fdicInsuredAccountInterestAccruals'], decimal.Decimal("0"))
         self.assertEqual(output['fdicInsuredAccountInterestAccrualsLong'], decimal.Decimal("0"))
         self.assertEqual(output['fdicInsuredAccountInterestAccrualsShort'], decimal.Decimal("0"))
+        self.assertEqual(output['fdicInsuredAccountInterestAccrualsComponent'], None)
+        self.assertEqual(output['fdicInsuredAccountInterestAccrualsComponentLong'], None)
+        self.assertEqual(output['fdicInsuredAccountInterestAccrualsComponentShort'], None)
         self.assertEqual(output['total'], decimal.Decimal("40.1509097"))
         self.assertEqual(output['totalLong'], decimal.Decimal("44.2009097"))
         self.assertEqual(output['totalShort'], decimal.Decimal("-46.05"))
+        self.assertEqual(output['brokerInterestAccrualsComponent'], None)
+        self.assertEqual(output['brokerCashComponent'], None)
+        self.assertEqual(output['cfdUnrealizedPl'], None)
 
 
 class CashReportCurrencyTestCase(unittest.TestCase):
@@ -1002,7 +1011,7 @@ class SecurityInfoTestCase(unittest.TestCase):
     def testConvert(self):
         output = self.schema.convert(self.data)
         self.assertIsInstance(output, dict)
-        self.assertEqual(len(output), 19)
+        self.assertEqual(len(output), 20)
 
         self.assertEqual(output['assetCategory'], "STK")
         self.assertEqual(output['symbol'], "VXX")
@@ -1023,6 +1032,7 @@ class SecurityInfoTestCase(unittest.TestCase):
         self.assertEqual(output['maturity'], None)
         self.assertEqual(output['issueDate'], None)
         self.assertEqual(output['code'], [])
+        self.assertEqual(output['type'], None)
 
 
 class ConversionRateTestCase(unittest.TestCase):

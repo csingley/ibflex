@@ -79,11 +79,12 @@ def parse_rate(elem):
     """
     Use input schema to convert element.
 
-    Return duple of ((currency, date), rate) suitable for use
+    Return duple of ((from_currency, to_currency, date), rate) suitable for use
     as a dict item.
     """
     rate = schemata.ConversionRate.convert(elem)
-    return (rate['fromCurrency'], rate['reportDate']), rate['rate']
+    return ((rate['fromCurrency'], rate['toCurrency'], rate['reportDate']),
+            rate['rate'])
 
 
 def parse_fxpos(elem):
