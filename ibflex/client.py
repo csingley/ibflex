@@ -16,10 +16,17 @@ import requests
 from ibflex import fields, schemata
 
 
+###############################################################################
+# SERVICE LOCATIONS
+###############################################################################
 FLEX_URL = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/'
 REQUEST_URL = FLEX_URL + 'FlexStatementService.SendRequest'
 STMT_URL = FLEX_URL + 'FlexStatementService.GetStatement'
 
+
+###############################################################################
+# ERRORS
+###############################################################################
 ERRORS = [
     ('1003', 'Statement is not available.'),
     ('1004', 'Statement is incomplete at this time. Please try again shortly.'),
@@ -44,6 +51,36 @@ ERRORS = [
 ERROR_CODES, ERROR_MSGS = zip(*ERRORS)
 
 
+class IbflexClientError(Exception):
+    """ Base class for Exceptions defined in this module """
+    pass
+
+
+class BadResponseError(IbflexClientError):
+    """
+    Exception raised for malformed Flex response.
+    """
+    def __init__(self, status, response):
+        self.status = status
+        self.response = response
+        display = "Bad response, status='{}':\n\n {}".format(status, response)
+        super(BadResponseError, self).__init__(display)
+
+
+class ResponseCodeError(IbflexClientError):
+    """
+    Exception raised when Flex server returns a response with an error code.
+    """
+    def __init__(self, code, msg):
+        self.code = code
+        self.msg = msg
+        display = "Code={}: {}".format(code, msg)
+        super(ResponseCodeError, self).__init__(display)
+
+
+###############################################################################
+# SCHEMATA
+###############################################################################
 class TextSchema(metaclass=schemata.SchemaMetaclass):
     """
     Base schema class where data is in text not attributes.
@@ -71,6 +108,9 @@ ResponseSchemata = {'Success': ResponseSuccessSchema,
                     'Fail': ResponseFailureSchema}
 
 
+###############################################################################
+# FUNCTIONS
+###############################################################################
 def requests_get_timeout(url, token, query_id):
     response = None
     req_count = 1
@@ -103,9 +143,11 @@ def send_request(token, query_id, url=None):
     timestamp = datetime.strptime(timestamp, '%d %B, %Y %I:%M %p %z')
 
     status = response.find('Status')
-    schema = ResponseSchemata.get(status.text, None)
     if status is None:
-        raise ValueError  # FIXME
+        raise BadResponseError(status=status, response=response)
+    schema = ResponseSchemata.get(status.text, None)
+    if schema is None:
+        raise BadResponseError(status=status, response=response)
     output = schema.convert(response)
     output['timestamp'] = timestamp
     return output
@@ -127,26 +169,28 @@ def download(token, query_id):
         while not ready:
             response = get_statement(token, reference_code, url)
             resp_str = str(response)
-            if 'FlexQueryResponse' in resp_str:
-                ready = True
-            elif 'FlexStatementResponse' in resp_str:
-                output = ResponseFailureSchema.convert(ET.fromstring(response))
-                if output['ErrorCode'] in ('1019',):
+            try:
+                if 'FlexQueryResponse' in resp_str:
+                    ready = True
+                elif 'FlexStatementResponse' in resp_str:
+                    output = ResponseFailureSchema.convert(ET.fromstring(response))
+                    raise ResponseCodeError(code=output['ErrorCode'],
+                                            msg=output['ErrorMessage'])
+                else:
+                    raise BadResponseError(status=status, response=response)
+            except ResponseCodeError as err:
+                if err.code in ('1019',):
                     time.sleep(5)
-                elif output['ErrorCode'] in ('1018',):
+                elif err.code in ('1018',):
                     time.sleep(10)
                 else:
-                    raise ValueError  # FIXME
-            else:
-                return response
-                raise ValueError  # FIXME
+                    raise
         return response
     elif status == 'Fail':
-        error_code = response['ErrorCode']
-        error_msg = response['ErrorMessage']
-        raise ValueError  # FIXME
+        raise ResponseCodeError(code=response['ErrorCode'],
+                                msg=response['ErrorMessage'])
     else:
-        raise ValueError  # FIXME
+        raise BadResponseError(status=status, response=response)
 
 
 ##############################################################################
