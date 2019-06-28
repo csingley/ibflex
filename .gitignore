@@ -14,3 +14,4 @@ MANIFEST
 build
 dist
 reg_settings.py
+.mypy_cache/
