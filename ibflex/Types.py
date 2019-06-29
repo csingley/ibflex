@@ -776,7 +776,6 @@ class OptionEAE(AccountMixin, CurrencyMixin, SecurityMixin):
     fxPnl: decimal.Decimal
     mtmPnl: decimal.Decimal
     tradeID: str
-    deliveredReceived: DeliveredReceived
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -862,6 +861,7 @@ class CorporateAction(AccountMixin, CurrencyMixin, SecurityMixin):
     fifoPnlRealized: decimal.Decimal
     mtmPnl: decimal.Decimal
     code: List[str]
+    type: CorporateActionType
 
 
 @dataclass(frozen=True)
