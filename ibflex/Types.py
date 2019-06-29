@@ -2,12 +2,26 @@
 """
 """
 
+__all__ = [
+    "CashTransactionType", "TradeType", "BuySell", "OpenClose", "OrderType",
+    "CorporateActionType", "OptionEAEType", "PositionSide", "TransferType",
+    "TradeTransferDirection", "TransferDirection", "DeliveredReceived",
+    "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
+    "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
+    "EquitySummaryByReportDateInBase", "CashReportCurrency",
+    "StatementOfFundsLine", "ChangeInPositionValue", "OpenPosition", "FxLot",
+    "Trade", "TradeConfirmation", "OptionEAE", "TradeTransfer",
+    "InterestAccrualsCurrency", "SLBActivity", "Transfer", "CorporateAction",
+    "CashTransaction", "ChangeInDividendAccrual", "OpenDividendAccrual",
+    "SecurityInfo", "ConversionRate", "PriorPeriodPosition",
+]
 
 import datetime
 import decimal
+from decimal import Decimal
 import enum
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional
 
 
 ###############################################################################
@@ -134,24 +148,6 @@ class DeliveredReceived(enum.Enum):
 
 
 ###############################################################################
-#  TYPE ALIASES
-###############################################################################
-OptionalDecimal = Optional[decimal.Decimal]
-
-
-FlexElement = Union[
-    "FlexQueryResponse", "FlexStatement", "AccountInformation", "ChangeInNAV",
-    "MTMPerformanceSummaryUnderlying", "EquitySummaryByReportDateInBase",
-    "CashReportCurrency", "StatementOfFundsLine", "ChangeInPositionValue",
-    "OpenPosition", "FxLot", "Trade", "TradeConfirmation", "OptionEAE",
-    "TradeTransfer", "InterestAccrualsCurrency", "SLBActivity", "Transfer",
-    "CorporateAction", "CashTransaction", "ChangeInDividendAccrual",
-    "OpenDividendAccrual", "SecurityInfo", "ConversionRate",
-    "PriorPeriodPosition",
-]
-
-
-###############################################################################
 #  MIXINS
 ###############################################################################
 @dataclass(frozen=True)
@@ -243,15 +239,20 @@ class DividendAccrualMixin(AccountMixin, CurrencyMixin, SecurityMixin):
 #  ELEMENTS
 ###############################################################################
 @dataclass(frozen=True)
-class FlexQueryResponse:
-    """ Top-level element """
+class FlexElement:
+    """ Base class for data element types """
+
+
+@dataclass(frozen=True)
+class FlexQueryResponse(FlexElement):
+    """ Root element """
     queryName: str
     type: str
     FlexStatements: List["FlexStatement"]
 
 
 @dataclass(frozen=True)
-class FlexStatement:
+class FlexStatement(FlexElement):
     """ Wrapped in <FlexStatements> """
     accountId: str
     fromDate: datetime.date
@@ -309,8 +310,8 @@ class FlexStatement:
 
 
 @dataclass(frozen=True)
-class AccountInformation:
-    """ Wrapped in <FlexStatement> """
+class AccountInformation(FlexElement):
+    """ Child of <FlexStatement> """
     accountId: str
     acctAlias: str
     currency: str
@@ -320,10 +321,10 @@ class AccountInformation:
     accountCapabilities: List[str]
     tradingPermissions: List[str]
     dateOpened: datetime.date
-    dateFunded: datetime.date
-    dateClosed: datetime.date
-    masterName: str
-    ibEntity: str
+    dateFunded: Optional[datetime.date]
+    dateClosed: Optional[datetime.date]
+    masterName: Optional[str]
+    ibEntity: Optional[str]
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -331,46 +332,46 @@ _AccountInformation = AccountInformation
 
 
 @dataclass(frozen=True)
-class ChangeInNAV(AccountMixin):
-    """ Wrapped in <FlexStatement> """
+class ChangeInNAV(FlexElement, AccountMixin):
+    """ Child of <FlexStatement> """
     fromDate: datetime.date
     toDate: datetime.date
-    startingValue: OptionalDecimal = None
-    mtm: OptionalDecimal = None
-    realized: OptionalDecimal = None
-    changeInUnrealized: OptionalDecimal = None
-    costAdjustments: OptionalDecimal = None
-    transferredPnlAdjustments: OptionalDecimal = None
-    depositsWithdrawals: OptionalDecimal = None
-    internalCashTransfers: OptionalDecimal = None
-    assetTransfers: OptionalDecimal = None
-    debitCardActivity: OptionalDecimal = None
-    billPay: OptionalDecimal = None
-    dividends: OptionalDecimal = None
-    withholdingTax: OptionalDecimal = None
-    withholding871m: OptionalDecimal = None
-    withholdingTaxCollected: OptionalDecimal = None
-    changeInDividendAccruals: OptionalDecimal = None
-    interest: OptionalDecimal = None
-    changeInInterestAccruals: OptionalDecimal = None
-    advisorFees: OptionalDecimal = None
-    clientFees: OptionalDecimal = None
-    otherFees: OptionalDecimal = None
-    feesReceivables: OptionalDecimal = None
-    commissions: OptionalDecimal = None
-    commissionReceivables: OptionalDecimal = None
-    forexCommissions: OptionalDecimal = None
-    transactionTax: OptionalDecimal = None
-    taxReceivables: OptionalDecimal = None
-    salesTax: OptionalDecimal = None
-    softDollars: OptionalDecimal = None
-    netFxTrading: OptionalDecimal = None
-    fxTranslation: OptionalDecimal = None
-    linkingAdjustments: OptionalDecimal = None
-    other: OptionalDecimal = None
-    endingValue: OptionalDecimal = None
-    twr: OptionalDecimal = None
-    corporateActionProceeds: OptionalDecimal = None
+    startingValue: Optional[Decimal] = None
+    mtm: Optional[Decimal] = None
+    realized: Optional[Decimal] = None
+    changeInUnrealized: Optional[Decimal] = None
+    costAdjustments: Optional[Decimal] = None
+    transferredPnlAdjustments: Optional[Decimal] = None
+    depositsWithdrawals: Optional[Decimal] = None
+    internalCashTransfers: Optional[Decimal] = None
+    assetTransfers: Optional[Decimal] = None
+    debitCardActivity: Optional[Decimal] = None
+    billPay: Optional[Decimal] = None
+    dividends: Optional[Decimal] = None
+    withholdingTax: Optional[Decimal] = None
+    withholding871m: Optional[Decimal] = None
+    withholdingTaxCollected: Optional[Decimal] = None
+    changeInDividendAccruals: Optional[Decimal] = None
+    interest: Optional[Decimal] = None
+    changeInInterestAccruals: Optional[Decimal] = None
+    advisorFees: Optional[Decimal] = None
+    clientFees: Optional[Decimal] = None
+    otherFees: Optional[Decimal] = None
+    feesReceivables: Optional[Decimal] = None
+    commissions: Optional[Decimal] = None
+    commissionReceivables: Optional[Decimal] = None
+    forexCommissions: Optional[Decimal] = None
+    transactionTax: Optional[Decimal] = None
+    taxReceivables: Optional[Decimal] = None
+    salesTax: Optional[Decimal] = None
+    softDollars: Optional[Decimal] = None
+    netFxTrading: Optional[Decimal] = None
+    fxTranslation: Optional[Decimal] = None
+    linkingAdjustments: Optional[Decimal] = None
+    other: Optional[Decimal] = None
+    endingValue: Optional[Decimal] = None
+    twr: Optional[Decimal] = None
+    corporateActionProceeds: Optional[Decimal] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -378,253 +379,253 @@ _ChangeInNAV = ChangeInNAV
 
 
 @dataclass(frozen=True)
-class MTMPerformanceSummaryUnderlying(AccountMixin, SecurityMixin):
+class MTMPerformanceSummaryUnderlying(FlexElement, AccountMixin, SecurityMixin):
     """ Wrapped in <MTMPerformanceSummaryInBase> """
     listingExchange: str
     underlyingSecurityID: str
     underlyingListingExchange: str
     reportDate: datetime.date
-    prevCloseQuantity: OptionalDecimal = None
-    prevClosePrice: OptionalDecimal = None
-    closeQuantity: OptionalDecimal = None
-    closePrice: OptionalDecimal = None
-    transactionMtm: OptionalDecimal = None
-    priorOpenMtm: OptionalDecimal = None
-    commissions: OptionalDecimal = None
-    other: OptionalDecimal = None
-    total: OptionalDecimal = None
+    prevCloseQuantity: Optional[Decimal] = None
+    prevClosePrice: Optional[Decimal] = None
+    closeQuantity: Optional[Decimal] = None
+    closePrice: Optional[Decimal] = None
+    transactionMtm: Optional[Decimal] = None
+    priorOpenMtm: Optional[Decimal] = None
+    commissions: Optional[Decimal] = None
+    other: Optional[Decimal] = None
+    total: Optional[Decimal] = None
     code: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
-class EquitySummaryByReportDateInBase(AccountMixin):
+class EquitySummaryByReportDateInBase(FlexElement, AccountMixin):
     """ Wrapped in <EquitySummaryInBase> """
     reportDate: datetime.date
-    cash: OptionalDecimal = None
-    cashLong: OptionalDecimal = None
-    cashShort: OptionalDecimal = None
-    slbCashCollateral: OptionalDecimal = None
-    slbCashCollateralLong: OptionalDecimal = None
-    slbCashCollateralShort: OptionalDecimal = None
-    stock: OptionalDecimal = None
-    stockLong: OptionalDecimal = None
-    stockShort: OptionalDecimal = None
-    slbDirectSecuritiesBorrowed: OptionalDecimal = None
-    slbDirectSecuritiesBorrowedLong: OptionalDecimal = None
-    slbDirectSecuritiesBorrowedShort: OptionalDecimal = None
-    slbDirectSecuritiesLent: OptionalDecimal = None
-    slbDirectSecuritiesLentLong: OptionalDecimal = None
-    slbDirectSecuritiesLentShort: OptionalDecimal = None
-    options: OptionalDecimal = None
-    optionsLong: OptionalDecimal = None
-    optionsShort: OptionalDecimal = None
-    commodities: OptionalDecimal = None
-    commoditiesLong: OptionalDecimal = None
-    commoditiesShort: OptionalDecimal = None
-    bonds: OptionalDecimal = None
-    bondsLong: OptionalDecimal = None
-    bondsShort: OptionalDecimal = None
-    notes: OptionalDecimal = None
-    notesLong: OptionalDecimal = None
-    notesShort: OptionalDecimal = None
-    funds: OptionalDecimal = None
-    fundsLong: OptionalDecimal = None
-    fundsShort: OptionalDecimal = None
-    interestAccruals: OptionalDecimal = None
-    interestAccrualsLong: OptionalDecimal = None
-    interestAccrualsShort: OptionalDecimal = None
-    softDollars: OptionalDecimal = None
-    softDollarsLong: OptionalDecimal = None
-    softDollarsShort: OptionalDecimal = None
-    forexCfdUnrealizedPl: OptionalDecimal = None
-    forexCfdUnrealizedPlLong: OptionalDecimal = None
-    forexCfdUnrealizedPlShort: OptionalDecimal = None
-    dividendAccruals: OptionalDecimal = None
-    dividendAccrualsLong: OptionalDecimal = None
-    dividendAccrualsShort: OptionalDecimal = None
-    fdicInsuredBankSweepAccount: OptionalDecimal = None
-    fdicInsuredBankSweepAccountLong: OptionalDecimal = None
-    fdicInsuredBankSweepAccountShort: OptionalDecimal = None
-    fdicInsuredBankSweepAccountCashComponent: OptionalDecimal = None
-    fdicInsuredBankSweepAccountCashComponentLong: OptionalDecimal = None
-    fdicInsuredBankSweepAccountCashComponentShort: OptionalDecimal = None
-    fdicInsuredAccountInterestAccruals: OptionalDecimal = None
-    fdicInsuredAccountInterestAccrualsLong: OptionalDecimal = None
-    fdicInsuredAccountInterestAccrualsShort: OptionalDecimal = None
-    fdicInsuredAccountInterestAccrualsComponent: OptionalDecimal = None
-    fdicInsuredAccountInterestAccrualsComponentLong: OptionalDecimal = None
-    fdicInsuredAccountInterestAccrualsComponentShort: OptionalDecimal = None
-    total: OptionalDecimal = None
-    totalLong: OptionalDecimal = None
-    totalShort: OptionalDecimal = None
-    brokerInterestAccrualsComponent: OptionalDecimal = None
-    brokerCashComponent: OptionalDecimal = None
-    cfdUnrealizedPl: OptionalDecimal = None
+    cash: Optional[Decimal] = None
+    cashLong: Optional[Decimal] = None
+    cashShort: Optional[Decimal] = None
+    slbCashCollateral: Optional[Decimal] = None
+    slbCashCollateralLong: Optional[Decimal] = None
+    slbCashCollateralShort: Optional[Decimal] = None
+    stock: Optional[Decimal] = None
+    stockLong: Optional[Decimal] = None
+    stockShort: Optional[Decimal] = None
+    slbDirectSecuritiesBorrowed: Optional[Decimal] = None
+    slbDirectSecuritiesBorrowedLong: Optional[Decimal] = None
+    slbDirectSecuritiesBorrowedShort: Optional[Decimal] = None
+    slbDirectSecuritiesLent: Optional[Decimal] = None
+    slbDirectSecuritiesLentLong: Optional[Decimal] = None
+    slbDirectSecuritiesLentShort: Optional[Decimal] = None
+    options: Optional[Decimal] = None
+    optionsLong: Optional[Decimal] = None
+    optionsShort: Optional[Decimal] = None
+    commodities: Optional[Decimal] = None
+    commoditiesLong: Optional[Decimal] = None
+    commoditiesShort: Optional[Decimal] = None
+    bonds: Optional[Decimal] = None
+    bondsLong: Optional[Decimal] = None
+    bondsShort: Optional[Decimal] = None
+    notes: Optional[Decimal] = None
+    notesLong: Optional[Decimal] = None
+    notesShort: Optional[Decimal] = None
+    funds: Optional[Decimal] = None
+    fundsLong: Optional[Decimal] = None
+    fundsShort: Optional[Decimal] = None
+    interestAccruals: Optional[Decimal] = None
+    interestAccrualsLong: Optional[Decimal] = None
+    interestAccrualsShort: Optional[Decimal] = None
+    softDollars: Optional[Decimal] = None
+    softDollarsLong: Optional[Decimal] = None
+    softDollarsShort: Optional[Decimal] = None
+    forexCfdUnrealizedPl: Optional[Decimal] = None
+    forexCfdUnrealizedPlLong: Optional[Decimal] = None
+    forexCfdUnrealizedPlShort: Optional[Decimal] = None
+    dividendAccruals: Optional[Decimal] = None
+    dividendAccrualsLong: Optional[Decimal] = None
+    dividendAccrualsShort: Optional[Decimal] = None
+    fdicInsuredBankSweepAccount: Optional[Decimal] = None
+    fdicInsuredBankSweepAccountLong: Optional[Decimal] = None
+    fdicInsuredBankSweepAccountShort: Optional[Decimal] = None
+    fdicInsuredBankSweepAccountCashComponent: Optional[Decimal] = None
+    fdicInsuredBankSweepAccountCashComponentLong: Optional[Decimal] = None
+    fdicInsuredBankSweepAccountCashComponentShort: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccruals: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccrualsLong: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccrualsShort: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccrualsComponent: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccrualsComponentLong: Optional[Decimal] = None
+    fdicInsuredAccountInterestAccrualsComponentShort: Optional[Decimal] = None
+    total: Optional[Decimal] = None
+    totalLong: Optional[Decimal] = None
+    totalShort: Optional[Decimal] = None
+    brokerInterestAccrualsComponent: Optional[Decimal] = None
+    brokerCashComponent: Optional[Decimal] = None
+    cfdUnrealizedPl: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
-class CashReportCurrency(AccountMixin):
+class CashReportCurrency(FlexElement, AccountMixin):
     """ Wrapped in <CashReport> """
     currency: str
     fromDate: datetime.date
     toDate: datetime.date
-    startingCash: OptionalDecimal = None
-    startingCashSec: OptionalDecimal = None
-    startingCashCom: OptionalDecimal = None
-    clientFees: OptionalDecimal = None
-    clientFeesSec: OptionalDecimal = None
-    clientFeesCom: OptionalDecimal = None
-    clientFeesMTD: OptionalDecimal = None
-    clientFeesYTD: OptionalDecimal = None
-    commissions: OptionalDecimal = None
-    commissionsSec: OptionalDecimal = None
-    commissionsCom: OptionalDecimal = None
-    commissionsMTD: OptionalDecimal = None
-    commissionsYTD: OptionalDecimal = None
-    billableCommissions: OptionalDecimal = None
-    billableCommissionsSec: OptionalDecimal = None
-    billableCommissionsCom: OptionalDecimal = None
-    billableCommissionsMTD: OptionalDecimal = None
-    billableCommissionsYTD: OptionalDecimal = None
-    depositWithdrawals: OptionalDecimal = None
-    depositWithdrawalsSec: OptionalDecimal = None
-    depositWithdrawalsCom: OptionalDecimal = None
-    depositWithdrawalsMTD: OptionalDecimal = None
-    depositWithdrawalsYTD: OptionalDecimal = None
-    deposits: OptionalDecimal = None
-    depositsSec: OptionalDecimal = None
-    depositsCom: OptionalDecimal = None
-    depositsMTD: OptionalDecimal = None
-    depositsYTD: OptionalDecimal = None
-    withdrawals: OptionalDecimal = None
-    withdrawalsSec: OptionalDecimal = None
-    withdrawalsCom: OptionalDecimal = None
-    withdrawalsMTD: OptionalDecimal = None
-    withdrawalsYTD: OptionalDecimal = None
-    accountTransfers: OptionalDecimal = None
-    accountTransfersSec: OptionalDecimal = None
-    accountTransfersCom: OptionalDecimal = None
-    accountTransfersMTD: OptionalDecimal = None
-    accountTransfersYTD: OptionalDecimal = None
-    linkingAdjustments: OptionalDecimal = None
-    linkingAdjustmentsSec: OptionalDecimal = None
-    linkingAdjustmentsCom: OptionalDecimal = None
-    internalTransfers: OptionalDecimal = None
-    internalTransfersSec: OptionalDecimal = None
-    internalTransfersCom: OptionalDecimal = None
-    internalTransfersMTD: OptionalDecimal = None
-    internalTransfersYTD: OptionalDecimal = None
-    dividends: OptionalDecimal = None
-    dividendsSec: OptionalDecimal = None
-    dividendsCom: OptionalDecimal = None
-    dividendsMTD: OptionalDecimal = None
-    dividendsYTD: OptionalDecimal = None
-    insuredDepositInterest: OptionalDecimal = None
-    insuredDepositInterestSec: OptionalDecimal = None
-    insuredDepositInterestCom: OptionalDecimal = None
-    insuredDepositInterestMTD: OptionalDecimal = None
-    insuredDepositInterestYTD: OptionalDecimal = None
-    brokerInterest: OptionalDecimal = None
-    brokerInterestSec: OptionalDecimal = None
-    brokerInterestCom: OptionalDecimal = None
-    brokerInterestMTD: OptionalDecimal = None
-    brokerInterestYTD: OptionalDecimal = None
-    bondInterest: OptionalDecimal = None
-    bondInterestSec: OptionalDecimal = None
-    bondInterestCom: OptionalDecimal = None
-    bondInterestMTD: OptionalDecimal = None
-    bondInterestYTD: OptionalDecimal = None
-    cashSettlingMtm: OptionalDecimal = None
-    cashSettlingMtmSec: OptionalDecimal = None
-    cashSettlingMtmCom: OptionalDecimal = None
-    cashSettlingMtmMTD: OptionalDecimal = None
-    cashSettlingMtmYTD: OptionalDecimal = None
-    realizedVm: OptionalDecimal = None
-    realizedVmSec: OptionalDecimal = None
-    realizedVmCom: OptionalDecimal = None
-    realizedVmMTD: OptionalDecimal = None
-    realizedVmYTD: OptionalDecimal = None
-    cfdCharges: OptionalDecimal = None
-    cfdChargesSec: OptionalDecimal = None
-    cfdChargesCom: OptionalDecimal = None
-    cfdChargesMTD: OptionalDecimal = None
-    cfdChargesYTD: OptionalDecimal = None
-    netTradesSales: OptionalDecimal = None
-    netTradesSalesSec: OptionalDecimal = None
-    netTradesSalesCom: OptionalDecimal = None
-    netTradesSalesMTD: OptionalDecimal = None
-    netTradesSalesYTD: OptionalDecimal = None
-    netTradesPurchases: OptionalDecimal = None
-    netTradesPurchasesSec: OptionalDecimal = None
-    netTradesPurchasesCom: OptionalDecimal = None
-    netTradesPurchasesMTD: OptionalDecimal = None
-    netTradesPurchasesYTD: OptionalDecimal = None
-    advisorFees: OptionalDecimal = None
-    advisorFeesSec: OptionalDecimal = None
-    advisorFeesCom: OptionalDecimal = None
-    advisorFeesMTD: OptionalDecimal = None
-    advisorFeesYTD: OptionalDecimal = None
-    feesReceivables: OptionalDecimal = None
-    feesReceivablesSec: OptionalDecimal = None
-    feesReceivablesCom: OptionalDecimal = None
-    feesReceivablesMTD: OptionalDecimal = None
-    feesReceivablesYTD: OptionalDecimal = None
-    paymentInLieu: OptionalDecimal = None
-    paymentInLieuSec: OptionalDecimal = None
-    paymentInLieuCom: OptionalDecimal = None
-    paymentInLieuMTD: OptionalDecimal = None
-    paymentInLieuYTD: OptionalDecimal = None
-    transactionTax: OptionalDecimal = None
-    transactionTaxSec: OptionalDecimal = None
-    transactionTaxCom: OptionalDecimal = None
-    transactionTaxMTD: OptionalDecimal = None
-    transactionTaxYTD: OptionalDecimal = None
-    taxReceivables: OptionalDecimal = None
-    taxReceivablesSec: OptionalDecimal = None
-    taxReceivablesCom: OptionalDecimal = None
-    taxReceivablesMTD: OptionalDecimal = None
-    taxReceivablesYTD: OptionalDecimal = None
-    withholdingTax: OptionalDecimal = None
-    withholdingTaxSec: OptionalDecimal = None
-    withholdingTaxCom: OptionalDecimal = None
-    withholdingTaxMTD: OptionalDecimal = None
-    withholdingTaxYTD: OptionalDecimal = None
-    withholding871m: OptionalDecimal = None
-    withholding871mSec: OptionalDecimal = None
-    withholding871mCom: OptionalDecimal = None
-    withholding871mMTD: OptionalDecimal = None
-    withholding871mYTD: OptionalDecimal = None
-    withholdingCollectedTax: OptionalDecimal = None
-    withholdingCollectedTaxSec: OptionalDecimal = None
-    withholdingCollectedTaxCom: OptionalDecimal = None
-    withholdingCollectedTaxMTD: OptionalDecimal = None
-    withholdingCollectedTaxYTD: OptionalDecimal = None
-    salesTax: OptionalDecimal = None
-    salesTaxSec: OptionalDecimal = None
-    salesTaxCom: OptionalDecimal = None
-    salesTaxMTD: OptionalDecimal = None
-    salesTaxYTD: OptionalDecimal = None
-    fxTranslationGainLoss: OptionalDecimal = None
-    fxTranslationGainLossSec: OptionalDecimal = None
-    fxTranslationGainLossCom: OptionalDecimal = None
-    otherFees: OptionalDecimal = None
-    otherFeesSec: OptionalDecimal = None
-    otherFeesCom: OptionalDecimal = None
-    otherFeesMTD: OptionalDecimal = None
-    otherFeesYTD: OptionalDecimal = None
-    other: OptionalDecimal = None
-    otherSec: OptionalDecimal = None
-    otherCom: OptionalDecimal = None
-    endingCash: OptionalDecimal = None
-    endingCashSec: OptionalDecimal = None
-    endingCashCom: OptionalDecimal = None
-    endingSettledCash: OptionalDecimal = None
-    endingSettledCashSec: OptionalDecimal = None
-    endingSettledCashCom: OptionalDecimal = None
+    startingCash: Optional[Decimal] = None
+    startingCashSec: Optional[Decimal] = None
+    startingCashCom: Optional[Decimal] = None
+    clientFees: Optional[Decimal] = None
+    clientFeesSec: Optional[Decimal] = None
+    clientFeesCom: Optional[Decimal] = None
+    clientFeesMTD: Optional[Decimal] = None
+    clientFeesYTD: Optional[Decimal] = None
+    commissions: Optional[Decimal] = None
+    commissionsSec: Optional[Decimal] = None
+    commissionsCom: Optional[Decimal] = None
+    commissionsMTD: Optional[Decimal] = None
+    commissionsYTD: Optional[Decimal] = None
+    billableCommissions: Optional[Decimal] = None
+    billableCommissionsSec: Optional[Decimal] = None
+    billableCommissionsCom: Optional[Decimal] = None
+    billableCommissionsMTD: Optional[Decimal] = None
+    billableCommissionsYTD: Optional[Decimal] = None
+    depositWithdrawals: Optional[Decimal] = None
+    depositWithdrawalsSec: Optional[Decimal] = None
+    depositWithdrawalsCom: Optional[Decimal] = None
+    depositWithdrawalsMTD: Optional[Decimal] = None
+    depositWithdrawalsYTD: Optional[Decimal] = None
+    deposits: Optional[Decimal] = None
+    depositsSec: Optional[Decimal] = None
+    depositsCom: Optional[Decimal] = None
+    depositsMTD: Optional[Decimal] = None
+    depositsYTD: Optional[Decimal] = None
+    withdrawals: Optional[Decimal] = None
+    withdrawalsSec: Optional[Decimal] = None
+    withdrawalsCom: Optional[Decimal] = None
+    withdrawalsMTD: Optional[Decimal] = None
+    withdrawalsYTD: Optional[Decimal] = None
+    accountTransfers: Optional[Decimal] = None
+    accountTransfersSec: Optional[Decimal] = None
+    accountTransfersCom: Optional[Decimal] = None
+    accountTransfersMTD: Optional[Decimal] = None
+    accountTransfersYTD: Optional[Decimal] = None
+    linkingAdjustments: Optional[Decimal] = None
+    linkingAdjustmentsSec: Optional[Decimal] = None
+    linkingAdjustmentsCom: Optional[Decimal] = None
+    internalTransfers: Optional[Decimal] = None
+    internalTransfersSec: Optional[Decimal] = None
+    internalTransfersCom: Optional[Decimal] = None
+    internalTransfersMTD: Optional[Decimal] = None
+    internalTransfersYTD: Optional[Decimal] = None
+    dividends: Optional[Decimal] = None
+    dividendsSec: Optional[Decimal] = None
+    dividendsCom: Optional[Decimal] = None
+    dividendsMTD: Optional[Decimal] = None
+    dividendsYTD: Optional[Decimal] = None
+    insuredDepositInterest: Optional[Decimal] = None
+    insuredDepositInterestSec: Optional[Decimal] = None
+    insuredDepositInterestCom: Optional[Decimal] = None
+    insuredDepositInterestMTD: Optional[Decimal] = None
+    insuredDepositInterestYTD: Optional[Decimal] = None
+    brokerInterest: Optional[Decimal] = None
+    brokerInterestSec: Optional[Decimal] = None
+    brokerInterestCom: Optional[Decimal] = None
+    brokerInterestMTD: Optional[Decimal] = None
+    brokerInterestYTD: Optional[Decimal] = None
+    bondInterest: Optional[Decimal] = None
+    bondInterestSec: Optional[Decimal] = None
+    bondInterestCom: Optional[Decimal] = None
+    bondInterestMTD: Optional[Decimal] = None
+    bondInterestYTD: Optional[Decimal] = None
+    cashSettlingMtm: Optional[Decimal] = None
+    cashSettlingMtmSec: Optional[Decimal] = None
+    cashSettlingMtmCom: Optional[Decimal] = None
+    cashSettlingMtmMTD: Optional[Decimal] = None
+    cashSettlingMtmYTD: Optional[Decimal] = None
+    realizedVm: Optional[Decimal] = None
+    realizedVmSec: Optional[Decimal] = None
+    realizedVmCom: Optional[Decimal] = None
+    realizedVmMTD: Optional[Decimal] = None
+    realizedVmYTD: Optional[Decimal] = None
+    cfdCharges: Optional[Decimal] = None
+    cfdChargesSec: Optional[Decimal] = None
+    cfdChargesCom: Optional[Decimal] = None
+    cfdChargesMTD: Optional[Decimal] = None
+    cfdChargesYTD: Optional[Decimal] = None
+    netTradesSales: Optional[Decimal] = None
+    netTradesSalesSec: Optional[Decimal] = None
+    netTradesSalesCom: Optional[Decimal] = None
+    netTradesSalesMTD: Optional[Decimal] = None
+    netTradesSalesYTD: Optional[Decimal] = None
+    netTradesPurchases: Optional[Decimal] = None
+    netTradesPurchasesSec: Optional[Decimal] = None
+    netTradesPurchasesCom: Optional[Decimal] = None
+    netTradesPurchasesMTD: Optional[Decimal] = None
+    netTradesPurchasesYTD: Optional[Decimal] = None
+    advisorFees: Optional[Decimal] = None
+    advisorFeesSec: Optional[Decimal] = None
+    advisorFeesCom: Optional[Decimal] = None
+    advisorFeesMTD: Optional[Decimal] = None
+    advisorFeesYTD: Optional[Decimal] = None
+    feesReceivables: Optional[Decimal] = None
+    feesReceivablesSec: Optional[Decimal] = None
+    feesReceivablesCom: Optional[Decimal] = None
+    feesReceivablesMTD: Optional[Decimal] = None
+    feesReceivablesYTD: Optional[Decimal] = None
+    paymentInLieu: Optional[Decimal] = None
+    paymentInLieuSec: Optional[Decimal] = None
+    paymentInLieuCom: Optional[Decimal] = None
+    paymentInLieuMTD: Optional[Decimal] = None
+    paymentInLieuYTD: Optional[Decimal] = None
+    transactionTax: Optional[Decimal] = None
+    transactionTaxSec: Optional[Decimal] = None
+    transactionTaxCom: Optional[Decimal] = None
+    transactionTaxMTD: Optional[Decimal] = None
+    transactionTaxYTD: Optional[Decimal] = None
+    taxReceivables: Optional[Decimal] = None
+    taxReceivablesSec: Optional[Decimal] = None
+    taxReceivablesCom: Optional[Decimal] = None
+    taxReceivablesMTD: Optional[Decimal] = None
+    taxReceivablesYTD: Optional[Decimal] = None
+    withholdingTax: Optional[Decimal] = None
+    withholdingTaxSec: Optional[Decimal] = None
+    withholdingTaxCom: Optional[Decimal] = None
+    withholdingTaxMTD: Optional[Decimal] = None
+    withholdingTaxYTD: Optional[Decimal] = None
+    withholding871m: Optional[Decimal] = None
+    withholding871mSec: Optional[Decimal] = None
+    withholding871mCom: Optional[Decimal] = None
+    withholding871mMTD: Optional[Decimal] = None
+    withholding871mYTD: Optional[Decimal] = None
+    withholdingCollectedTax: Optional[Decimal] = None
+    withholdingCollectedTaxSec: Optional[Decimal] = None
+    withholdingCollectedTaxCom: Optional[Decimal] = None
+    withholdingCollectedTaxMTD: Optional[Decimal] = None
+    withholdingCollectedTaxYTD: Optional[Decimal] = None
+    salesTax: Optional[Decimal] = None
+    salesTaxSec: Optional[Decimal] = None
+    salesTaxCom: Optional[Decimal] = None
+    salesTaxMTD: Optional[Decimal] = None
+    salesTaxYTD: Optional[Decimal] = None
+    fxTranslationGainLoss: Optional[Decimal] = None
+    fxTranslationGainLossSec: Optional[Decimal] = None
+    fxTranslationGainLossCom: Optional[Decimal] = None
+    otherFees: Optional[Decimal] = None
+    otherFeesSec: Optional[Decimal] = None
+    otherFeesCom: Optional[Decimal] = None
+    otherFeesMTD: Optional[Decimal] = None
+    otherFeesYTD: Optional[Decimal] = None
+    other: Optional[Decimal] = None
+    otherSec: Optional[Decimal] = None
+    otherCom: Optional[Decimal] = None
+    endingCash: Optional[Decimal] = None
+    endingCashSec: Optional[Decimal] = None
+    endingCashCom: Optional[Decimal] = None
+    endingSettledCash: Optional[Decimal] = None
+    endingSettledCashSec: Optional[Decimal] = None
+    endingSettledCashCom: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
-class StatementOfFundsLine(AccountMixin, SecurityMixin):
+class StatementOfFundsLine(FlexElement, AccountMixin, SecurityMixin):
     """ Wrapped in <StmtFunds> """
     currency: str
     reportDate: datetime.date
@@ -639,7 +640,7 @@ class StatementOfFundsLine(AccountMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class ChangeInPositionValue(AccountMixin):
+class ChangeInPositionValue(FlexElement, AccountMixin):
     """ Wrapped in <ChangeInPositionValues> """
     currency: str
     assetCategory: str
@@ -658,7 +659,7 @@ class ChangeInPositionValue(AccountMixin):
 
 
 @dataclass(frozen=True)
-class OpenPosition(AccountMixin, CurrencyMixin, SecurityMixin):
+class OpenPosition(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """ Wrapped in <OpenPositions> """
     reportDate: datetime.date
     position: decimal.Decimal
@@ -680,8 +681,8 @@ class OpenPosition(AccountMixin, CurrencyMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class FxLot(AccountMixin):
-    """ Wrapped in <FxLots> """
+class FxLot(FlexElement, AccountMixin):
+    """ Wrapped in <FxLots>, which in turn is wrapped in <FxPositions> """
     assetCategory: str
     reportDate: datetime.date
     functionalCurrency: str
@@ -699,7 +700,7 @@ class FxLot(AccountMixin):
 
 
 @dataclass(frozen=True)
-class Trade(TradeMixin):
+class Trade(FlexElement, TradeMixin):
     """ Wrapped in <Trades> """
     buySell: BuySell
     ibOrderID: str
@@ -719,7 +720,7 @@ class Trade(TradeMixin):
 
 
 @dataclass(frozen=True)
-class TradeConfirmation(TradeMixin):
+class TradeConfirmation(FlexElement, TradeMixin):
     """ Wrapped in <TradeConfirms> """
     buySell: BuySell
     commissionCurrency: str
@@ -759,7 +760,7 @@ class TradeConfirmation(TradeMixin):
 
 
 @dataclass(frozen=True)
-class OptionEAE(AccountMixin, CurrencyMixin, SecurityMixin):
+class OptionEAE(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """Option Exercise Assignment or Expiration
 
     Wrapped in (identically-named) <OptionEAE>
@@ -783,7 +784,7 @@ _OptionEAE = OptionEAE
 
 
 @dataclass(frozen=True)
-class TradeTransfer(TradeMixin):
+class TradeTransfer(FlexElement, TradeMixin):
     """ Wrapped in <TradeTransfers> """
     # Oddly, `origTradeDate` appears to have hard-coded YYYYMMDD format
     # instead of the date format from the report configuration.
@@ -800,7 +801,7 @@ class TradeTransfer(TradeMixin):
 
 
 @dataclass(frozen=True)
-class InterestAccrualsCurrency(AccountMixin):
+class InterestAccrualsCurrency(FlexElement, AccountMixin):
     """ Wrapped in <InterestAccruals> """
     currency: str
     fromDate: datetime.date
@@ -813,7 +814,7 @@ class InterestAccrualsCurrency(AccountMixin):
 
 
 @dataclass(frozen=True)
-class SLBActivity(AccountMixin, CurrencyMixin, SecurityMixin):
+class SLBActivity(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """ Wrapped in <SLBActivities> """
     date: datetime.date
     slbTransactionId: str
@@ -829,7 +830,7 @@ class SLBActivity(AccountMixin, CurrencyMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class Transfer(AccountMixin, CurrencyMixin, SecurityMixin):
+class Transfer(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """ Wrapped in <Transfers> """
     date: datetime.date
     type: TransferType
@@ -850,7 +851,15 @@ class Transfer(AccountMixin, CurrencyMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class CorporateAction(AccountMixin, CurrencyMixin, SecurityMixin):
+class PriorPeriodPosition(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
+    """ Wrapped in <PriorPeriodPositions> """
+    priorMtmPnl: decimal.Decimal
+    date: datetime.date
+    price: decimal.Decimal
+
+
+@dataclass(frozen=True)
+class CorporateAction(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """ Wrapped in <CorporateActions> """
     reportDate: datetime.date
     dateTime: datetime.datetime
@@ -865,7 +874,7 @@ class CorporateAction(AccountMixin, CurrencyMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class CashTransaction(AccountMixin, CurrencyMixin, SecurityMixin):
+class CashTransaction(FlexElement, AccountMixin, CurrencyMixin, SecurityMixin):
     """ Wrapped in <CashTransactions> """
     # Despite the name, `dateTime` actually contains only the date.
     dateTime: datetime.date
@@ -879,7 +888,7 @@ class CashTransaction(AccountMixin, CurrencyMixin, SecurityMixin):
 
 
 @dataclass(frozen=True)
-class ChangeInDividendAccrual(DividendAccrualMixin):
+class ChangeInDividendAccrual(FlexElement, DividendAccrualMixin):
     """ Wrapped in <ChangeInDividendAccruals> """
     date: datetime.date
 
@@ -889,13 +898,13 @@ _ChangeInDividendAccrual = ChangeInDividendAccrual
 
 
 @dataclass(frozen=True)
-class OpenDividendAccrual(DividendAccrualMixin):
+class OpenDividendAccrual(FlexElement, DividendAccrualMixin):
     """ Wrapped in <OpenDividendAccruals> """
     pass
 
 
 @dataclass(frozen=True)
-class SecurityInfo(SecurityMixin):
+class SecurityInfo(FlexElement, SecurityMixin):
     """ Wrapped in <SecuritiesInfo> """
     maturity: str
     issueDate: datetime.date
@@ -903,17 +912,9 @@ class SecurityInfo(SecurityMixin):
 
 
 @dataclass(frozen=True)
-class ConversionRate:
+class ConversionRate(FlexElement):
     """ Wrapped in <ConversionRates> """
     reportDate: datetime.date
     fromCurrency: str
     toCurrency: str
     rate: decimal.Decimal
-
-
-@dataclass(frozen=True)
-class PriorPeriodPosition(AccountMixin, CurrencyMixin, SecurityMixin):
-    """ Wrapped in <PriorPeriodPositions> """
-    priorMtmPnl: decimal.Decimal
-    date: datetime.date
-    price: decimal.Decimal

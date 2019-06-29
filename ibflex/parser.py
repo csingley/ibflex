@@ -1,6 +1,5 @@
 # coding: utf-8
-"""
-Parser/type converter for data in Interactive Brokers' Flex XML format.
+"""Parser/type converter for data in Interactive Brokers' Flex XML format.
 
 https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm
 """
@@ -22,11 +21,17 @@ AttributeType = Union[
     str, int, bool, decimal.Decimal, datetime.date, datetime.time,
     datetime.datetime, enum.Enum, List[str], None,
 ]
-""" Possible type annotations for a class attributes from Types module. """
+""" Possible type annotations for a class attribute from Types module. """
 
 
+###############################################################################
+#  PARSE FUNCTIONS
+###############################################################################
 def parse(source) -> Types.FlexQueryResponse:
-    """Parse Flex XML data into hierarchy of ibflex.Types instances.
+    """Parse Flex XML data into a hierarchy of ibflex.Types class instances.
+
+    Args:
+        source: file name or file object.
     """
     tree = ET.ElementTree()
     tree.parse(source)
@@ -41,28 +46,54 @@ def parse(source) -> Types.FlexQueryResponse:
 def parse_element(
     elem: ET.Element
 ) -> Union[Types.FlexElement, List[Types.FlexElement]]:
-    """Distinguish XML data elements from list wrappers; dispatch accordingly.
+    """Distinguish XML data element from container element; dispatch accordingly.
+
+    Flex format stores data as XML element attributes, while container elements
+    have no attributes.  The only exception is <FlexStatements>, which has a
+    `count` attribute as a check on its contents.
+    """
+    if not elem.attrib or elem.tag == "FlexStatements":
+        return parse_element_container(elem)
+
+    return parse_data_element(elem)
+
+
+def parse_element_container(elem: ET.Element) -> List[Types.FlexElement]:
+    """Parse XML element container into list of FlexElement subclass instances.
     """
     tag = elem.tag
 
-    if not hasattr(Types, tag):
-        #  If ibflex.Types doesn't contain a class definition for this element,
-        #  then it's a list wrapper, not a data element.
-        return parse_list(elem)
-    elif tag == "OptionEAE" and not elem.attrib:
-        #  IB uses the same tag name for OptionEAE wrapper and data element.
-        #  The Types module contains a class definition for the data element.
-        #  Force ignore the class definition for the OptionEAE wrapper
-        #  (which has no element attributes, unlike the data element).
-        return parse_list(elem)
+    if tag == "FxPositions":
+        #   <FxLot> is double-wrapped (???).  Element structure here is:
+        #       <FxPositions><FxLots><FxLot /></FxLots></FxPositions>
+        #   Look through <FxLots> to create FlexStatement.FxPositions
+        #   as a list of FxLot instances.
+        if len(elem) > 1:
+            msg = "Bad XML structure: <FXPositions> contains multiple <FxLots>"
+            raise FlexParserError(msg)
+        elem = elem[0] if len(elem) == 1 else elem
+    elif tag == "FlexStatements":
+        # Verify that # of contained <FlexStatement> elements matches
+        # what's reported in <FlexStatements count> attribute
+        count = int(elem.attrib["count"])
+        if len(elem) != count:
+            msg = f"FlexStatement count={len(elem)}; expected count={count}"
+            raise FlexParserError(msg)
 
-    return parse_data_element(elem)
+    instances = [parse_data_element(child) for child in elem]
+
+    # Sanity check - list contents should all be same type
+    if not utils.all_equal(type(instance) for instance in instances):
+        types = {type(instance) for instance in instances}
+        raise FlexParserError(f"{tag} contains multiple element types {types}")
+
+    return instances
 
 
 def parse_data_element(
     elem: ET.Element
 ) -> Types.FlexElement:
-    """Parse an XML data element into a class instance from the Types module.
+    """Parse an XML data element into a Types.FlexElement subclass instance.
     """
     Class = getattr(Types, elem.tag)
 
@@ -77,89 +108,59 @@ def parse_data_element(
         ]
     )
 
-    # Parse XML element attributes
-    def parse_attribute(
-        attr_name: str, attr_type: AttributeType, value: str
+    def parse_element_attr(
+        name: str, value: str, Type: AttributeType
     ) -> Tuple[str, Any]:
-        """
-        Empty string is interpreted as null data.
+        """Convert an XML element attribute into its corresponding Python type,
+        based on the FlexElement subclass attribute type hint.
+
+        Note:
+            Empty string (null data) returns empty list (for list Types) or None
+
+        Args:
+            name: XML attribute name
+            value: XML attribute value
+            Type: type hint for FlexElement subclass attribute of `name`
         """
         if not value:
-            # Null data is empty list for list type, None otherwise
-            if attr_type is list or getattr(attr_type, "_name", "") == "List":
-                converted: Any = []
-            else:
-                converted = None
-            return attr_name, converted
+            return name, [] if getattr(Type, "_name", "") == "List" else None
 
-        if isinstance(attr_type, enum.EnumMeta):
-            #  Enum classes have IB text as values; convert from value to name
+        if isinstance(Type, enum.EnumMeta):
+            #  Dispatch Enums by metaclass, not class; they're all handled the same way.
+            #  Enums defined in Types bind custom names to the IB-supplied values.
+            #  To convert, just do a reverse lookup on the incoming string.
             #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
-            return attr_name, attr_type(value)
+            return name, Type(value)
 
-        if "currency" in attr_name.lower():
-            if value not in CURRENCY_CODES:
-                raise FlexParserError(f"Unknown currency {value!r}")
+        # Validate currency
+        if "currency" in name.lower() and value not in CURRENCY_CODES:
+            raise FlexParserError(f"Unknown currency {value!r}")
 
         try:
-            converted = ATTRIB_CONVERTERS[attr_type](value)
+            return name, ATTRIB_CONVERTERS[Type](value)
         except Exception as exc:
-            msg = f"{Class.__name__}.{attr_name} - " + str(exc)
+            msg = f"{Class.__name__}.{name}" + str(exc)
             raise FlexParserError(msg)
 
-        return attr_name, converted
-
+    # Parse element attributes
     attrs = dict(
-        parse_attribute(k, schema[k], v) for k, v in elem.attrib.items()
+        parse_element_attr(k, v, schema[k]) for k, v in elem.attrib.items()
     )
 
-    # Parse XML element children
-    attrs.update({child.tag: parse_element(child) for child in elem})
+    # FlexQueryResponse & FlexStatement are the only data elements
+    # that contain other data elements.
+    contained_elements = {child.tag: parse_element(child) for child in elem}
+    if contained_elements:
+        assert elem.tag in ("FlexQueryResponse", "FlexStatement")
+        attrs.update(contained_elements)
+
     instance = Class(**attrs)
     return instance
-
-
-def parse_list(elem: ET.Element) -> List[Types.FlexElement]:
-    """Parse an XML wrapper into a list of Types class instances.
-    """
-    tag = elem.tag
-
-    if tag == "FxPositions":
-        #   <FxLot> is double-wrapped (???).  Element structure here is:
-        #       <FxPositions><FxLots><FxLot /></FxLots></FxPositions>
-        #   Look through <FxLots> to create FlexStatement.FxPositions
-        #   as a list of FxLot instances.
-        if len(elem) == 0:
-            return []
-        elif len(elem) != 1:
-            msg = "Bad XML structure: <FXPositions> contains multiple <FxLots>"
-            raise FlexParserError(msg)
-        elem = elem[0]
-    elif tag == "FlexStatements":
-        # Verify that # of contained <FlexStatement> elements matches
-        # what's reported in <FlexStatements count> attribute
-        count = int(elem.attrib["count"])
-        if len(elem) != count:
-            msg = f"FlexStatement count={len(elem)}; expected count={count}"
-            raise FlexParserError(msg)
-
-    instances = [parse_data_element(child) for child in elem]
-    # Sanity check - list contents should all be same type
-    assert utils.all_equal(type(instance) for instance in instances)
-    return instances
 
 
 ###############################################################################
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
 ###############################################################################
-def prep_string(value: str) -> str:
-    return value
-
-
-def prep_int(value: str) -> str:
-    return value
-
-
 def prep_date(value: str) -> Tuple[int, int, int]:
     """Returns a tuple of (year, month, day).
     """
@@ -247,23 +248,9 @@ def prep_datetime(value: str) -> Tuple[int, ...]:
     raise FlexParserError(f"Bad date/time format: {prepped}")
 
 
-def prep_bool(value: str) -> bool:
-    """Convert 'Y'/'N' into True/False.
-    """
-    return {"Y": True, "N": False}[value]
-
-
-def prep_decimal(value: str) -> Optional[str]:
-    """Strip place separators (commas) from string holding numeric value.
-    """
-    return value.replace(",", "") or None
-
-
-def prep_list(value: str) -> Iterable[str]:
+def prep_sequence(value: str) -> Iterable[str]:
     """Split a sequence string into its component items.
 
-    N.B. these lists are different from the XML wrapper elements processed by
-    `prep_list()`.  These lists are strings contained in XML attributes.
     Flex `notes` attribute is semicolon-delimited; other sequences use commas.
     """
     sep = ";" if ";" in value else ","
@@ -292,7 +279,7 @@ def make_converter(
                 # Preserve "null data" indicated by prep function.
                 return None
             elif isinstance(prepped_value, tuple):
-                # date/time values are prepped into time_struct() slices;
+                # date/time values are prepped into time tuples;
                 # unpack before passing to type constructor.
                 return Type(*prepped_value)
             else:
@@ -305,19 +292,35 @@ def make_converter(
     return convert
 
 
-convert_decimal = make_converter(decimal.Decimal, prep=prep_decimal)
-
+convert_string = make_converter(str, prep=utils.identity_func)
+convert_int = make_converter(int, prep=utils.identity_func)
+# IB sends "Y"/"N" for True/False
+convert_bool = make_converter(bool, prep=lambda x: {"Y": True, "N": False}[x])
+# IB sends numeric data with place delimiters (commas)
+convert_decimal = make_converter(
+    decimal.Decimal,
+    prep=lambda x: x.replace(",", "")
+)
+convert_date = make_converter(datetime.date, prep=prep_date)
+convert_time = make_converter(datetime.time, prep=prep_time)
+convert_datetime = make_converter(datetime.datetime, prep=prep_datetime)
+convert_sequence = make_converter(list, prep=prep_sequence)
 
 ATTRIB_CONVERTERS = {
-    str: make_converter(str, prep=prep_string),
-    int: make_converter(int, prep=prep_int),
-    bool: make_converter(bool, prep=prep_bool),
+    str: convert_string,
+    Optional[str]: convert_string,
+    int: convert_int,
+    Optional[int]: convert_int,
+    bool: convert_bool,
+    Optional[bool]: convert_bool,
     decimal.Decimal: convert_decimal,
-    Union[decimal.Decimal, None]: convert_decimal,
-    datetime.date: make_converter(datetime.date, prep=prep_date),
-    datetime.time: make_converter(datetime.time, prep=prep_time),
-    datetime.datetime: make_converter(datetime.datetime, prep=prep_datetime),
-    List[str]: make_converter(list, prep=prep_list),
+    Optional[decimal.Decimal]: convert_decimal,
+    datetime.date: convert_date,
+    Optional[datetime.date]: convert_date,
+    datetime.time: convert_time,
+    datetime.datetime: convert_datetime,
+    Optional[datetime.datetime]: convert_datetime,
+    List[str]: convert_sequence,
 }
 """Map of Types class attribute type hint to corresponding converter function.
 """
@@ -325,7 +328,6 @@ ATTRIB_CONVERTERS = {
 
 ###############################################################################
 #  IB DATE FORMATS
-#
 #  https://www.interactivebrokers.com/en/software/am/am/reports/activityflexqueries.htm
 ###############################################################################
 DATE_FORMATS = {8: {0: "%Y%m%d", 2: "%m/%d/%y"},
