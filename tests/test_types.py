@@ -1,5 +1,6 @@
 # coding: utf-8
-""" Unit tests for ibflex.schemata module """
+""" Unit tests for ibflex.Types module """
+
 # stdlib imports
 import unittest
 import xml.etree.ElementTree as ET
@@ -11,151 +12,123 @@ import decimal
 from ibflex import Types, parser
 
 
-#  class SchemaTestCase(unittest.TestCase):
-    #  def setUp(self):
-        #  class TestMixin(object):
-            #  boolean = fields.Boolean()
+class AccountInformationTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<AccountInformation accountId="U123456" acctAlias="ibflex test" '
+         'currency="USD" name="Porky Pig" accountType="Advisor Client" '
+         'customerType="Partnership" '
+         'accountCapabilities="Portfolio Margin,IBPrime" '
+         'tradingPermissions="Stocks,Options,Warrants,Bonds,Forex,Stock Borrow" '
+         'dateOpened="2009-06-25" dateFunded="2009-07-13" dateClosed="" '
+         'masterName="Dewey Cheatham &amp; Howe" ibEntity="IBLLC-US" />')
+    )
 
-        #  class TestSchema(schemata.Schema, TestMixin):
-            #  string = fields.String(required=True)
-            #  integer = fields.Integer()
-
-        #  self.schema = TestSchema
-
-    #  def testMetaclass(self):
-        #  self.assertTrue(hasattr(self.schema, 'fields'))
-        #  fields_ = self.schema.fields
-        #  self.assertIsInstance(fields_, dict)
-        #  self.assertEqual(len(fields_), 3)
-
-        #  self.assertIn('string', fields_)
-        #  string = fields_.string
-        #  self.assertIsInstance(string, fields.String)
-        #  self.assertTrue(string.required)
-
-        #  self.assertIn('integer', fields_)
-        #  integer = fields_.integer
-        #  self.assertIsInstance(integer, fields.Integer)
-        #  self.assertFalse(integer.required)
-
-        #  self.assertIn('boolean', fields_)
-        #  boolean = fields_.boolean
-        #  self.assertIsInstance(boolean, fields.Boolean)
-        #  self.assertFalse(boolean.required)
-
-    #  def testConvert(self):
-        #  data = ET.fromstring("<Test string='foo' integer='23' boolean='Y' />")
-        #  instance = self.schema.convert(data)
-        #  self.assertIsInstance(instance, dict)
-        #  self.assertEqual(len(instance), 3)
-        #  self.assertIn('string', instance)
-        #  string = instance.string
-        #  self.assertIsInstance(string, str)
-        #  self.assertEqual(string, 'foo')
-        #  self.assertIn('integer', instance)
-        #  integer = instance.integer
-        #  self.assertIsInstance(integer, int)
-        #  self.assertEqual(integer, 23)
-        #  self.assertIn('boolean', instance)
-        #  boolean = instance.boolean
-        #  self.assertIsInstance(boolean, bool)
-        #  self.assertEqual(boolean, True)
-
-    #  def testRequired(self):
-        #  data = ET.fromstring("<Test string='' integer='23' boolean='Y' />")
-        #  with self.assertRaises(fields.FlexFieldError):
-            #  self.schema.convert(data)
-
-    #  def testNotRequired(self):
-        #  data = ET.fromstring("<Test string='foo' integer='' boolean='' />")
-        #  instance = self.schema.convert(data)
-        #  self.assertIsInstance(instance, dict)
-        #  self.assertEqual(len(instance), 3)
-        #  self.assertIn('string', instance)
-        #  string = instance.string
-        #  self.assertIsInstance(string, str)
-        #  self.assertEqual(string, 'foo')
-        #  self.assertIn('integer', instance)
-        #  integer = instance.integer
-        #  self.assertIs(integer, None)
-        #  self.assertIn('boolean', instance)
-        #  boolean = instance.boolean
-        #  self.assertIs(boolean, None)
-
-    #  def testExtraDataNotInSchema(self):
-        #  data = ET.fromstring(
-            #  "<Test string='foo' integer='23' boolean='Y' bar='baz' />"
-        #  )
-        #  with self.assertRaises(schemata.FlexSchemaError):
-            #  self.schema.convert(data)
-
-
-#  class FlexQueryResponseTestCase(unittest.TestCase):
-    #  data = ET.fromstring(
-        #  """<FlexQueryResponse queryName="ibflex test" type="AF" />"""
-    #  )
-
-    #  def testConvert(self):
-        #  instance = parser.parse_element(self.data)
-        #  self.assertIsInstance(instance, Types.FlexQueryResponse)
-        #  self.assertIn('queryName', instance)
-        #  queryName = instance.queryName
-        #  self.assertIsInstance(queryName, str)
-        #  self.assertEqual(queryName, 'ibflex test')
-        #  self.assertIn('type', instance)
-        #  type_ = instance.type
-        #  self.assertIsInstance(type_, str)
-        #  self.assertEqual(type_, 'AF')
-
-
-#  class FlexStatementsTestCase(unittest.TestCase):
-    #  data = ET.fromstring("""<FlexStatements count="1" />""")
-
-    #  def testConvert(self):
-        #  instance = parser.parse_element(self.data)
-        #  self.assertIsInstance(instance, Types.FlexStatements)
-        #  self.assertIn('count', instance)
-        #  count = instance.count
-        #  self.assertIsInstance(count, int)
-        #  self.assertEqual(count, 1)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.AccountInformation)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.name, "Porky Pig")
+        self.assertEqual(instance.accountType, "Advisor Client")
+        self.assertEqual(instance.customerType, "Partnership")
+        self.assertEqual(
+            instance.accountCapabilities,
+            ["Portfolio Margin", "IBPrime"]
+        )
+        self.assertEqual(
+            instance.tradingPermissions,
+            ["Stocks", "Options", "Warrants", "Bonds", "Forex", "Stock Borrow"]
+        )
+        self.assertEqual(instance.dateOpened, datetime.date(2009, 6, 25))
+        self.assertEqual(instance.dateFunded, datetime.date(2009, 7, 13))
+        self.assertEqual(instance.dateClosed, None)
+        self.assertEqual(instance.masterName, "Dewey Cheatham & Howe")
+        self.assertEqual(instance.ibEntity, "IBLLC-US")
 
 
 class FlexStatementTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<FlexStatement accountId="U123456" fromDate="2011-01-03" toDate="2011-12-30" period="" whenGenerated="2017-05-10;164137" />"""
+        ('<FlexStatement accountId="U123456" fromDate="2011-01-03" toDate="2011-12-30" '
+         'period="" whenGenerated="2017-05-10;164137" />')
     )
+    data.append(AccountInformationTestCase.data)
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.FlexStatement)
-        self.assertIn('accountId', instance)
-        acctid = instance.accountId
-        self.assertIsInstance(acctid, str)
-        self.assertEqual(acctid, 'U123456')
-        self.assertIn('fromDate', instance)
-        fromdate = instance.fromDate
-        self.assertIsInstance(fromdate, datetime.date)
-        self.assertEqual(fromdate, datetime.date(2011, 1, 3))
-        self.assertIn('toDate', instance)
-        todate = instance.toDate
-        self.assertIsInstance(todate, datetime.date)
-        self.assertEqual(todate, datetime.date(2011, 12, 30))
-        self.assertIn('period', instance)
-        period = instance.period
-        self.assertIs(period, None)
-        self.assertIn('whenGenerated', instance)
-        when = instance.whenGenerated
-        self.assertIsInstance(when, datetime.datetime)
-        self.assertEqual(when, datetime.datetime(2017, 5, 10, 16, 41, 37))
+        self.assertEqual(instance.accountId , 'U123456')
+        self.assertEqual(instance.fromDate, datetime.date(2011, 1, 3))
+        self.assertEqual(instance.toDate, datetime.date(2011, 12, 30))
+        self.assertIs(instance.period, None)
+        self.assertEqual(instance.whenGenerated, datetime.datetime(2017, 5, 10, 16, 41, 37))
+        self.assertIsInstance(instance.AccountInformation, Types.AccountInformation)
+
+
+class FlexQueryResponseTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        """<FlexQueryResponse queryName="ibflex test" type="AF" />"""
+    )
+    data.append(ET.fromstring("""<FlexStatements count="1" />"""))
+
+    def testParse(self):
+        self.data[0].append(FlexStatementTestCase.data)
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.FlexQueryResponse)
+        self.assertEqual(instance.queryName, 'ibflex test')
+        self.assertEqual(instance.type, 'AF')
+
+        self.assertIsInstance(instance.FlexStatements, list)
+        self.assertEqual(len(instance.FlexStatements), 1)
+        self.assertIsInstance(instance.FlexStatements[0], Types.FlexStatement)
+
+    def testParseWrongStatementCount(self):
+        """Error if <FlexStatements> `count` attr doesn't match # FlexStatement
+        """
+        # `count` == 1; no FlexStatement
+        with self.assertRaises(parser.FlexParserError):
+            parser.parse_data_element(self.data)
+
+        # `count` == 1; 2 FlexStatements
+        self.data[0].append(FlexStatementTestCase.data)
+        self.data[0].append(FlexStatementTestCase.data)
+        with self.assertRaises(parser.FlexParserError):
+            parser.parse_data_element(self.data)
+
+    def testParseNoStatements(self):
+        # Error if FlexStatements `count` attribute doesn't match # FlexStatement
+        self.data[0].append(FlexStatementTestCase.data)
+        self.data[0].append(FlexStatementTestCase.data)
+        with self.assertRaises(parser.FlexParserError):
+            parser.parse_data_element(self.data)
 
 
 class EquitySummaryByReportDateInBaseTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<EquitySummaryByReportDateInBase accountId="U123456" acctAlias="ibflex test" model="" reportDate="2011-12-30" cash="51.730909701" cashLong="51.730909701" cashShort="0" slbCashCollateral="0" slbCashCollateralLong="0" slbCashCollateralShort="0" stock="39.68" stockLong="44.68" stockShort="-46" slbDirectSecuritiesBorrowed="0" slbDirectSecuritiesBorrowedLong="0" slbDirectSecuritiesBorrowedShort="0" slbDirectSecuritiesLent="0" slbDirectSecuritiesLentLong="0" slbDirectSecuritiesLentShort="0" options="0" optionsLong="0" optionsShort="0" commodities="0" commoditiesLong="0" commoditiesShort="0" bonds="0" bondsLong="0" bondsShort="0" notes="0" notesLong="0" notesShort="0" funds="0" fundsLong="0" fundsShort="0" interestAccruals="-1111.05" interestAccrualsLong="0" interestAccrualsShort="-1111.05" softDollars="0" softDollarsLong="0" softDollarsShort="0" forexCfdUnrealizedPl="0" forexCfdUnrealizedPlLong="0" forexCfdUnrealizedPlShort="0" dividendAccruals="3299.79" dividendAccrualsLong="3299.79" dividendAccrualsShort="0" fdicInsuredBankSweepAccount="0" fdicInsuredBankSweepAccountLong="0" fdicInsuredBankSweepAccountShort="0" fdicInsuredAccountInterestAccruals="0" fdicInsuredAccountInterestAccrualsLong="0" fdicInsuredAccountInterestAccrualsShort="0" total="40.1509097" totalLong="44.2009097" totalShort="-46.05" />"""
+        ('<EquitySummaryByReportDateInBase accountId="U123456" acctAlias="ibflex test" '
+         'model="" reportDate="2011-12-30" cash="51.730909701" cashLong="51.730909701" '
+         'cashShort="0" slbCashCollateral="0" slbCashCollateralLong="0" '
+         'slbCashCollateralShort="0" stock="39.68" stockLong="44.68" stockShort="-46" '
+         'slbDirectSecuritiesBorrowed="0" slbDirectSecuritiesBorrowedLong="0" '
+         'slbDirectSecuritiesBorrowedShort="0" slbDirectSecuritiesLent="0" '
+         'slbDirectSecuritiesLentLong="0" slbDirectSecuritiesLentShort="0" options="0" '
+         'optionsLong="0" optionsShort="0" commodities="0" commoditiesLong="0" '
+         'commoditiesShort="0" bonds="0" bondsLong="0" bondsShort="0" notes="0" '
+         'notesLong="0" notesShort="0" funds="0" fundsLong="0" fundsShort="0" '
+         'interestAccruals="-1111.05" interestAccrualsLong="0" '
+         'interestAccrualsShort="-1111.05" softDollars="0" softDollarsLong="0" '
+         'softDollarsShort="0" forexCfdUnrealizedPl="0" forexCfdUnrealizedPlLong="0" '
+         'forexCfdUnrealizedPlShort="0" dividendAccruals="3299.79" '
+         'dividendAccrualsLong="3299.79" dividendAccrualsShort="0" '
+         'fdicInsuredBankSweepAccount="0" fdicInsuredBankSweepAccountLong="0" '
+         'fdicInsuredBankSweepAccountShort="0" fdicInsuredAccountInterestAccruals="0" '
+         'fdicInsuredAccountInterestAccrualsLong="0" '
+         'fdicInsuredAccountInterestAccrualsShort="0" '
+         'total="40.1509097" totalLong="44.2009097" totalShort="-46.05" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.EquitySummaryByReportDateInBase)
 
         self.assertEqual(instance.accountId, 'U123456')
@@ -226,11 +199,47 @@ class EquitySummaryByReportDateInBaseTestCase(unittest.TestCase):
 
 class CashReportCurrencyTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<CashReportCurrency accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fromDate="2011-01-03" toDate="2011-12-30" startingCash="30.702569078" startingCashSec="30.702569078" startingCashCom="0" clientFees="0" clientFeesSec="0" clientFeesCom="0" commissions="-45.445684" commissionsSec="-45.445684" commissionsCom="0" billableCommissions="0" billableCommissionsSec="0" billableCommissionsCom="0" depositWithdrawals="10.62" depositWithdrawalsSec="10.62" depositWithdrawalsCom="0" deposits="13.62" depositsSec="13.62" depositsCom="0" withdrawals="-24" withdrawalsSec="-24" withdrawalsCom="0" accountTransfers="0" accountTransfersSec="0" accountTransfersCom="0" linkingAdjustments="0" linkingAdjustmentsSec="0" linkingAdjustmentsCom="0" internalTransfers="0" internalTransfersSec="0" internalTransfersCom="0" dividends="34.74" dividendsSec="34.74" dividendsCom="0" insuredDepositInterest="0" insuredDepositInterestSec="0" insuredDepositInterestCom="0" brokerInterest="-64.57" brokerInterestSec="-64.57" brokerInterestCom="0" bondInterest="0" bondInterestSec="0" bondInterestCom="0" cashSettlingMtm="0" cashSettlingMtmSec="0" cashSettlingMtmCom="0" realizedVm="0" realizedVmSec="0" realizedVmCom="0" cfdCharges="0" cfdChargesSec="0" cfdChargesCom="0" netTradesSales="19.608813" netTradesSalesSec="19.608813" netTradesSalesCom="0" netTradesPurchases="-33.164799999" netTradesPurchasesSec="-33.164799999" netTradesPurchasesCom="0" advisorFees="0" advisorFeesSec="0" advisorFeesCom="0" feesReceivables="0" feesReceivablesSec="0" feesReceivablesCom="0" paymentInLieu="-44.47" paymentInLieuSec="-44.47" paymentInLieuCom="0" transactionTax="0" transactionTaxSec="0" transactionTaxCom="0" taxReceivables="0" taxReceivablesSec="0" taxReceivablesCom="0" withholdingTax="-27.07" withholdingTaxSec="-27.07" withholdingTaxCom="0" withholding871m="0" withholding871mSec="0" withholding871mCom="0" withholdingCollectedTax="0" withholdingCollectedTaxSec="0" withholdingCollectedTaxCom="0" salesTax="0" salesTaxSec="0" salesTaxCom="0" fxTranslationGainLoss="0" fxTranslationGainLossSec="0" fxTranslationGainLossCom="0" otherFees="-521.22" otherFeesSec="-521.22" otherFeesCom="0" other="0" otherSec="0" otherCom="0" endingCash="51.730897778" endingCashSec="51.730897778" endingCashCom="0" endingSettledCash="51.730897778" endingSettledCashSec="51.730897778" endingSettledCashCom="0" />"""
+        ('<CashReportCurrency accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fromDate="2011-01-03" toDate="2011-12-30" '
+         'startingCash="30.702569078" startingCashSec="30.702569078" '
+         'startingCashCom="0" clientFees="0" clientFeesSec="0" clientFeesCom="0" '
+         'commissions="-45.445684" commissionsSec="-45.445684" commissionsCom="0" '
+         'billableCommissions="0" billableCommissionsSec="0" '
+         'billableCommissionsCom="0" depositWithdrawals="10.62" '
+         'depositWithdrawalsSec="10.62" depositWithdrawalsCom="0" deposits="13.62" '
+         'depositsSec="13.62" depositsCom="0" withdrawals="-24" withdrawalsSec="-24" '
+         'withdrawalsCom="0" accountTransfers="0" accountTransfersSec="0" '
+         'accountTransfersCom="0" linkingAdjustments="0" linkingAdjustmentsSec="0" '
+         'linkingAdjustmentsCom="0" internalTransfers="0" internalTransfersSec="0" '
+         'internalTransfersCom="0" dividends="34.74" dividendsSec="34.74" '
+         'dividendsCom="0" insuredDepositInterest="0" insuredDepositInterestSec="0" '
+         'insuredDepositInterestCom="0" brokerInterest="-64.57" '
+         'brokerInterestSec="-64.57" brokerInterestCom="0" bondInterest="0" '
+         'bondInterestSec="0" bondInterestCom="0" cashSettlingMtm="0" '
+         'cashSettlingMtmSec="0" cashSettlingMtmCom="0" realizedVm="0" '
+         'realizedVmSec="0" realizedVmCom="0" cfdCharges="0" cfdChargesSec="0" '
+         'cfdChargesCom="0" netTradesSales="19.608813" netTradesSalesSec="19.608813" '
+         'netTradesSalesCom="0" netTradesPurchases="-33.164799999" '
+         'netTradesPurchasesSec="-33.164799999" netTradesPurchasesCom="0" '
+         'advisorFees="0" advisorFeesSec="0" advisorFeesCom="0" feesReceivables="0" '
+         'feesReceivablesSec="0" feesReceivablesCom="0" paymentInLieu="-44.47" '
+         'paymentInLieuSec="-44.47" paymentInLieuCom="0" transactionTax="0" '
+         'transactionTaxSec="0" transactionTaxCom="0" taxReceivables="0" '
+         'taxReceivablesSec="0" taxReceivablesCom="0" withholdingTax="-27.07" '
+         'withholdingTaxSec="-27.07" withholdingTaxCom="0" withholding871m="0" '
+         'withholding871mSec="0" withholding871mCom="0" withholdingCollectedTax="0" '
+         'withholdingCollectedTaxSec="0" withholdingCollectedTaxCom="0" salesTax="0" '
+         'salesTaxSec="0" salesTaxCom="0" fxTranslationGainLoss="0" '
+         'fxTranslationGainLossSec="0" fxTranslationGainLossCom="0" '
+         'otherFees="-521.22" otherFeesSec="-521.22" otherFeesCom="0" other="0" '
+         'otherSec="0" otherCom="0" endingCash="51.730897778" '
+         'endingCashSec="51.730897778" endingCashCom="0" '
+         'endingSettledCash="51.730897778" endingSettledCashSec="51.730897778" '
+         'endingSettledCashCom="0" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.CashReportCurrency)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -341,11 +350,19 @@ class CashReportCurrencyTestCase(unittest.TestCase):
 
 class StatementOfFundsLineTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<StatementOfFundsLine accountId="U123456" acctAlias="ibflex test" model="" currency="USD" assetCategory="STK" symbol="ECRO" description="ECC CAPITAL CORP" conid="33205002" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" reportDate="2011-12-27" date="2011-12-27" activityDescription="Buy 38,900 ECC CAPITAL CORP " tradeID="657898717" debit="-3185.60925" credit="" amount="-3185.60925" balance="53409.186538632" buySell="BUY" />"""
+        ('<StatementOfFundsLine accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" assetCategory="STK" symbol="ECRO" '
+         'description="ECC CAPITAL CORP" conid="33205002" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" reportDate="2011-12-27" date="2011-12-27" '
+         'activityDescription="Buy 38,900 ECC CAPITAL CORP " tradeID="657898717" '
+         'debit="-3185.60925" credit="" amount="-3185.60925" balance="53409.186538632" '
+         'buySell="BUY" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.StatementOfFundsLine)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -380,11 +397,16 @@ class StatementOfFundsLineTestCase(unittest.TestCase):
 
 class ChangeInPositionValueTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<ChangeInPositionValue accountId="U123456" acctAlias="ibflex test" model="" currency="USD" assetCategory="STK" priorPeriodValue="18.57" transactions="14.931399999" mtmPriorPeriodPositions="-16.1077" mtmTransactions="-22.2354" corporateActions="-11.425" other="0" accountTransfers="94.18" linkingAdjustments="0" fxTranslationPnl="0" futurePriceAdjustments="0" settledCash="0" endOfPeriodValue="39.68" />"""
+        ('<ChangeInPositionValue accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" assetCategory="STK" priorPeriodValue="18.57" '
+         'transactions="14.931399999" mtmPriorPeriodPositions="-16.1077" '
+         'mtmTransactions="-22.2354" corporateActions="-11.425" other="0" '
+         'accountTransfers="94.18" linkingAdjustments="0" fxTranslationPnl="0" '
+         'futurePriceAdjustments="0" settledCash="0" endOfPeriodValue="39.68" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.ChangeInPositionValue)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -407,11 +429,22 @@ class ChangeInPositionValueTestCase(unittest.TestCase):
 
 class OpenPositionTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<OpenPosition accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="VXX" description="IPATH S&amp;P 500 VIX S/T FU ETN" conid="80789235" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" reportDate="2011-12-30" position="-100" markPrice="35.53" positionValue="-3553" openPrice="34.405" costBasisPrice="34.405" costBasisMoney="-3440.5" percentOfNAV="" fifoPnlUnrealized="-112.5" side="Short" levelOfDetail="LOT" openDateTime="2011-08-08;134413" holdingPeriodDateTime="2011-08-08;134413" code="" originatingOrderID="308163094" originatingTransactionID="2368917073" accruedInt="" />"""
+        ('<OpenPosition accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="VXX" '
+         'description="IPATH S&amp;P 500 VIX S/T FU ETN" conid="80789235" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" reportDate="2011-12-30" position="-100" '
+         'markPrice="35.53" positionValue="-3553" openPrice="34.405" '
+         'costBasisPrice="34.405" costBasisMoney="-3440.5" percentOfNAV="" '
+         'fifoPnlUnrealized="-112.5" side="Short" levelOfDetail="LOT" '
+         'openDateTime="2011-08-08;134413" holdingPeriodDateTime="2011-08-08;134413" '
+         'code="" originatingOrderID="308163094" originatingTransactionID="2368917073" '
+         'accruedInt="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.OpenPosition)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -455,11 +488,16 @@ class OpenPositionTestCase(unittest.TestCase):
 
 class FxLotTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<FxLot accountId="U123456" acctAlias="ibflex test" model="" assetCategory="CASH" reportDate="2013-12-31" functionalCurrency="USD" fxCurrency="CAD" quantity="0.000012" costPrice="1" costBasis="-0.000012" closePrice="0.94148" value="0.000011" unrealizedPL="-0.000001" code="" lotDescription="CASH: -0.0786 USD.CAD" lotOpenDateTime="2011-01-25;180427" levelOfDetail="LOT" />"""
+        ('<FxLot accountId="U123456" acctAlias="ibflex test" model="" '
+         'assetCategory="CASH" reportDate="2013-12-31" functionalCurrency="USD" '
+         'fxCurrency="CAD" quantity="0.000012" costPrice="1" costBasis="-0.000012" '
+         'closePrice="0.94148" value="0.000011" unrealizedPL="-0.000001" code="" '
+         'lotDescription="CASH: -0.0786 USD.CAD" lotOpenDateTime="2011-01-25;180427" '
+         'levelOfDetail="LOT" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.FxLot)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -482,11 +520,29 @@ class FxLotTestCase(unittest.TestCase):
 
 class TradeTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<Trade accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="OPT" symbol="VXX   110917C00005000" description="VXX 17SEP11 5.0 C" conid="83615386" securityID="" securityIDType="" cusip="" isin="" underlyingConid="80789235" underlyingSymbol="VXX" issuer="" multiplier="100" strike="5" expiry="2011-09-17" putCall="C" principalAdjustFactor="" tradeID="594763148" reportDate="2011-08-12" tradeDate="2011-08-11" tradeTime="162000" settleDateTarget="2011-08-12" transactionType="BookTrade" exchange="--" quantity="3" tradePrice="0" tradeMoney="0" proceeds="-0" taxes="0" ibCommission="0" ibCommissionCurrency="USD" netCash="0" closePrice="29.130974" openCloseIndicator="C" notes="A" cost="8398.81122" fifoPnlRealized="0" fxPnl="0" mtmPnl="8739.2922" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" transactionID="2381339439" buySell="BUY" ibOrderID="2381339439" ibExecID="" brokerageOrderID="" orderReference="" volatilityOrderLink="" exchOrderId="N/A" extExecID="N/A" orderTime="" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" orderType="" traderID="" isAPIOrder="N" />"""
+        ('<Trade accountId="U123456" acctAlias="ibflex test" model="" currency="USD" '
+         'fxRateToBase="1" assetCategory="OPT" symbol="VXX   110917C00005000" '
+         'description="VXX 17SEP11 5.0 C" conid="83615386" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="80789235" '
+         'underlyingSymbol="VXX" issuer="" multiplier="100" strike="5" '
+         'expiry="2011-09-17" putCall="C" principalAdjustFactor="" tradeID="594763148" '
+         'reportDate="2011-08-12" tradeDate="2011-08-11" tradeTime="162000" '
+         'settleDateTarget="2011-08-12" transactionType="BookTrade" exchange="--" '
+         'quantity="3" tradePrice="0" tradeMoney="0" proceeds="-0" taxes="0" '
+         'ibCommission="0" ibCommissionCurrency="USD" netCash="0" '
+         'closePrice="29.130974" openCloseIndicator="C" notes="A" cost="8398.81122" '
+         'fifoPnlRealized="0" fxPnl="0" mtmPnl="8739.2922" origTradePrice="0" '
+         'origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" '
+         'transactionID="2381339439" buySell="BUY" ibOrderID="2381339439" ibExecID="" '
+         'brokerageOrderID="" orderReference="" volatilityOrderLink="" '
+         'exchOrderId="N/A" extExecID="N/A" orderTime="" openDateTime="" '
+         'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
+         'levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" '
+         'orderType="" traderID="" isAPIOrder="N" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.Trade)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -560,11 +616,21 @@ class TradeTestCase(unittest.TestCase):
 
 class OptionEAETestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<OptionEAE accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="OPT" symbol="VXX   110805C00020000" description="VXX 05AUG11 20.0 C" conid="91900358" securityID="" securityIDType="" cusip="" isin="" underlyingConid="80789235" underlyingSymbol="VXX" issuer="" multiplier="100" strike="20" expiry="2011-08-05" putCall="C" principalAdjustFactor="" date="2011-08-05" transactionType="Assignment" quantity="20" tradePrice="0.0000" markPrice="0.0000" proceeds="0.00" commisionsAndTax="0.00" costBasis="21,792.73" realizedPnl="0.00" fxPnl="0.00" mtmPnl="20,620.00" tradeID="" />"""
+        ('<OptionEAE accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="OPT" '
+         'symbol="VXX   110805C00020000" '
+         'description="VXX 05AUG11 20.0 C" conid="91900358" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="80789235" '
+         'underlyingSymbol="VXX" issuer="" multiplier="100" strike="20" '
+         'expiry="2011-08-05" putCall="C" principalAdjustFactor="" date="2011-08-05" '
+         'transactionType="Assignment" quantity="20" tradePrice="0.0000" '
+         'markPrice="0.0000" proceeds="0.00" commisionsAndTax="0.00" '
+         'costBasis="21,792.73" realizedPnl="0.00" fxPnl="0.00" mtmPnl="20,620.00" '
+         'tradeID="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.OptionEAE)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -603,11 +669,29 @@ class OptionEAETestCase(unittest.TestCase):
 
 class TradeTransferTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<TradeTransfer accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="ADGI" description="ALLIED DEFENSE GROUP INC/THE" conid="764451" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" tradeID="599063639" reportDate="2011-08-22" tradeDate="2011-08-19" tradeTime="202000" settleDateTarget="2011-08-24" transactionType="DvpTrade" exchange="--" quantity="10000" tradePrice="3.1" tradeMoney="31000" proceeds="-31010" taxes="0" ibCommission="-1" ibCommissionCurrency="USD" netCash="-31011" closePrice="3.02" openCloseIndicator="O" notes="" cost="31011" fifoPnlRealized="0" fxPnl="0" mtmPnl="-810" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="94378" transactionID="" brokerName="E*Trade Clearing LLC" brokerAccount="1234-5678" awayBrokerCommission="10" regulatoryFee="0" direction="From" deliveredReceived="Received" netTradeMoney="31010" netTradeMoneyInBase="31010" netTradePrice="3.101" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="TRADE_TRANSFERS" />"""
+        ('<TradeTransfer accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="ADGI" '
+         'description="ALLIED DEFENSE GROUP INC/THE" conid="764451" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" tradeID="599063639" reportDate="2011-08-22" '
+         'tradeDate="2011-08-19" tradeTime="202000" settleDateTarget="2011-08-24" '
+         'transactionType="DvpTrade" exchange="--" quantity="10000" tradePrice="3.1" '
+         'tradeMoney="31000" proceeds="-31010" taxes="0" ibCommission="-1" '
+         'ibCommissionCurrency="USD" netCash="-31011" closePrice="3.02" '
+         'openCloseIndicator="O" notes="" cost="31011" fifoPnlRealized="0" fxPnl="0" '
+         'mtmPnl="-810" origTradePrice="0" origTradeDate="" origTradeID="" '
+         'origOrderID="0" clearingFirmID="94378" transactionID="" '
+         'brokerName="E*Trade Clearing LLC" brokerAccount="1234-5678" '
+         'awayBrokerCommission="10" regulatoryFee="0" direction="From" '
+         'deliveredReceived="Received" netTradeMoney="31010" '
+         'netTradeMoneyInBase="31010" netTradePrice="3.101" openDateTime="" '
+         'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
+         'levelOfDetail="TRADE_TRANSFERS" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.TradeTransfer)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -676,11 +760,18 @@ class TradeTransferTestCase(unittest.TestCase):
 
 class CashTransactionTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<CashTransaction accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="RHDGF" description="RHDGF(ANN741081064) CASH DIVIDEND 1.00000000 USD PER SHARE (Return of Capital)" conid="62049667" securityID="ANN741081064" securityIDType="ISIN" cusip="" isin="ANN741081064" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" dateTime="2015-10-06" amount="27800" type="Dividends" tradeID="" code="" transactionID="5767420360" reportDate="2015-10-06" clientReference="" />"""
+        ('<CashTransaction accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="RHDGF" '
+         'description="RHDGF(ANN741081064) CASH DIVIDEND 1.00000000 USD PER SHARE (Return of Capital)" '
+         'conid="62049667" securityID="ANN741081064" securityIDType="ISIN" cusip="" '
+         'isin="ANN741081064" underlyingConid="" underlyingSymbol="" issuer="" '
+         'multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" '
+         'dateTime="2015-10-06" amount="27800" type="Dividends" tradeID="" code="" '
+         'transactionID="5767420360" reportDate="2015-10-06" clientReference="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.CashTransaction)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -715,11 +806,15 @@ class CashTransactionTestCase(unittest.TestCase):
 
 class InterestAccrualsCurrencyTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<InterestAccrualsCurrency accountId="U123456" acctAlias="ibflex test" model="" currency="BASE_SUMMARY" fromDate="2011-01-03" toDate="2011-12-30" startingAccrualBalance="-11.558825" interestAccrued="-7516.101776" accrualReversal="6416.624437" fxTranslation="-0.013836" endingAccrualBalance="-1111.05" />"""
+        ('<InterestAccrualsCurrency accountId="U123456" acctAlias="ibflex test" '
+         'model="" currency="BASE_SUMMARY" fromDate="2011-01-03" toDate="2011-12-30" '
+         'startingAccrualBalance="-11.558825" interestAccrued="-7516.101776" '
+         'accrualReversal="6416.624437" fxTranslation="-0.013836" '
+         'endingAccrualBalance="-1111.05" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.InterestAccrualsCurrency)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -736,11 +831,19 @@ class InterestAccrualsCurrencyTestCase(unittest.TestCase):
 
 class SLBActivityTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<SLBActivity accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="CHTP.CVR" description="CHELSEA THERAPEUTICS INTERNA - ESCROW" conid="158060456" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" date="2015-06-01" slbTransactionId="SLB.32117554" activityDescription="New Loan Allocation" type="ManagedLoan" exchange="" quantity="-48330" feeRate="0.44" collateralAmount="48330" markQuantity="0" markPriorPrice="0" markCurrentPrice="0" />"""
+        ('<SLBActivity accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="CHTP.CVR" '
+         'description="CHELSEA THERAPEUTICS INTERNA - ESCROW" conid="158060456" '
+         'securityID="" securityIDType="" cusip="" isin="" underlyingConid="" '
+         'underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" date="2015-06-01" slbTransactionId="SLB.32117554" '
+         'activityDescription="New Loan Allocation" type="ManagedLoan" exchange="" '
+         'quantity="-48330" feeRate="0.44" collateralAmount="48330" markQuantity="0" '
+         'markPriorPrice="0" markCurrentPrice="0" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.SLBActivity)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -778,11 +881,20 @@ class SLBActivityTestCase(unittest.TestCase):
 
 class TransferTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<Transfer accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="FMTIF" description="FMI HOLDINGS LTD" conid="86544467" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" date="2011-07-18" type="ACATS" direction="IN" company="--" account="12345678" accountName="" quantity="226702" transferPrice="0" positionAmount="11.51" positionAmountInBase="11.51" pnlAmount="0" pnlAmountInBase="0" fxPnl="0" cashTransfer="0" code="" clientReference="" />"""
+        ('<Transfer accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="FMTIF" '
+         'description="FMI HOLDINGS LTD" conid="86544467" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" date="2011-07-18" type="ACATS" direction="IN" '
+         'company="--" account="12345678" accountName="" quantity="226702" '
+         'transferPrice="0" positionAmount="11.51" positionAmountInBase="11.51" '
+         'pnlAmount="0" pnlAmountInBase="0" fxPnl="0" cashTransfer="0" code="" '
+         'clientReference="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.Transfer)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -825,11 +937,18 @@ class TransferTestCase(unittest.TestCase):
 
 class CorporateActionTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<CorporateAction accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="NILSY.TEN" description="NILSY.TEN(466992534) MERGED(Voluntary Offer Allocation)  FOR USD 30.60000000 PER SHARE (NILSY.TEN, MMC NORILSK NICKEL JSC-ADR - TENDER, 466992534)" conid="96835898" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" reportDate="2011-11-03" dateTime="2011-11-02;202500" amount="-30600" proceeds="30600" value="-18110" quantity="-1000" fifoPnlRealized="10315" mtmPnl="12490" code="" type="TC" />"""
+        ('<CorporateAction accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="NILSY.TEN" '
+         'description="NILSY.TEN(466992534) MERGED(Voluntary Offer Allocation)  FOR USD 30.60000000 PER SHARE (NILSY.TEN, MMC NORILSK NICKEL JSC-ADR - TENDER, 466992534)" '
+         'conid="96835898" securityID="" securityIDType="" cusip="" isin="" '
+         'underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" '
+         'expiry="" putCall="" principalAdjustFactor="" reportDate="2011-11-03" '
+         'dateTime="2011-11-02;202500" amount="-30600" proceeds="30600" value="-18110" '
+         'quantity="-1000" fifoPnlRealized="10315" mtmPnl="12490" code="" type="TC" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.CorporateAction)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -866,11 +985,18 @@ class CorporateActionTestCase(unittest.TestCase):
 
 class ChangeInDividendAccrualTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<ChangeInDividendAccrual accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="RHDGF" description="RETAIL HOLDINGS NV" conid="62049667" securityID="ANN741081064" securityIDType="ISIN" cusip="" isin="ANN741081064" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" date="2011-09-21" exDate="2011-09-22" payDate="2011-10-11" quantity="13592" tax="0" fee="0" grossRate="2.5" grossAmount="33980" netAmount="33980" code="Po" fromAcct="" toAcct="" />"""
+        ('<ChangeInDividendAccrual accountId="U123456" acctAlias="ibflex test" '
+         'model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="RHDGF" '
+         'description="RETAIL HOLDINGS NV" conid="62049667" securityID="ANN741081064" '
+         'securityIDType="ISIN" cusip="" isin="ANN741081064" underlyingConid="" '
+         'underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" date="2011-09-21" exDate="2011-09-22" '
+         'payDate="2011-10-11" quantity="13592" tax="0" fee="0" grossRate="2.5" '
+         'grossAmount="33980" netAmount="33980" code="Po" fromAcct="" toAcct="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.ChangeInDividendAccrual)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -909,11 +1035,18 @@ class ChangeInDividendAccrualTestCase(unittest.TestCase):
 
 class OpenDividendAccrualTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<OpenDividendAccrual accountId="U123456" acctAlias="ibflex test" model="" currency="USD" fxRateToBase="1" assetCategory="STK" symbol="CASH" description="META FINANCIAL GROUP INC" conid="3655441" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" exDate="2011-12-08" payDate="2012-01-01" quantity="25383" tax="0" fee="0" grossRate="0.13" grossAmount="3299.79" netAmount="3299.79" code="" fromAcct="" toAcct="" />"""
+        ('<OpenDividendAccrual accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="CASH" '
+         'description="META FINANCIAL GROUP INC" conid="3655441" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="" exDate="2011-12-08" payDate="2012-01-01" '
+         'quantity="25383" tax="0" fee="0" grossRate="0.13" grossAmount="3299.79" '
+         'netAmount="3299.79" code="" fromAcct="" toAcct="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.OpenDividendAccrual)
         self.assertEqual(instance.accountId, "U123456")
         self.assertEqual(instance.acctAlias, "ibflex test")
@@ -951,11 +1084,15 @@ class OpenDividendAccrualTestCase(unittest.TestCase):
 
 class SecurityInfoTestCase(unittest.TestCase):
     data = ET.fromstring(
-        """<SecurityInfo assetCategory="STK" symbol="VXX" description="IPATH S&amp;P 500 VIX S/T FU ETN" conid="80789235" securityID="" securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="1" maturity="" issueDate="" code="" />"""
+        ('<SecurityInfo assetCategory="STK" symbol="VXX" '
+         'description="IPATH S&amp;P 500 VIX S/T FU ETN" conid="80789235" '
+         'securityID="" securityIDType="" cusip="" isin="" underlyingConid="" '
+         'underlyingSymbol="" issuer="" multiplier="1" strike="" expiry="" putCall="" '
+         'principalAdjustFactor="1" maturity="" issueDate="" code="" />')
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.SecurityInfo)
         self.assertEqual(instance.assetCategory, "STK")
         self.assertEqual(instance.symbol, "VXX")
@@ -983,8 +1120,8 @@ class ConversionRateTestCase(unittest.TestCase):
         """<ConversionRate reportDate="2011-12-30" fromCurrency="HKD" toCurrency="USD" rate="0.12876" />"""
     )
 
-    def testConvert(self):
-        instance = parser.parse_element(self.data)
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
         self.assertIsInstance(instance, Types.ConversionRate)
         self.assertEqual(instance.reportDate, datetime.date(2011, 12, 30))
         self.assertEqual(instance.fromCurrency, "HKD")
