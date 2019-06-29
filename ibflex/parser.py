@@ -51,6 +51,7 @@ def parse_element(
         return parse_list(elem)
     elif tag == "OptionEAE" and not elem.attrib:
         #  IB uses the same tag name for OptionEAE wrapper and data element.
+        #  The Types module contains a class definition for the data element.
         #  Force ignore the class definition for the OptionEAE wrapper
         #  (which has no element attributes, unlike the data element).
         return parse_list(elem)
@@ -80,6 +81,17 @@ def parse_data_element(
     def parse_attribute(
         attr_name: str, attr_type: AttributeType, value: str
     ) -> Tuple[str, Any]:
+        """
+        Empty string is interpreted as null data.
+        """
+        if not value:
+            # Null data is empty list for list type, None otherwise
+            if attr_type is list or getattr(attr_type, "_name", "") == "List":
+                converted: Any = []
+            else:
+                converted = None
+            return attr_name, converted
+
         if isinstance(attr_type, enum.EnumMeta):
             #  Enum classes have IB text as values; convert from value to name
             #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
@@ -89,7 +101,13 @@ def parse_data_element(
             if value not in CURRENCY_CODES:
                 raise FlexParserError(f"Unknown currency {value!r}")
 
-        return attr_name, ATTRIB_CONVERTERS[attr_type](value)
+        try:
+            converted = ATTRIB_CONVERTERS[attr_type](value)
+        except Exception as exc:
+            msg = f"{Class.__name__}.{attr_name} - " + str(exc)
+            raise FlexParserError(msg)
+
+        return attr_name, converted
 
     attrs = dict(
         parse_attribute(k, schema[k], v) for k, v in elem.attrib.items()
@@ -111,7 +129,9 @@ def parse_list(elem: ET.Element) -> List[Types.FlexElement]:
         #       <FxPositions><FxLots><FxLot /></FxLots></FxPositions>
         #   Look through <FxLots> to create FlexStatement.FxPositions
         #   as a list of FxLot instances.
-        if len(elem) != 1:
+        if len(elem) == 0:
+            return []
+        elif len(elem) != 1:
             msg = "Bad XML structure: <FXPositions> contains multiple <FxLots>"
             raise FlexParserError(msg)
         elem = elem[0]
@@ -132,43 +152,31 @@ def parse_list(elem: ET.Element) -> List[Types.FlexElement]:
 ###############################################################################
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
 ###############################################################################
-def prep_string(value: str) -> Optional[str]:
-    """ Empty string is interpreted as null data. """
-    return value or None
+def prep_string(value: str) -> str:
+    return value
 
 
-def prep_int(value: str) -> Optional[str]:
-    """ Empty string is interpreted as null data. """
-    return value or None
+def prep_int(value: str) -> str:
+    return value
 
 
-def prep_date(value: str) -> Optional[Tuple[int, int, int]]:
+def prep_date(value: str) -> Tuple[int, int, int]:
     """Returns a tuple of (year, month, day).
-    Empty string is interpreted as null data.
     """
-    if not value:
-        return None
     date_format = DATE_FORMATS[len(value)][value.count('/')]
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
 
 def prep_time(value: str) -> Optional[Tuple[int, int, int]]:
     """Returns a tuple of (hour, minute, second).
-    Empty string is interpreted as null data.
     """
-    if not value:
-        return None
     time_format = TIME_FORMATS[len(value)]
     return datetime.datetime.strptime(value, time_format).timetuple()[3:6]
 
 
-def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
+def prep_datetime(value: str) -> Tuple[int, ...]:
     """Returns a tuple of (year, month, day, hour, minute, second).
-
-    Empty string is interpreted as null data.
     """
-    if not value:
-        return None
 
     def merge_date_time(datestr: str, timestr: str) -> Tuple[int, ...]:
         """Convert presplit date/time strings into args ready for datetime().
@@ -181,8 +189,9 @@ def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
             tuple of (year, month, day, hour, minute, second).
         """
         prepped_date = prep_date(datestr)
-        prepped_time = prep_time(timestr)
         assert prepped_date is not None
+
+        prepped_time = prep_time(timestr)
         assert prepped_time is not None
 
         return prepped_date + prepped_time
@@ -194,8 +203,16 @@ def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
         return merge_date_time(datestr, timestr)
     elif len(seps) == 0:
         #  If we can't find an explicit date/time separator in input value,
-        #  assume null separator.  Brute force guess index of date/time split.
-        #
+        #  first try the value as a bare date (no time).
+        try:
+            prepped_date = prep_date(value)
+        except Exception:
+            pass
+        else:
+            return prepped_date
+
+        #  If that doesn't work, assume null separator.
+        #  Brute force guess index of date/time split.
         #  Shortest loop is to iterate over TIME_FORMATS, slicing value from
         #  the rear and taking that as the time string, with the date string
         #  comprising the remainder.
@@ -230,27 +247,24 @@ def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
     raise FlexParserError(f"Bad date/time format: {prepped}")
 
 
-def prep_bool(value: str) -> Optional[bool]:
+def prep_bool(value: str) -> bool:
     """Convert 'Y'/'N' into True/False.
-    Empty string is interpreted as null data.
     """
-    if not value:
-        return None
     return {"Y": True, "N": False}[value]
 
 
 def prep_decimal(value: str) -> Optional[str]:
     """Strip place separators (commas) from string holding numeric value.
-    Empty string is interpreted as null data.
     """
     return value.replace(",", "") or None
 
 
 def prep_list(value: str) -> Iterable[str]:
-    """Split a sequence string into its elements.
-    Flex `notes` attribute is semicolon-separated; other sequences use commas.
+    """Split a sequence string into its component items.
 
-    Empty string is interpreted as empty list.
+    N.B. these lists are different from the XML wrapper elements processed by
+    `prep_list()`.  These lists are strings contained in XML attributes.
+    Flex `notes` attribute is semicolon-delimited; other sequences use commas.
     """
     sep = ";" if ";" in value else ","
     return (v for v in value.split(sep) if v)
@@ -285,7 +299,7 @@ def make_converter(
                 return Type(prepped_value)
         except Exception:
             raise FlexParserError(
-                f"{value!r} can't be converted to {type}"
+                f"{value!r} can't be converted to {Type}"
             )
 
     return convert
@@ -401,7 +415,7 @@ def main():
         response = parse(file)
         for stmt in response.FlexStatements:
             for trade in stmt.Trades:
-                print(trade.buySell)
+                print(trade)
 
 
 if __name__ == "__main__":
