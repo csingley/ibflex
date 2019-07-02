@@ -429,6 +429,7 @@ class ConverterFunctionTestCase(unittest.TestCase):
             parser.convert_datetime("2010-01-08, 14:02:30"),
             datetime.datetime(2010, 1, 8, 14, 2, 30)
         )
+
     def testConvertSequence(self):
         """String sequences can be comma- or semicolon-delimited.
         """
@@ -440,6 +441,38 @@ class ConverterFunctionTestCase(unittest.TestCase):
 
         #  Empty string returns empty list.
         self.assertEqual(parser.convert_sequence(""), [])
+
+    def testConvertEnum(self):
+        """convert_enum() looks up by value not name.
+        """
+        class TestEnum(enum.Enum):
+            FOO = "1"
+            BAR = "2"
+
+        self.assertEqual(parser.convert_enum(TestEnum, "1"), TestEnum.FOO)
+        self.assertEqual(parser.convert_enum(TestEnum, "2"), TestEnum.BAR)
+
+        #  Empty string returns None.
+        self.assertEqual(parser.convert_enum(TestEnum, ""), None)
+
+        #  Old and new versions of enum values work.
+        self.assertEqual(
+            parser.convert_enum(Types.CashTransactionType, "Deposits/Withdrawals"),
+            Types.CashTransactionType.DEPOSITWITHDRAW,
+        )
+        self.assertEqual(
+            parser.convert_enum(Types.CashTransactionType, "Deposits & Withdrawals"),
+            Types.CashTransactionType.DEPOSITWITHDRAW,
+        )
+
+        self.assertEqual(
+            parser.convert_enum(Types.TransferType, "ACAT"),
+            Types.TransferType.ACATS,
+        )
+        self.assertEqual(
+            parser.convert_enum(Types.TransferType, "ACATS"),
+            Types.TransferType.ACATS,
+        )
 
     def testMakeOptional(self):
         """make_optional() wraps converter functions to return None for empty string.

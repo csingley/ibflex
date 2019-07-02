@@ -138,15 +138,14 @@ def parse_element_attr(
         name: XML attribute name
         value: XML attribute value
     """
+    #  FIXME
+    #  This "dot reference" gets hit a lot by parse_data_element(), and
+    #  `Class` is always the same in the list comprehension.
+    #  Consider moving `Class.__annotations__` out of the loop
+    #  and instead defining it as a function argument.
     Type = Class.__annotations__[name]
 
     if isinstance(Type, enum.EnumMeta):
-        #  Work around old versions of values; convert to the new format
-        if Type is Types.CashTransactionType and value == "Deposits/Withdrawals":
-            value = "Deposits & Withdrawals"
-        elif Type is Types.TransferType and value == "ACAT":
-            value = "ACATS"
-
         #  Dispatch Enums by metaclass, not class;
         #  Enums are all converted the same way.
         try:
@@ -329,6 +328,12 @@ convert_sequence = make_converter(list, prep=prep_sequence)
 
 
 def convert_enum(Type, value):
+    #  Work around old versions of values; convert to the new format
+    if Type is Types.CashTransactionType and value == "Deposits/Withdrawals":
+        value = "Deposits & Withdrawals"
+    elif Type is Types.TransferType and value == "ACAT":
+        value = "ACATS"
+
     #  Enums defined in Types bind custom names to the IB-supplied values.
     #  To convert, just do a by-value lookup on the incoming string.
     #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
