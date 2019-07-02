@@ -2,6 +2,10 @@
 """Parser/type converter for data in Interactive Brokers' Flex XML format.
 
 https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm
+
+Flex report configuration needed by this module:
+    Date format: choose yyyy-MM-dd
+    Trades: uncheck "Symbol Summary", "Asset Summary", "Orders"
 """
 import xml.etree.ElementTree as ET
 import enum

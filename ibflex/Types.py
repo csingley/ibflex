@@ -1,6 +1,21 @@
 # coding: utf-8
 """
-Trades: uncheck "Symbol Summary", "Asset Summary", "Orders"
+TODO - need types for:
+    FdicInsuredDepositsByBank
+    ComplexPositions
+    HKIPOSubscriptionActivity
+    PendingExcercises
+    FxTransactions
+    UnbookedTrades
+    RoutingCommissions
+    IBGNoteTransactions
+    Adjustments
+    DebitCardActivities
+    SoftDollars
+    SalesTaxes
+    CFDCharges
+    SLBOpenContracts
+    HKIPOOpenSubscriptions
 """
 
 __all__ = [
@@ -202,13 +217,13 @@ class FlexStatement(FlexElement):
     UnbookedTrades: List = field(default_factory=list)  # FIXME
     RoutingCommissions: List = field(default_factory=list)  # FIXME
     IBGNoteTransactions: List = field(default_factory=list)  # FIXME
-    UnsettledTransfers: List["UnsettledTransfer"] = field(default_factory=list)  # FIXME
+    UnsettledTransfers: List["UnsettledTransfer"] = field(default_factory=list)
     UnbundledCommissionDetails: List["UnbundledCommissionDetail"] = field(default_factory=list)
     Adjustments: List = field(default_factory=list)  # FIXME
     PriorPeriodPositions: List["PriorPeriodPosition"] = field(default_factory=list)
     CorporateActions: List["CorporateAction"] = field(default_factory=list)
-    ClientFees: List = field(default_factory=list)  # FIXME
-    ClientFeesDetail: List = field(default_factory=list)  # FIXME
+    ClientFees: List["ClientFee"] = field(default_factory=list)
+    ClientFeesDetail: List["_ClientFeesDetail"] = field(default_factory=list)
     DebitCardActivities: List = field(default_factory=list)  # FIXME
     SoftDollars: List = field(default_factory=list)  # FIXME
     CashTransactions: List["CashTransaction"] = field(default_factory=list)
@@ -265,7 +280,6 @@ class AccountInformation(FlexElement):
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _AccountInformation = AccountInformation
-
 
 @dataclass(frozen=True)
 class ChangeInNAV(FlexElement):
@@ -1636,3 +1650,54 @@ class NetStockPosition(FlexElement):
     sharesBorrowed: Optional[Decimal] = None
     sharesLent: Optional[Decimal] = None
     netShares: Optional[Decimal] = None
+
+
+@dataclass(frozen=True)
+class ClientFee(FlexElement):
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    feeType: Optional[str] = None
+    date: Optional[datetime.datetime] = None
+    description: Optional[str] = None
+    expenseIndicator: Optional[str] = None
+    revenue: Optional[Decimal] = None
+    expense: Optional[Decimal] = None
+    net: Optional[Decimal] = None
+    revenueInBase: Optional[Decimal] = None
+    expenseInBase: Optional[Decimal] = None
+    netInBase: Optional[Decimal] = None
+    tradeID: Optional[str] = None
+    execID: Optional[str] = None
+    levelOfDetail: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class ClientFeesDetail(FlexElement):
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    date: Optional[datetime.datetime] = None
+    tradeID: Optional[str] = None
+    execID: Optional[str] = None
+    totalRevenue: Optional[Decimal] = None
+    totalCommission: Optional[Decimal] = None
+    brokerExecutionCharge: Optional[Decimal] = None
+    clearingCharge: Optional[Decimal] = None
+    thirdPartyExecutionCharge: Optional[Decimal] = None
+    thirdPartyRegulatoryCharge: Optional[Decimal] = None
+    regFINRATradingActivityFee: Optional[Decimal] = None
+    regSection31TransactionFee: Optional[Decimal] = None
+    regOther: Optional[Decimal] = None
+    totalNet: Optional[Decimal] = None
+    totalNetInBase: Optional[Decimal] = None
+    levelOfDetail: Optional[str] = None
+    other: Optional[Decimal] = None
+
+
+#  Type alias to work around https://github.com/python/mypy/issues/1775
+_ClientFeesDetail = ClientFeesDetail
