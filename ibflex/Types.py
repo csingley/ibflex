@@ -9,13 +9,17 @@ __all__ = [
     "TradeTransferDirection", "TransferDirection", "DeliveredReceived",
     "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
     "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
-    "EquitySummaryByReportDateInBase", "CashReportCurrency",
+    "EquitySummaryByReportDateInBase", "MTDYTDPerformanceSummaryUnderlying",
+    "CashReportCurrency", "FIFOPerformanceSummaryUnderlying",
+    "NetStockPosition", "UnsettledTransfer", "UnbundledCommissionDetail",
     "StatementOfFundsLine", "ChangeInPositionValue", "OpenPosition", "FxLot",
-    "Trade", "TradeConfirmation", "OptionEAE", "TradeTransfer",
+    "Trade", "TradeConfirm", "OptionEAE", "TradeTransfer",
+    "TierInterestDetail", "HardToBorrowDetail",
     "InterestAccrualsCurrency", "SLBActivity", "Transfer", "CorporateAction",
     "CashTransaction", "ChangeInDividendAccrual", "OpenDividendAccrual",
     "SecurityInfo", "ConversionRate", "PriorPeriodPosition",
 ]
+
 
 import datetime
 import decimal
