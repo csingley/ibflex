@@ -5,9 +5,10 @@ https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm
 """
 import xml.etree.ElementTree as ET
 import enum
-import collections
 import datetime
 import decimal
+import itertools
+import functools
 from typing import List, Tuple, Union, Optional, Any, Callable, Iterable
 
 from ibflex import Types, utils
@@ -21,7 +22,7 @@ AttributeType = Union[
     str, int, bool, decimal.Decimal, datetime.date, datetime.time,
     datetime.datetime, enum.Enum, List[str], None,
 ]
-""" Possible type annotations for a class attribute from Types module. """
+""" Possible type annotations for a FlexElement class attribute. """
 
 
 ###############################################################################
@@ -52,7 +53,22 @@ def parse_element(
     have no attributes.  The only exception is <FlexStatements>, which has a
     `count` attribute as a check on its contents.
     """
-    if not elem.attrib or elem.tag == "FlexStatements":
+    if elem.tag == "FlexStatements":
+        #  Verify that # of contained <FlexStatement> elements matches
+        #  what's reported in <FlexStatements count> attribute.
+        try:
+            count = int(elem.get("count", None))
+            assert len(elem) == count
+        except (TypeError, ValueError):
+            msg = f"Malformed FlexStatements.count={elem.get('count', '')}"
+            raise FlexParserError(msg)
+        except AssertionError:
+            msg = f"Wrong FlexStatements.count={count} vs. {len(elem)}"
+            raise FlexParserError(msg)
+
+        return parse_element_container(elem)
+
+    if not elem.attrib:
         return parse_element_container(elem)
 
     return parse_data_element(elem)
@@ -64,21 +80,11 @@ def parse_element_container(elem: ET.Element) -> List[Types.FlexElement]:
     tag = elem.tag
 
     if tag == "FxPositions":
-        #   <FxLot> is double-wrapped (???).  Element structure here is:
-        #       <FxPositions><FxLots><FxLot /></FxLots></FxPositions>
-        #   Look through <FxLots> to create FlexStatement.FxPositions
-        #   as a list of FxLot instances.
-        if len(elem) > 1:
-            msg = "Bad XML structure: <FXPositions> contains multiple <FxLots>"
-            raise FlexParserError(msg)
-        elem = elem[0] if len(elem) == 1 else elem
-    elif tag == "FlexStatements":
-        # Verify that # of contained <FlexStatement> elements matches
-        # what's reported in <FlexStatements count> attribute
-        count = int(elem.attrib["count"])
-        if len(elem) != count:
-            msg = f"FlexStatement count={len(elem)}; expected count={count}"
-            raise FlexParserError(msg)
+        #  <FxPositions> contains an <FxLots> wrapper per currency.
+        #  Element structure here is <FxPositions><FxLots><FxLot /></FxLots><FxLots><FxLot /></FxLots></FxPositions>
+        #  Flatten the nesting to create FxPositions as a list of FxLots
+        fxlots = [parse_element_container(child) for child in elem]
+        return list(itertools.chain.from_iterable(fxlots))
 
     instances = [parse_data_element(child) for child in elem]
 
@@ -95,71 +101,76 @@ def parse_data_element(
 ) -> Types.FlexElement:
     """Parse an XML data element into a Types.FlexElement subclass instance.
     """
+    #  Look up XML element's matching FlexElement subclass in ibflex.Types.
     Class = getattr(Types, elem.tag)
 
-    #  Map of Class attribute name to type hint.
-    #  Need to collect annotations from traversing entire Class MRO
-    #  (method resolution order) to support mixin inheritance.
-    schema = collections.ChainMap(
-        *[
-            cls.__annotations__
-            for cls in Class.__mro__
-            if hasattr(cls, "__annotations__")
-        ]
-    )
+    #  Parse element attributes
+    try:
+        attrs = dict(
+            parse_element_attr(Class, k, v)
+            for k, v in elem.attrib.items()
+        )
+    except KeyError as exc:
+        msg = f"{Class.__name__} has no attribute " + str(exc)
+        raise FlexParserError(msg)
 
-    def parse_element_attr(
-        name: str, value: str, Type: AttributeType
-    ) -> Tuple[str, Any]:
-        """Convert an XML element attribute into its corresponding Python type,
-        based on the FlexElement subclass attribute type hint.
-
-        Note:
-            Empty string (null data) returns empty list (for list Types) or None
-
-        Args:
-            name: XML attribute name
-            value: XML attribute value
-            Type: type hint for FlexElement subclass attribute of `name`
-        """
-        if not value:
-            return name, [] if getattr(Type, "_name", "") == "List" else None
-
-        if isinstance(Type, enum.EnumMeta):
-            #  Dispatch Enums by metaclass, not class; they're all handled the same way.
-            #  Enums defined in Types bind custom names to the IB-supplied values.
-            #  To convert, just do a reverse lookup on the incoming string.
-            #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
-            return name, Type(value)
-
-        # Validate currency
-        if "currency" in name.lower() and value not in CURRENCY_CODES:
-            raise FlexParserError(f"Unknown currency {value!r}")
-
-        try:
-            return name, ATTRIB_CONVERTERS[Type](value)
-        except Exception as exc:
-            msg = f"{Class.__name__}.{name}" + str(exc)
-            raise FlexParserError(msg)
-
-    # Parse element attributes
-    attrs = dict(
-        parse_element_attr(k, v, schema[k]) for k, v in elem.attrib.items()
-    )
-
-    # FlexQueryResponse & FlexStatement are the only data elements
-    # that contain other data elements.
+    #  FlexQueryResponse & FlexStatement are the only data elements
+    #  that contain other data elements.
     contained_elements = {child.tag: parse_element(child) for child in elem}
     if contained_elements:
         assert elem.tag in ("FlexQueryResponse", "FlexStatement")
         attrs.update(contained_elements)
 
-    instance = Class(**attrs)
-    return instance
+    try:
+        return Class(**attrs)
+    except Exception as exc:
+        raise FlexParserError(f"{Class.__name__} - " + str(exc))
+
+
+def parse_element_attr(
+    Class: Types.FlexElement, name: str, value: str
+) -> Tuple[str, Any]:
+    """Convert an XML element attribute into its corresponding Python type,
+    based on the FlexElement subclass attribute type hint.
+
+    Args:
+        Class: FlexElement subclass
+        name: XML attribute name
+        value: XML attribute value
+    """
+    Type = Class.__annotations__[name]
+
+    if isinstance(Type, enum.EnumMeta):
+        #  Work around old versions of values; convert to the new format
+        if Type is Types.CashTransactionType and value == "Deposits/Withdrawals":
+            value = "Deposits & Withdrawals"
+        elif Type is Types.TransferType and value == "ACAT":
+            value = "ACATS"
+
+        #  Dispatch Enums by metaclass, not class;
+        #  Enums are all converted the same way.
+        try:
+            return name, convert_enum(Type, value)
+        except Exception as exc:
+            raise FlexParserError(str(exc))
+
+    #  Validate currency of any field named something like "currency".
+    if "currency" in name.lower() and value not in CURRENCY_CODES:
+        raise FlexParserError(f"Unknown currency {value!r}")
+
+    try:
+        return name, ATTRIB_CONVERTERS[Type](value=value)
+    except KeyError as exc:
+        msg = f"{Class.__name__}.{name} - Don't know how to convert "  # type: ignore
+        raise FlexParserError(msg + str(exc))
+    except Exception as exc:
+        msg = f"{Class.__name__}.{name} - " + str(exc)  # type: ignore
+        raise FlexParserError(msg)
 
 
 ###############################################################################
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
+#  These are just implementation details for converters and don't need testing.
 ###############################################################################
 def prep_date(value: str) -> Tuple[int, int, int]:
     """Returns a tuple of (year, month, day).
@@ -168,7 +179,7 @@ def prep_date(value: str) -> Tuple[int, int, int]:
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
 
-def prep_time(value: str) -> Optional[Tuple[int, int, int]]:
+def prep_time(value: str) -> Tuple[int, int, int]:
     """Returns a tuple of (hour, minute, second).
     """
     time_format = TIME_FORMATS[len(value)]
@@ -178,16 +189,11 @@ def prep_time(value: str) -> Optional[Tuple[int, int, int]]:
 def prep_datetime(value: str) -> Tuple[int, ...]:
     """Returns a tuple of (year, month, day, hour, minute, second).
     """
+    #  HACK - some old data has ", " separator instead of ",".
+    value = value.replace(", ", ",")
 
     def merge_date_time(datestr: str, timestr: str) -> Tuple[int, ...]:
         """Convert presplit date/time strings into args ready for datetime().
-
-        Args:
-            datestr - string representing date, in any recognized format.
-            timestr - string representing time, in any recognized format.
-
-        Returns:
-            tuple of (year, month, day, hour, minute, second).
         """
         prepped_date = prep_date(datestr)
         assert prepped_date is not None
@@ -201,60 +207,67 @@ def prep_datetime(value: str) -> Tuple[int, ...]:
     if len(seps) == 1:
         sep = seps[0]
         datestr, timestr = value.split(sep)
+        # HACK - some old data has TZ offset appended.  Drop the offset.
+        if "-" in timestr:
+            timestr = timestr.split("-")[0]
+        elif "+" in timestr:
+            timestr = timestr.split("+")[0]
+
         return merge_date_time(datestr, timestr)
     elif len(seps) == 0:
         #  If we can't find an explicit date/time separator in input value,
-        #  first try the value as a bare date (no time).
+        #  best case is that the value as a bare date (no time).
         try:
-            prepped_date = prep_date(value)
+            return prep_date(value)
         except Exception:
             pass
-        else:
-            return prepped_date
 
-        #  If that doesn't work, assume null separator.
-        #  Brute force guess index of date/time split.
-        #  Shortest loop is to iterate over TIME_FORMATS, slicing value from
-        #  the rear and taking that as the time string, with the date string
-        #  comprising the remainder.
+        #  If that doesn't work, assume null separator.  Brute force guess
+        #  index of date/time split. Shortest loop is to iterate over
+        #  TIME_FORMATS (there's only 2 of them).
 
-        def testlength(
+        def testtimelength(
             value: str, time_length: int
         ) -> Optional[Tuple[int, ...]]:
             """Assuming time substring is of given length, try to process value
             into time tuple.
-
-            Args:
-                value: input string data.
-                time_length: candidate length of time substring.
-
-            Returns:
-                If valid, return (year, month, day, hour, minute, second).
-                If invalid, return None.
             """
+            datestr, timestr = value[:-time_length], value[-time_length:]
             try:
-                datestr, timestr = value[:-time_length], value[-time_length:]
                 return merge_date_time(datestr, timestr)
             except Exception:
                 return None
 
-        tested = (testlength(value, length) for length in TIME_FORMATS)
+        tested = (testtimelength(value, length) for length in TIME_FORMATS)
         prepped = [t for t in tested if t is not None]
         if len(prepped) != 1:
-            raise FlexParserError(f"Bad date/time format: {prepped}")
+            raise FlexParserError(f"Bad date/time format: {value}")
         return prepped[0]
 
     # Multiple date/time separators appear in input value.
-    raise FlexParserError(f"Bad date/time format: {prepped}")
+    raise FlexParserError(f"Bad date/time format: {value}")
+
+    sep = seps[0]
+
+    try:
+        #  HACK - some old data has ", " separator, which shows up as
+        #  seps = [",", ""].  Keep the comma, strip the space.
+        datestr, timestr = value.split(sep)
+        timestr = timestr.strip()
+        return merge_date_time(datestr, timestr)
+    except Exception:
+        raise FlexParserError(f"Bad date/time format: {value}")
 
 
 def prep_sequence(value: str) -> Iterable[str]:
     """Split a sequence string into its component items.
 
     Flex `notes` attribute is semicolon-delimited; other sequences use commas.
+
+    Empty string input interpreted as null data; returns empty list.
     """
     sep = ";" if ";" in value else ","
-    return (v for v in value.split(sep) if v)
+    return (v for v in value.split(sep) if v) if value != "" else []
 
 
 ###############################################################################
@@ -286,13 +299,21 @@ def make_converter(
                 return Type(prepped_value)
         except Exception:
             raise FlexParserError(
-                f"{value!r} can't be converted to {Type}"
+                f"Can't convert {value!r} to {Type}"
             )
 
     return convert
 
 
-convert_string = make_converter(str, prep=utils.identity_func)
+def make_optional(func):
+
+    def optional_convert(value):
+        return None if value in ("", "-", "--", "N/A") else func(value)
+
+    return optional_convert
+
+
+convert_string = make_optional(make_converter(str, prep=utils.identity_func))
 convert_int = make_converter(int, prep=utils.identity_func)
 # IB sends "Y"/"N" for True/False
 convert_bool = make_converter(bool, prep=lambda x: {"Y": True, "N": False}[x])
@@ -306,23 +327,36 @@ convert_time = make_converter(datetime.time, prep=prep_time)
 convert_datetime = make_converter(datetime.datetime, prep=prep_datetime)
 convert_sequence = make_converter(list, prep=prep_sequence)
 
+
+def convert_enum(Type, value):
+    #  Enums defined in Types bind custom names to the IB-supplied values.
+    #  To convert, just do a by-value lookup on the incoming string.
+    #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
+    return Type(value) if value != "" else None
+
+
 ATTRIB_CONVERTERS = {
     str: convert_string,
     Optional[str]: convert_string,
     int: convert_int,
-    Optional[int]: convert_int,
+    Optional[int]: make_optional(convert_int),
     bool: convert_bool,
-    Optional[bool]: convert_bool,
+    Optional[bool]: make_optional(convert_bool),
     decimal.Decimal: convert_decimal,
-    Optional[decimal.Decimal]: convert_decimal,
+    Optional[decimal.Decimal]: make_optional(convert_decimal),
     datetime.date: convert_date,
-    Optional[datetime.date]: convert_date,
+    Optional[datetime.date]: make_optional(convert_date),
     datetime.time: convert_time,
+    Optional[datetime.time]: make_optional(convert_time),
     datetime.datetime: convert_datetime,
-    Optional[datetime.datetime]: convert_datetime,
+    Optional[datetime.datetime]: make_optional(convert_datetime),
     List[str]: convert_sequence,
+    #  HACK - once upon a time, <CorporateAction> had no `type` attribute.
+    Optional[Types.CorporateActionType]: functools.partial(
+        convert_enum, Type=Types.CorporateActionType
+    ),
 }
-"""Map of Types class attribute type hint to corresponding converter function.
+"""Map of FlexElement attribute type hint to corresponding converter function.
 """
 
 
@@ -332,7 +366,7 @@ ATTRIB_CONVERTERS = {
 ###############################################################################
 DATE_FORMATS = {8: {0: "%Y%m%d", 2: "%m/%d/%y"},
                 9: {0: "%d-%b-%y"},
-                10: {0: "%Y-%m-%d", 2: "%m/%d/%y"}}
+                10: {0: "%Y-%m-%d", 2: "%m/%d/%Y"}}
 """Keyed first by string length, then by "/" count within string.
 
 We can't distinguish in-band between US MM/dd/yyyy and Euro dd/MM/yyyy.
@@ -345,8 +379,8 @@ Available date formats are:
     yyyy-MM-dd
     MM/dd/yyyy
     MM/dd/yy
-    dd/MM/yyyy
-    dd/MM/yy
+    dd/MM/yyyy [not implemented in ibflex]
+    dd/MM/yy [not implemented in ibflex]
     dd-MMM-yy
 """
 
@@ -358,7 +392,7 @@ Available time formats are:
     HH:mm:ss
 """
 
-DATETIME_SEPARATORS = {";", ",", " "}
+DATETIME_SEPARATORS = [";", ",", " ", "T"]
 """We omit the null separator (empty string) because it screws up our logic.
 
 DO NOT CONFIGURE YOUR REPORTS TO USE NULL-SEPARATED DATE/TIME FIELDS.
@@ -368,6 +402,8 @@ Available date/time separators are:
     ,   (comma)
     ' ' (single-spaced)
     No separator
+
+Additionally, some old values have 'T' as a date/time separator with TZ offset.
 """
 
 
@@ -417,7 +453,10 @@ def main():
         response = parse(file)
         for stmt in response.FlexStatements:
             for trade in stmt.Trades:
-                print(trade)
+                print(
+                    (f"{trade.tradeDate} {trade.buySell.value} {abs(trade.quantity)} "
+                     f"{trade.symbol} @ {trade.tradePrice}")
+                )
 
 
 if __name__ == "__main__":
