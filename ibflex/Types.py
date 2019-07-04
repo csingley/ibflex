@@ -20,7 +20,7 @@ TODO - need types for:
 
 __all__ = [
     "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType",
-    "Reorg", "OptionEAEType", "PositionSide", "TransferType",
+    "Reorg", "OptionEAEType", "LongShort", "TransferType",
     "ToFrom", "InOut", "DeliveredReceived",
     "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
     "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
@@ -138,7 +138,7 @@ class OptionEAEType(enum.Enum):
 
 
 @enum.unique
-class PositionSide(enum.Enum):
+class LongShort(enum.Enum):
     LONG = "Long"
     SHORT = "Short"
 
@@ -763,6 +763,7 @@ class ChangeInPositionValue(FlexElement):
 @dataclass(frozen=True)
 class OpenPosition(FlexElement):
     """ Wrapped in <OpenPositions> """
+    side: LongShort
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
@@ -782,7 +783,6 @@ class OpenPosition(FlexElement):
     costBasisPrice: Optional[decimal.Decimal] = None
     costBasisMoney: Optional[decimal.Decimal] = None
     fifoPnlUnrealized: Optional[decimal.Decimal] = None
-    side: Optional[str] = None
     levelOfDetail: Optional[str] = None
     openDateTime: Optional[datetime.datetime] = None
     holdingPeriodDateTime: Optional[datetime.datetime] = None

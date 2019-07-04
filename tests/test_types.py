@@ -476,7 +476,7 @@ class OpenPositionTestCase(unittest.TestCase):
         self.assertEqual(instance.costBasisMoney, decimal.Decimal("-3440.5"))
         self.assertEqual(instance.percentOfNAV, None)
         self.assertEqual(instance.fifoPnlUnrealized, decimal.Decimal("-112.5"))
-        self.assertEqual(instance.side, "Short")
+        self.assertEqual(instance.side, Types.LongShort.SHORT)
         self.assertEqual(instance.levelOfDetail, "LOT")
         self.assertEqual(instance.openDateTime, datetime.datetime(2011, 8, 8, 13, 44, 13))
         self.assertEqual(instance.holdingPeriodDateTime,  datetime.datetime(2011, 8, 8, 13, 44, 13))
