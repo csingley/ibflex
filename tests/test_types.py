@@ -796,7 +796,7 @@ class CashTransactionTestCase(unittest.TestCase):
         self.assertEqual(instance.principalAdjustFactor, None)
         self.assertEqual(instance.dateTime, datetime.datetime(2015, 10, 6))
         self.assertEqual(instance.amount, decimal.Decimal("27800"))
-        self.assertEqual(instance.type, Types.CashTransactionType.DIVIDEND)
+        self.assertEqual(instance.type, Types.CashAction.DIVIDEND)
         self.assertEqual(instance.tradeID, None)
         self.assertEqual(instance.code, [])
         self.assertEqual(instance.transactionID, "5767420360")

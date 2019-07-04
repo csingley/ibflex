@@ -1,9 +1,123 @@
 # coding: utf-8
 """
+Must-have fields
+====
+FlexStatement:
+    AccountInformation
+
+AccountInformation:
+    accountId
+    currency
+
+SecurityInfo: N.B. this is not configurable through the web interface
+    conid
+    cusip
+    isin
+    symbol
+    description
+
+Trade:  N.B. Can't select Symbol Summary, Asset Class, or Orders
+    tradeID
+    conid
+    reportDate
+    description
+    quantity
+    currency
+    netCash
+    origTradeID
+    notes  "Notes/Codes"
+
+    preferably dateTime, otherwise tradeDate/tradeTime
+
+    transactionID  N.B. this is not configurable through the web interface
+
+
+TradeTransfer:
+    tradeID
+    tradeDate
+    tradeTime
+    description
+    conid
+    quantity
+    currency
+    netCash
+    reportDate
+    origTradeID
+    notes
+    transactionType
+    deliveredReceived
+    direction
+    brokerName
+    brokerAccount
+
+CashTransaction:
+    dateTime
+    transactionID
+    description
+    conid
+    type
+    currency
+    amount
+
+CorporateAction:
+    dateTime
+    description
+    conid
+    quantity
+    currency
+    proceeds
+    type
+    reportDate
+    code
+
+Transfer:
+    date
+    description
+    conid
+    quantity
+    direction
+    type
+    account
+
+OptionEAE:
+    conid
+    transactionType
+    date
+    description
+    quantity
+
+
+ChangeInDividendAccrual:
+    conid
+    payDate
+    code
+
+ConversionRate:
+    reportDate
+    fromCurrency
+    toCurrency
+    rate
+
+TODO - need types for:
+    FdicInsuredDepositsByBank
+    ComplexPositions
+    HKIPOSubscriptionActivity
+    PendingExcercises
+    FxTransactions
+    UnbookedTrades
+    RoutingCommissions
+    IBGNoteTransactions
+    Adjustments
+    DebitCardActivities
+    SoftDollars
+    SalesTaxes
+    CFDCharges
+    SLBOpenContracts
+    HKIPOOpenSubscriptions
 """
 
 __all__ = [
-    "CashTransactionType", "TradeType", "BuySell", "OpenClose", "OrderType",
+    "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType",
     "Reorg", "OptionEAEType", "PositionSide", "TransferType",
     "TradeTransferDirection", "TransferDirection", "DeliveredReceived",
     "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
@@ -32,7 +146,7 @@ from typing import List, Optional
 #  ENUMS
 ###############################################################################
 @enum.unique
-class CashTransactionType(enum.Enum):
+class CashAction(enum.Enum):
     DEPOSITWITHDRAW = "Deposits & Withdrawals"
     BROKERINTPAID = "Broker Interest Paid"
     BROKERINTRCVD = "Broker Interest Received"
@@ -1445,7 +1559,7 @@ class CorporateAction(FlexElement):
 @dataclass(frozen=True)
 class CashTransaction(FlexElement):
     """ Wrapped in <CashTransactions> """
-    type: CashTransactionType
+    type: CashAction
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None

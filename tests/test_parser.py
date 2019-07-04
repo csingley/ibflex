@@ -457,12 +457,12 @@ class ConverterFunctionTestCase(unittest.TestCase):
 
         #  Old and new versions of enum values work.
         self.assertEqual(
-            parser.convert_enum(Types.CashTransactionType, "Deposits/Withdrawals"),
-            Types.CashTransactionType.DEPOSITWITHDRAW,
+            parser.convert_enum(Types.CashAction, "Deposits/Withdrawals"),
+            Types.CashAction.DEPOSITWITHDRAW,
         )
         self.assertEqual(
-            parser.convert_enum(Types.CashTransactionType, "Deposits & Withdrawals"),
-            Types.CashTransactionType.DEPOSITWITHDRAW,
+            parser.convert_enum(Types.CashAction, "Deposits & Withdrawals"),
+            Types.CashAction.DEPOSITWITHDRAW,
         )
 
         self.assertEqual(

@@ -334,7 +334,7 @@ convert_sequence = make_converter(list, prep=prep_sequence)
 
 def convert_enum(Type, value):
     #  Work around old versions of values; convert to the new format
-    if Type is Types.CashTransactionType and value == "Deposits/Withdrawals":
+    if Type is Types.CashAction and value == "Deposits/Withdrawals":
         value = "Deposits & Withdrawals"
     elif Type is Types.TransferType and value == "ACAT":
         value = "ACATS"
