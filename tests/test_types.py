@@ -980,7 +980,7 @@ class CorporateActionTestCase(unittest.TestCase):
         self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("10315"))
         self.assertEqual(instance.mtmPnl, decimal.Decimal("12490"))
         self.assertEqual(instance.code, [])
-        self.assertEqual(instance.type, Types.CorporateActionType.MERGER)
+        self.assertEqual(instance.type, Types.Reorg.MERGER)
 
 
 class ChangeInDividendAccrualTestCase(unittest.TestCase):

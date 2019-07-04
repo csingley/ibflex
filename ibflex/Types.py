@@ -1,26 +1,10 @@
 # coding: utf-8
 """
-TODO - need types for:
-    FdicInsuredDepositsByBank
-    ComplexPositions
-    HKIPOSubscriptionActivity
-    PendingExcercises
-    FxTransactions
-    UnbookedTrades
-    RoutingCommissions
-    IBGNoteTransactions
-    Adjustments
-    DebitCardActivities
-    SoftDollars
-    SalesTaxes
-    CFDCharges
-    SLBOpenContracts
-    HKIPOOpenSubscriptions
 """
 
 __all__ = [
     "CashTransactionType", "TradeType", "BuySell", "OpenClose", "OrderType",
-    "CorporateActionType", "OptionEAEType", "PositionSide", "TransferType",
+    "Reorg", "OptionEAEType", "PositionSide", "TransferType",
     "TradeTransferDirection", "TransferDirection", "DeliveredReceived",
     "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
     "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
@@ -94,7 +78,7 @@ class OrderType(enum.Enum):
 
 
 @enum.unique
-class CorporateActionType(enum.Enum):
+class Reorg(enum.Enum):
     BONDCONVERSION = "BC"
     BONDMATURITY = "BM"
     CONTRACTSOULTE = "CA"
@@ -186,11 +170,16 @@ class FlexQueryResponse(FlexElement):
 @dataclass(frozen=True)
 class FlexStatement(FlexElement):
     """ Wrapped in <FlexStatements> """
-    accountId: Optional[str] = None
-    fromDate: Optional[datetime.date] = None
-    toDate: Optional[datetime.date] = None
-    period: Optional[str] = None
-    whenGenerated: Optional[datetime.datetime] = None
+    accountId: str
+    fromDate: datetime.date
+    toDate: datetime.date
+    period: str
+    whenGenerated: datetime.datetime
+    #  accountId: Optional[str] = None
+    #  fromDate: Optional[datetime.date] = None
+    #  toDate: Optional[datetime.date] = None
+    #  period: Optional[str] = None
+    #  whenGenerated: Optional[datetime.datetime] = None
     AccountInformation: Optional["_AccountInformation"] = None
     CashReport: List["CashReportCurrency"] = field(default_factory=list)
     MTDYTDPerformanceSummary: List["MTDYTDPerformanceSummaryUnderlying"] = field(default_factory=list)
@@ -242,6 +231,13 @@ class FlexStatement(FlexElement):
     SecuritiesInfo: List["SecurityInfo"] = field(default_factory=list)
     ConversionRates: List["ConversionRate"] = field(default_factory=list)
     HKIPOOpenSubscriptions: List = field(default_factory=list)  # FIXME
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}(accountId={self.accountId}, "
+            f"fromDate={self.fromDate}, toDate={self.toDate}, period={self.period}, "
+            f"whenGenerated={self.whenGenerated})"
+        )
 
 
 @dataclass(frozen=True)
@@ -820,6 +816,22 @@ class FxLot(FlexElement):
     model: Optional[str] = None
 
 
+#  Trade:  N.B. Can't select Symbol Summary, Asset Class, or Orders
+    #  tradeID
+    #  conid
+    #  reportDate
+    #  description
+    #  quantity
+    #  currency
+    #  netCash
+    #  origTradeID
+    #  notes  "Notes/Codes"
+
+    #  transactionID  N.B. this is not configurable through the web interface
+
+    #  tradeDate  ?? Date/Time ??  Trade Date ??
+    #  tradeTime
+
 @dataclass(frozen=True)
 class Trade(FlexElement):
     """ Wrapped in <Trades> """
@@ -875,6 +887,8 @@ class Trade(FlexElement):
     proceeds: Optional[decimal.Decimal] = None
     fxPnl: Optional[decimal.Decimal] = None
     clearingFirmID: Optional[str] = None
+    #  Effective 2013, every Trade has a `transactionID` attribute that can't
+    #  be deselected in the Flex query template.
     transactionID: Optional[str] = None
     holdingPeriodDateTime: Optional[datetime.datetime] = None
     ibExecID: Optional[str] = None
@@ -1409,7 +1423,8 @@ class CorporateAction(FlexElement):
     capitalGainsPnl: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
-    type: Optional[CorporateActionType] = None
+    #  Effective 2010, CorporateAction has a `type` attribute
+    type: Optional[Reorg] = None
     code: List[str] = field(default_factory=list)
     sedol: Optional[str] = None
     acctAlias: Optional[str] = None

@@ -162,7 +162,8 @@ def parse_element_attr(
         raise FlexParserError(f"Unknown currency {value!r}")
 
     try:
-        return name, ATTRIB_CONVERTERS[Type](value=value)
+        converted = ATTRIB_CONVERTERS[Type](value=value)
+        return name, converted
     except KeyError as exc:
         msg = f"{Class.__name__}.{name} - Don't know how to convert "  # type: ignore
         raise FlexParserError(msg + str(exc))
@@ -360,9 +361,10 @@ ATTRIB_CONVERTERS = {
     datetime.datetime: convert_datetime,
     Optional[datetime.datetime]: make_optional(convert_datetime),
     List[str]: convert_sequence,
-    #  HACK - once upon a time, <CorporateAction> had no `type` attribute.
-    Optional[Types.CorporateActionType]: functools.partial(
-        convert_enum, Type=Types.CorporateActionType
+    #  HACK - once upon a time, <CorporateAction> had no `type` attribute,
+    #  so we have to annotate its class attribute as optional.
+    Optional[Types.Reorg]: functools.partial(
+        convert_enum, Type=Types.Reorg
     ),
 }
 """Map of FlexElement attribute type hint to corresponding converter function.
