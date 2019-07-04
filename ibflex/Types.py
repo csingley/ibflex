@@ -103,7 +103,7 @@ class Code(enum.Enum):
     PRINCIPAL = "Pr"  # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
     REINVESTMENT = "R"  # Dividend Reinvestment
     REDEMPTION = "RED"  # Redemption to Investor
-    REVERSAL = "Re"  # Interest or Dividend Accrual Reversal
+    REVERSE = "Re"  # Interest or Dividend Accrual Reversal
     REIMBURSEMENT = "Ri"  # Reimbursement
     SOLICITEDIB = "SI"  # This order was solicited by Interactive Brokers
     SPECIFICLOT = "SL"  # Specific Lot tax lot-matching method
