@@ -60,6 +60,61 @@ class CashAction(enum.Enum):
 
 
 @enum.unique
+class Code(enum.Enum):
+    ASSIGNMENT = "A"
+    AUTOEXERCISE = "AEx"  # Automatic exercise for dividend-related recommendation
+    ADJUSTMENT = "Adj"  # Adjustment
+    ALLOCATION = "Al"  # Allocation
+    AWAY = "Aw"  # Away Trade
+    BUYIN = "B"  # Automatic Buy-in
+    BORROW = "Bo"  # Direct Borrow
+    CLOSING = "C"  # Closing Trade
+    CASHDELIVERY = "CD"  # Cash Delivery
+    COMPLEX = "CP"  # Complex Position
+    CANCELLED = "Ca"  # Cancelled
+    CORRECTED = "Co"  # Corrected Trade
+    CROSSING = "Cx"  # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
+    ETF = "ETF"  # ETF Creation/Redemption
+    EXPIRED = "Ep"  # Resulted from an Expired Position
+    EXERCISE = "Ex"  # Exercise
+    GUARANTEED = "G"  # Trade in Guaranteed Account Segment
+    HIGHESTCOST = "HC"  # Highest Cost tax lot-matching method
+    HFINVESTMENT = "HFI"  # Investment Transferred to Hedge Fund
+    HFREDEMPTION = "HFR"  # Redemption from Hedge Fund
+    INTERNAL = "I"  # Internal Transfer
+    AFFILIATE = "IA"  # This transaction was executed against an IB affiliate
+    INVESTOR = "INV"  # Investment Transfer from Investor
+    MARGIN = "L"  # Ordered by IB (Margin Violation)
+    WASHSALE = "LD"  # Adjusted by Loss Disallowed from Wash Sale
+    LIFO = "LI"  # Last In, First Out (LIFO) tax lot-matching method
+    LTCG = "LT"  # Long-term P/L
+    LOAN = "Lo"  # Direct Loan
+    MANUAL = "M"  # Entered manually by IB
+    MANUALEXERCISE = "MEx"  # Manual exercise for dividend-related recommendation
+    MAXLOSS = "ML"  # Maximize Losses tax basis election
+    MAXLTCG = "MLG"  # Maximize Long-Term Gain tax lot-matching method
+    MINLTCG = "MLL"  # Maximize Long-Term Loss tax lot-matching method
+    MAXSTCG = "MSG"  # Maximize Short-Term Gain tax lot-matching method
+    MINSTCG = "MSL"  # Maximize Short-Term Loss tax lot-matching method
+    OPENING = "O"  # Opening Trade
+    PARTIAL = "P"  # Partial Execution
+    PRICEIMPROVEMENT = "PI"  # Price Improvement
+    POSTACCRUAL = "Po"  # Interest or Dividend Accrual Posting
+    PRINCIPAL = "Pr"  # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
+    REINVESTMENT = "R"  # Dividend Reinvestment
+    REDEMPTION = "RED"  # Redemption to Investor
+    REVERSAL = "Re"  # Interest or Dividend Accrual Reversal
+    REIMBURSEMENT = "Ri"  # Reimbursement
+    SOLICITEDIB = "SI"  # This order was solicited by Interactive Brokers
+    SPECIFICLOT = "SL"  # Specific Lot tax lot-matching method
+    SOLICITEDOTHER = "SO"  # This order was marked as solicited by your Introducing Broker
+    SHORTENEDSETTLEMENT = "SS"  # Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
+    STCG = "ST"  # Short-term P/L
+    STOCKYIELD = "SY"  # Positions that may be eligible for Stock Yield. Potential for additional annualized income of 25.20 USD
+    TRANSFER = "T"  # Transfer
+
+
+@enum.unique
 class TradeType(enum.Enum):
     EXCHTRADE = "ExchTrade"
     TRADECANCEL = "TradeCancel"
@@ -378,7 +433,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     commissions: Optional[Decimal] = None
     other: Optional[Decimal] = None
     total: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     corpActionMtm: Optional[Decimal] = None
     dividends: Optional[Decimal] = None
 
@@ -789,7 +844,7 @@ class OpenPosition(FlexElement):
     issuer: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     originatingOrderID: Optional[str] = None
     originatingTransactionID: Optional[str] = None
     accruedInt: Optional[str] = None
@@ -823,29 +878,13 @@ class FxLot(FlexElement):
     closePrice: Optional[Decimal] = None
     value: Optional[Decimal] = None
     unrealizedPL: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     lotDescription: Optional[str] = None
     lotOpenDateTime: Optional[datetime.datetime] = None
     levelOfDetail: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
 
-
-#  Trade:  N.B. Can't select Symbol Summary, Asset Class, or Orders
-    #  tradeID
-    #  conid
-    #  reportDate
-    #  description
-    #  quantity
-    #  currency
-    #  netCash
-    #  origTradeID
-    #  notes  "Notes/Codes"
-
-    #  transactionID  N.B. this is not configurable through the web interface
-
-    #  tradeDate  ?? Date/Time ??  Trade Date ??
-    #  tradeTime
 
 @dataclass(frozen=True)
 class Trade(FlexElement):
@@ -1061,7 +1100,7 @@ class TradeConfirm(FlexElement):
     changeInQuantity: Optional[Decimal] = None
     traderID: Optional[str] = None
     isAPIOrder: Optional[bool] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     tax: Optional[Decimal] = None
     listingExchange: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
@@ -1224,7 +1263,7 @@ class TierInterestDetail(FlexElement):
     commoditiesInterest: Optional[Decimal] = None
     ibuklInterest: Optional[Decimal] = None
     totalInterest: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1262,7 +1301,7 @@ class HardToBorrowDetail(FlexElement):
     value: Optional[Decimal] = None
     borrowFeeRate: Optional[Decimal] = None
     borrowFee: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1332,7 +1371,7 @@ class Transfer(FlexElement):
     positionAmountInBase: Optional[Decimal] = None
     capitalGainsPnl: Optional[Decimal] = None
     cashTransfer: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     clientReference: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1440,7 +1479,7 @@ class CorporateAction(FlexElement):
     mtmPnl: Optional[Decimal] = None
     #  Effective 2010, CorporateAction has a `type` attribute
     type: Optional[Reorg] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     sedol: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1487,7 +1526,7 @@ class CashTransaction(FlexElement):
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     transactionID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     clientReference: Optional[str] = None
@@ -1523,7 +1562,7 @@ class ChangeInDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
@@ -1564,7 +1603,7 @@ class OpenDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
     sedol: Optional[str] = None
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
@@ -1608,7 +1647,7 @@ class SecurityInfo(FlexElement):
     issuer: Optional[str] = None
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
-    code: List[str] = field(default_factory=list)
+    code: List[Code] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

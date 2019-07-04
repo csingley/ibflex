@@ -274,6 +274,21 @@ def prep_sequence(value: str) -> Iterable[str]:
     return (v for v in value.split(sep) if v) if value != "" else []
 
 
+def prep_code_sequence(value: str) -> Iterable[Types.Code]:
+    """Split a code sequence string into its component codes.
+
+    Flex `notes` attribute is semicolon-delimited; other sequences use commas.
+
+    Empty string input interpreted as null data; returns empty list.
+    """
+    sep = ";" if ";" in value else ","
+    return (
+        Types.Code(v)
+        for v in value.split(sep)
+        if v
+    ) if value != "" else []
+
+
 ###############################################################################
 #  DATA CONVERTER FUNCTIONS
 ###############################################################################
@@ -330,6 +345,7 @@ convert_date = make_converter(datetime.date, prep=prep_date)
 convert_time = make_converter(datetime.time, prep=prep_time)
 convert_datetime = make_converter(datetime.datetime, prep=prep_datetime)
 convert_sequence = make_converter(list, prep=prep_sequence)
+convert_code_sequence = make_converter(list, prep=prep_code_sequence)
 
 
 def convert_enum(Type, value):
@@ -361,6 +377,7 @@ ATTRIB_CONVERTERS = {
     datetime.datetime: convert_datetime,
     Optional[datetime.datetime]: make_optional(convert_datetime),
     List[str]: convert_sequence,
+    List[Types.Code]: convert_code_sequence,
     #  HACK - once upon a time, <CorporateAction> had no `type` attribute,
     #  so we have to annotate its class attribute as optional.
     Optional[Types.Reorg]: functools.partial(

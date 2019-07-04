@@ -1028,7 +1028,7 @@ class ChangeInDividendAccrualTestCase(unittest.TestCase):
         self.assertEqual(instance.grossRate, decimal.Decimal("2.5"))
         self.assertEqual(instance.grossAmount, decimal.Decimal("33980"))
         self.assertEqual(instance.netAmount, decimal.Decimal("33980"))
-        self.assertEqual(instance.code, ["Po"])
+        self.assertEqual(instance.code, [Types.Code.POSTACCRUAL])
         self.assertEqual(instance.fromAcct, None)
         self.assertEqual(instance.toAcct, None)
 
