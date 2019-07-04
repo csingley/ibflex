@@ -20,7 +20,7 @@ TODO - need types for:
 
 __all__ = [
     "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType", "Reorg",
-    "OptionFate", "LongShort", "TransferType", "ToFrom", "InOut",
+    "OptionAction", "LongShort", "TransferType", "ToFrom", "InOut",
     "DeliveredReceived", "FlexElement", "FlexQueryResponse", "FlexStatement",
     "AccountInformation", "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
     "EquitySummaryByReportDateInBase", "MTDYTDPerformanceSummaryUnderlying",
@@ -184,10 +184,10 @@ class Reorg(enum.Enum):
 
 
 @enum.unique
-class OptionFate(enum.Enum):
-    ASSIGNMENT = "Assignment"
+class OptionAction(enum.Enum):
+    ASSIGN = "Assignment"
     EXERCISE = "Exercise"
-    EXPIRATION = "Expiration"
+    EXPIRE = "Expiration"
     SELL = "Sell"
 
 
@@ -1117,7 +1117,7 @@ class OptionEAE(FlexElement):
 
     Wrapped in (identically-named) <OptionEAE>
     """
-    transactionType: OptionFate
+    transactionType: OptionAction
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
