@@ -71,8 +71,8 @@ class Code(enum.Enum):
     CLOSING = "C"  # Closing Trade
     CASHDELIVERY = "CD"  # Cash Delivery
     COMPLEX = "CP"  # Complex Position
-    CANCELLED = "Ca"  # Cancelled
-    CORRECTED = "Co"  # Corrected Trade
+    CANCEL = "Ca"  # Cancelled
+    CORRECT = "Co"  # Corrected Trade
     CROSSING = "Cx"  # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
     ETF = "ETF"  # ETF Creation/Redemption
     EXPIRED = "Ep"  # Resulted from an Expired Position
