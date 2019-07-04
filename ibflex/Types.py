@@ -1,103 +1,5 @@
 # coding: utf-8
 """
-Must-have fields
-====
-FlexStatement:
-    AccountInformation
-
-AccountInformation:
-    accountId
-    currency
-
-SecurityInfo: N.B. this is not configurable through the web interface
-    conid
-    cusip
-    isin
-    symbol
-    description
-
-Trade:  N.B. Can't select Symbol Summary, Asset Class, or Orders
-    tradeID
-    conid
-    reportDate
-    description
-    quantity
-    currency
-    netCash
-    origTradeID
-    notes  "Notes/Codes"
-
-    preferably dateTime, otherwise tradeDate/tradeTime
-
-    transactionID  N.B. this is not configurable through the web interface
-
-
-TradeTransfer:
-    tradeID
-    tradeDate
-    tradeTime
-    description
-    conid
-    quantity
-    currency
-    netCash
-    reportDate
-    origTradeID
-    notes
-    transactionType
-    deliveredReceived
-    direction
-    brokerName
-    brokerAccount
-
-CashTransaction:
-    dateTime
-    transactionID
-    description
-    conid
-    type
-    currency
-    amount
-
-CorporateAction:
-    dateTime
-    description
-    conid
-    quantity
-    currency
-    proceeds
-    type
-    reportDate
-    code
-
-Transfer:
-    date
-    description
-    conid
-    quantity
-    direction
-    type
-    account
-
-OptionEAE:
-    conid
-    transactionType
-    date
-    description
-    quantity
-
-
-ChangeInDividendAccrual:
-    conid
-    payDate
-    code
-
-ConversionRate:
-    reportDate
-    fromCurrency
-    toCurrency
-    rate
-
 TODO - need types for:
     FdicInsuredDepositsByBank
     ComplexPositions
@@ -119,7 +21,7 @@ TODO - need types for:
 __all__ = [
     "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType",
     "Reorg", "OptionEAEType", "PositionSide", "TransferType",
-    "TradeTransferDirection", "TransferDirection", "DeliveredReceived",
+    "ToFrom", "InOut", "DeliveredReceived",
     "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
     "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
     "EquitySummaryByReportDateInBase", "MTDYTDPerformanceSummaryUnderlying",
@@ -242,7 +144,7 @@ class PositionSide(enum.Enum):
 
 
 @enum.unique
-class TradeTransferDirection(enum.Enum):
+class ToFrom(enum.Enum):
     TO = "To"
     FROM = "From"
 
@@ -254,7 +156,7 @@ class TransferType(enum.Enum):
 
 
 @enum.unique
-class TransferDirection(enum.Enum):
+class InOut(enum.Enum):
     IN = "IN"
     OUT = "OUT"
 
@@ -1221,7 +1123,7 @@ class TradeTransfer(FlexElement):
     """ Wrapped in <TradeTransfers> """
     transactionType: TradeType
     openCloseIndicator: OpenClose
-    direction: TradeTransferDirection
+    direction: ToFrom
     deliveredReceived: DeliveredReceived
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1407,7 +1309,7 @@ class SLBActivity(FlexElement):
 class Transfer(FlexElement):
     """ Wrapped in <Transfers> """
     type: TransferType
-    direction: TransferDirection
+    direction: InOut
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1455,7 +1357,7 @@ class Transfer(FlexElement):
 @dataclass(frozen=True)
 class UnsettledTransfer(FlexElement):
     """ Wrapped in <UnsettledTransfers> """
-    direction: TradeTransferDirection
+    direction: ToFrom
     accountId: Optional[str] = None
     currency: Optional[str] = None
     assetCategory: Optional[str] = None
