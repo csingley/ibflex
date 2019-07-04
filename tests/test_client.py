@@ -31,7 +31,7 @@ RESPONSE_FAIL = (
 FLEX_QUERY_RESPONSE = (
     '<FlexQueryResponse queryName="Test" type="AZ">'
     '<FlexStatements count="1">'
-    '<FlexStatement accountId="U666777" />'
+    '<FlexStatement accountId="U666777" fromDate="20070101" toDate="20071231" period="Foo" whenGenerated="20100505 12:30:45" />'
     '</FlexStatements>'
     '</FlexQueryResponse>'
 )
