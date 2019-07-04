@@ -19,20 +19,19 @@ TODO - need types for:
 """
 
 __all__ = [
-    "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType",
-    "Reorg", "OptionEAEType", "LongShort", "TransferType",
-    "ToFrom", "InOut", "DeliveredReceived",
-    "FlexElement", "FlexQueryResponse", "FlexStatement", "AccountInformation",
-    "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
+    "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType", "Reorg",
+    "OptionFate", "LongShort", "TransferType", "ToFrom", "InOut",
+    "DeliveredReceived", "FlexElement", "FlexQueryResponse", "FlexStatement",
+    "AccountInformation", "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
     "EquitySummaryByReportDateInBase", "MTDYTDPerformanceSummaryUnderlying",
     "CashReportCurrency", "FIFOPerformanceSummaryUnderlying",
     "NetStockPosition", "UnsettledTransfer", "UnbundledCommissionDetail",
     "StatementOfFundsLine", "ChangeInPositionValue", "OpenPosition", "FxLot",
     "Trade", "TradeConfirm", "OptionEAE", "TradeTransfer",
-    "TierInterestDetail", "HardToBorrowDetail",
-    "InterestAccrualsCurrency", "SLBActivity", "Transfer", "CorporateAction",
-    "CashTransaction", "ChangeInDividendAccrual", "OpenDividendAccrual",
-    "SecurityInfo", "ConversionRate", "PriorPeriodPosition",
+    "TierInterestDetail", "HardToBorrowDetail", "InterestAccrualsCurrency",
+    "SLBActivity", "Transfer", "CorporateAction", "CashTransaction",
+    "ChangeInDividendAccrual", "OpenDividendAccrual", "SecurityInfo",
+    "ConversionRate", "PriorPeriodPosition",
 ]
 
 
@@ -130,7 +129,7 @@ class Reorg(enum.Enum):
 
 
 @enum.unique
-class OptionEAEType(enum.Enum):
+class OptionFate(enum.Enum):
     ASSIGNMENT = "Assignment"
     EXERCISE = "Exercise"
     EXPIRATION = "Expiration"
@@ -1079,7 +1078,7 @@ class OptionEAE(FlexElement):
 
     Wrapped in (identically-named) <OptionEAE>
     """
-    transactionType: OptionEAEType
+    transactionType: OptionFate
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None

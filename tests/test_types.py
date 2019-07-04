@@ -654,7 +654,7 @@ class OptionEAETestCase(unittest.TestCase):
         self.assertEqual(instance.putCall, "C")
         self.assertEqual(instance.principalAdjustFactor, None)
         self.assertEqual(instance.date, datetime.date(2011, 8, 5))
-        self.assertEqual(instance.transactionType, Types.OptionEAEType.ASSIGNMENT)
+        self.assertEqual(instance.transactionType, Types.OptionFate.ASSIGNMENT)
         self.assertEqual(instance.quantity, decimal.Decimal("20"))
         self.assertEqual(instance.tradePrice, decimal.Decimal("0.0000"))
         self.assertEqual(instance.markPrice, decimal.Decimal("0.0000"))
