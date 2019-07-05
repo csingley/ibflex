@@ -269,6 +269,16 @@ class FlexQueryResponse(FlexElement):
     type: str
     FlexStatements: Tuple["FlexStatement", ...]
 
+    def __repr__(self):
+        repr = (
+            f"{type(self).__name__}("
+            f"queryName={self.queryName!r}, "
+            f"type={self.type!r}, "
+            f"len(FlexStatements)={len(self.FlexStatements)}"
+            ")"
+        )
+        return repr
+
 
 @dataclass(frozen=True)
 class FlexStatement(FlexElement):
@@ -332,9 +342,12 @@ class FlexStatement(FlexElement):
 
     def __repr__(self):
         repr = (
-            f"{type(self).__name__}(accountId={self.accountId}, "
-            f"fromDate={self.fromDate}, toDate={self.toDate}, period={self.period}, "
-            f"whenGenerated={self.whenGenerated})"
+            f"{type(self).__name__}("
+            f"accountId={self.accountId!r}, "
+            f"fromDate={self.fromDate!r}, "
+            f"toDate={self.toDate!r}, "
+            f"period={self.period!r}, "
+            f"whenGenerated={self.whenGenerated!r}"
         )
 
         sequences = (
@@ -351,7 +364,6 @@ class FlexStatement(FlexElement):
                 repr += seq
         repr += ")"
         return repr
-
 
 
 @dataclass(frozen=True)
@@ -884,7 +896,6 @@ class OpenPosition(FlexElement):
     fifoPnlUnrealized: Optional[decimal.Decimal] = None
     levelOfDetail: Optional[str] = None
     openDateTime: Optional[datetime.datetime] = None
-    holdingPeriodDateTime: Optional[datetime.datetime] = None
     securityIDType: Optional[str] = None
     issuer: Optional[str] = None
     underlyingConid: Optional[str] = None
@@ -1265,7 +1276,7 @@ class TradeTransfer(FlexElement):
     clearingFirmID: Optional[str] = None
     transactionID: Optional[str] = None
     openDateTime: Optional[datetime.datetime] = None
-    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None  # For wash sales
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
     levelOfDetail: Optional[str] = None
