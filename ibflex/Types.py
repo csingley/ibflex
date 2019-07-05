@@ -69,7 +69,7 @@ import decimal
 from decimal import Decimal
 import enum
 from dataclasses import dataclass
-from typing import Tuple, Optional
+from typing import Tuple, Optional, _GenericAlias, _VariadicGenericAlias
 
 
 ###############################################################################
@@ -331,11 +331,27 @@ class FlexStatement(FlexElement):
     HKIPOOpenSubscriptions: Tuple = ()  # TODO
 
     def __repr__(self):
-        return (
+        repr = (
             f"{type(self).__name__}(accountId={self.accountId}, "
             f"fromDate={self.fromDate}, toDate={self.toDate}, period={self.period}, "
             f"whenGenerated={self.whenGenerated})"
         )
+
+        sequences = (
+            (k, getattr(self, k)) for k, v in self.__annotations__.items()
+            if type(v) in (_GenericAlias, _VariadicGenericAlias)
+            and v.__origin__ is tuple
+        )
+        nonempty_sequences = ", ".join(
+            f"len({name})={len(value)}" for (name, value) in sequences if value
+        )
+        if nonempty_sequences:
+            repr += ", "
+            for seq in nonempty_sequences:
+                repr += seq
+        repr += ")"
+        return repr
+
 
 
 @dataclass(frozen=True)
