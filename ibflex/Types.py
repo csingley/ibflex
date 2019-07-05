@@ -2,8 +2,14 @@
 """Python data types for IB Flex format XML data.
 
 These class definitions are introspected by ibflex.parser to type-convert
-IB data.  They're dataclasses, made immutable by passing `Frozen=True` to t
-the class  decorator.  Class attributes are annotated with PEP 484 type hints.
+IB data.  They're dataclasses, made immutable by passing `Frozen=True` to the
+class  decorator.  Class attributes are annotated with PEP 484 type hints.
+
+Except for the top-level XML elements, i.e. <FlexQueryResponse>,
+<FlexStatements>, and <FlexStatement>, the Flex format cleanly differentiates
+between data-bearing elements and container elements.  Data elements hold
+their values in XML element attributes; container elements are sequences
+of child elements (usually data elements, but sometimes other containers).
 
 XML element attributes are represented by class attributes hinted with the
 Python type to which their values should be converted.  Almost all are marked
@@ -15,7 +21,7 @@ Specifically defined enums are an exception; the parser handles missing values
 for them, so you shouldn't specify a default value.  The enums therefore need
 to come first in the class definition to avoid offending dataclass.
 
-XML container types are represented as a `List` of their contained children.
+XML container elements are represented as a `List` of their contained children.
 These are also marked `Optional`; the default value should be an empty list,
 which necessitates the use of `dataclass.field`.  See the stdlib documentation.
 
