@@ -922,7 +922,7 @@ class Trade(FlexElement):
     netCash: Optional[Decimal] = None
     netCashInBase: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: List[str] = field(default_factory=list) # separator = ";"
+    notes: List[Code] = field(default_factory=list) # separator = ";"
     cost: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     origTradePrice: Optional[Decimal] = None
@@ -1057,7 +1057,7 @@ class TradeConfirm(FlexElement):
     ibCommissionCurrency: Optional[str] = None
     netCash: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: List[str] = field(default_factory=list)  # separator = ";"
+    notes: List[Code] = field(default_factory=list)  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
@@ -1186,7 +1186,7 @@ class TradeTransfer(FlexElement):
     ibCommission: Optional[Decimal] = None
     ibCommissionCurrency: Optional[str] = None
     closePrice: Optional[Decimal] = None
-    notes: List[str] = field(default_factory=list)  # separator = ";"
+    notes: List[Code] = field(default_factory=list)  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
