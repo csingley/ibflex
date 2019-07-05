@@ -34,11 +34,11 @@ class AccountInformationTestCase(unittest.TestCase):
         self.assertEqual(instance.customerType, "Partnership")
         self.assertEqual(
             instance.accountCapabilities,
-            ["Portfolio Margin", "IBPrime"]
+            ("Portfolio Margin", "IBPrime")
         )
         self.assertEqual(
             instance.tradingPermissions,
-            ["Stocks", "Options", "Warrants", "Bonds", "Forex", "Stock Borrow"]
+            ("Stocks", "Options", "Warrants", "Bonds", "Forex", "Stock Borrow")
         )
         self.assertEqual(instance.dateOpened, datetime.date(2009, 6, 25))
         self.assertEqual(instance.dateFunded, datetime.date(2009, 7, 13))
@@ -78,7 +78,7 @@ class FlexQueryResponseTestCase(unittest.TestCase):
         self.assertEqual(instance.queryName, 'ibflex test')
         self.assertEqual(instance.type, 'AF')
 
-        self.assertIsInstance(instance.FlexStatements, list)
+        self.assertIsInstance(instance.FlexStatements, tuple)
         self.assertEqual(len(instance.FlexStatements), 1)
         self.assertIsInstance(instance.FlexStatements[0], Types.FlexStatement)
 
@@ -480,7 +480,7 @@ class OpenPositionTestCase(unittest.TestCase):
         self.assertEqual(instance.levelOfDetail, "LOT")
         self.assertEqual(instance.openDateTime, datetime.datetime(2011, 8, 8, 13, 44, 13))
         self.assertEqual(instance.holdingPeriodDateTime,  datetime.datetime(2011, 8, 8, 13, 44, 13))
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.originatingOrderID, "308163094")
         self.assertEqual(instance.originatingTransactionID, "2368917073")
         self.assertEqual(instance.accruedInt, None)
@@ -512,7 +512,7 @@ class FxLotTestCase(unittest.TestCase):
         self.assertEqual(instance.closePrice, decimal.Decimal("0.94148"))
         self.assertEqual(instance.value, decimal.Decimal("0.000011"))
         self.assertEqual(instance.unrealizedPL, decimal.Decimal("-0.000001"))
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.lotDescription, "CASH: -0.0786 USD.CAD")
         self.assertEqual(instance.lotOpenDateTime, datetime.datetime(2011, 1, 25, 18, 4, 27))
         self.assertEqual(instance.levelOfDetail, "LOT")
@@ -582,7 +582,7 @@ class TradeTestCase(unittest.TestCase):
         self.assertEqual(instance.netCash, decimal.Decimal("0"))
         self.assertEqual(instance.closePrice, decimal.Decimal("29.130974"))
         self.assertEqual(instance.openCloseIndicator, Types.OpenClose.CLOSE)
-        self.assertEqual(instance.notes, ["A", ])
+        self.assertEqual(instance.notes, (Types.Code.ASSIGNMENT, ))
         self.assertEqual(instance.cost, decimal.Decimal("8398.81122"))
         self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("0"))
         self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
@@ -654,7 +654,7 @@ class OptionEAETestCase(unittest.TestCase):
         self.assertEqual(instance.putCall, "C")
         self.assertEqual(instance.principalAdjustFactor, None)
         self.assertEqual(instance.date, datetime.date(2011, 8, 5))
-        self.assertEqual(instance.transactionType, Types.OptionFate.ASSIGNMENT)
+        self.assertEqual(instance.transactionType, Types.OptionAction.ASSIGN)
         self.assertEqual(instance.quantity, decimal.Decimal("20"))
         self.assertEqual(instance.tradePrice, decimal.Decimal("0.0000"))
         self.assertEqual(instance.markPrice, decimal.Decimal("0.0000"))
@@ -731,7 +731,7 @@ class TradeTransferTestCase(unittest.TestCase):
         self.assertEqual(instance.netCash, decimal.Decimal("-31011"))
         self.assertEqual(instance.closePrice, decimal.Decimal("3.02"))
         self.assertEqual(instance.openCloseIndicator, Types.OpenClose.OPEN)
-        self.assertEqual(instance.notes, [])
+        self.assertEqual(instance.notes, ())
         self.assertEqual(instance.cost, decimal.Decimal("31011"))
         self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("0"))
         self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
@@ -798,7 +798,7 @@ class CashTransactionTestCase(unittest.TestCase):
         self.assertEqual(instance.amount, decimal.Decimal("27800"))
         self.assertEqual(instance.type, Types.CashAction.DIVIDEND)
         self.assertEqual(instance.tradeID, None)
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.transactionID, "5767420360")
         self.assertEqual(instance.reportDate, datetime.date(2015,10, 6))
         self.assertEqual(instance.clientReference, None)
@@ -931,7 +931,7 @@ class TransferTestCase(unittest.TestCase):
         self.assertEqual(instance.pnlAmountInBase, decimal.Decimal("0"))
         self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
         self.assertEqual(instance.cashTransfer, decimal.Decimal("0"))
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.clientReference, None)
 
 
@@ -979,7 +979,7 @@ class CorporateActionTestCase(unittest.TestCase):
         self.assertEqual(instance.quantity, decimal.Decimal("-1000"))
         self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("10315"))
         self.assertEqual(instance.mtmPnl, decimal.Decimal("12490"))
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.type, Types.Reorg.MERGER)
 
 
@@ -1028,7 +1028,7 @@ class ChangeInDividendAccrualTestCase(unittest.TestCase):
         self.assertEqual(instance.grossRate, decimal.Decimal("2.5"))
         self.assertEqual(instance.grossAmount, decimal.Decimal("33980"))
         self.assertEqual(instance.netAmount, decimal.Decimal("33980"))
-        self.assertEqual(instance.code, [Types.Code.POSTACCRUAL])
+        self.assertEqual(instance.code, (Types.Code.POSTACCRUAL, ))
         self.assertEqual(instance.fromAcct, None)
         self.assertEqual(instance.toAcct, None)
 
@@ -1077,7 +1077,7 @@ class OpenDividendAccrualTestCase(unittest.TestCase):
         self.assertEqual(instance.grossRate, decimal.Decimal("0.13"))
         self.assertEqual(instance.grossAmount, decimal.Decimal("3299.79"))
         self.assertEqual(instance.netAmount, decimal.Decimal("3299.79"))
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
         self.assertEqual(instance.fromAcct, None)
         self.assertEqual(instance.toAcct, None)
 
@@ -1112,7 +1112,7 @@ class SecurityInfoTestCase(unittest.TestCase):
         self.assertEqual(instance.principalAdjustFactor, decimal.Decimal("1"))
         self.assertEqual(instance.maturity, None)
         self.assertEqual(instance.issueDate, None)
-        self.assertEqual(instance.code, [])
+        self.assertEqual(instance.code, ())
 
 
 class ConversionRateTestCase(unittest.TestCase):

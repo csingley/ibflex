@@ -14,16 +14,18 @@ of child elements (usually data elements, but sometimes other containers).
 XML element attributes are represented by class attributes hinted with the
 Python type to which their values should be converted.  Almost all are marked
 `Optional`, since Flex report configuration allows any of them to be included
-or omitted individually.  Default value is `None` unless the attribute is a
-List type.
+or omitted individually.  Default value is `None` for a single value, or an
+empty tuple for a sequence.
 
 Specifically defined enums are an exception; the parser handles missing values
 for them, so you shouldn't specify a default value.  The enums therefore need
 to come first in the class definition to avoid offending dataclass.
 
-XML container elements are represented as a `List` of their contained children.
-These are also marked `Optional`; the default value should be an empty list,
-which necessitates the use of `dataclass.field`.  See the stdlib documentation.
+Some data elements have XML attributes whose values are sequences delimited by
+commas or semicolons.  These are represented as by class attributes hinted as
+`Tuple` of their sequence item type (i.e. `str` or an Enum type).
+
+XML container elements are represented as `Tuple` of contained child type.
 
 TODO - need types for:
     FdicInsuredDepositsByBank
@@ -64,8 +66,8 @@ import datetime
 import decimal
 from decimal import Decimal
 import enum
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import Tuple, Optional
 
 
 ###############################################################################
@@ -263,7 +265,7 @@ class FlexQueryResponse(FlexElement):
     """ Root element """
     queryName: str
     type: str
-    FlexStatements: List["FlexStatement"]
+    FlexStatements: Tuple["FlexStatement"]
 
 
 @dataclass(frozen=True)
@@ -275,56 +277,56 @@ class FlexStatement(FlexElement):
     period: str
     whenGenerated: datetime.datetime
     AccountInformation: Optional["_AccountInformation"] = None
-    CashReport: List["CashReportCurrency"] = field(default_factory=list)
-    MTDYTDPerformanceSummary: List["MTDYTDPerformanceSummaryUnderlying"] = field(default_factory=list)
+    CashReport: Tuple["CashReportCurrency"] = ()
+    MTDYTDPerformanceSummary: Tuple["MTDYTDPerformanceSummaryUnderlying"] = ()
     ChangeInNAV: Optional["_ChangeInNAV"] = None
-    MTMPerformanceSummaryInBase: List["MTMPerformanceSummaryUnderlying"] = field(default_factory=list)
-    EquitySummaryInBase: List["EquitySummaryByReportDateInBase"] = field(default_factory=list)
-    FIFOPerformanceSummaryInBase: List["FIFOPerformanceSummaryUnderlying"] = field(default_factory=list)
-    FdicInsuredDepositsByBank: List = field(default_factory=list)  # TODO
-    StmtFunds: List["StatementOfFundsLine"] = field(default_factory=list)
-    ChangeInPositionValues: List["ChangeInPositionValue"] = field(default_factory=list)
-    OpenPositions: List["OpenPosition"] = field(default_factory=list)
-    NetStockPositionSummary: List["NetStockPosition"] = field(default_factory=list)
-    ComplexPositions: List = field(default_factory=list)  # TODO
-    FxPositions: List["FxLot"] = field(default_factory=list)  # N.B. FXLot wrapped in FxLots
-    Trades: List["Trade"] = field(default_factory=list)
-    HKIPOSubscriptionActivity: List = field(default_factory=list)  # TODO
-    TradeConfirms: List["TradeConfirm"] = field(default_factory=list)
-    TransactionTaxes: List = field(default_factory=list)
-    OptionEAE: List["_OptionEAE"] = field(default_factory=list)
+    MTMPerformanceSummaryInBase: Tuple["MTMPerformanceSummaryUnderlying"] = ()
+    EquitySummaryInBase: Tuple["EquitySummaryByReportDateInBase"] = ()
+    FIFOPerformanceSummaryInBase: Tuple["FIFOPerformanceSummaryUnderlying"] = ()
+    FdicInsuredDepositsByBank: Tuple = ()  # TODO
+    StmtFunds: Tuple["StatementOfFundsLine"] = ()
+    ChangeInPositionValues: Tuple["ChangeInPositionValue"] = ()
+    OpenPositions: Tuple["OpenPosition"] = ()
+    NetStockPositionSummary: Tuple["NetStockPosition"] = ()
+    ComplexPositions: Tuple = ()  # TODO
+    FxPositions: Tuple["FxLot"] = ()  # N.B. FXLot wrapped in FxLots
+    Trades: Tuple["Trade"] = ()
+    HKIPOSubscriptionActivity: Tuple = ()  # TODO
+    TradeConfirms: Tuple["TradeConfirm"] = ()
+    TransactionTaxes: Tuple = ()
+    OptionEAE: Tuple["_OptionEAE"] = ()
     # Not a typo - they really spell it "Excercises"
-    PendingExcercises: List = field(default_factory=list)  # TODO
-    TradeTransfers: List["TradeTransfer"] = field(default_factory=list)
-    FxTransactions: List = field(default_factory=list)  # TODO
-    UnbookedTrades: List = field(default_factory=list)  # TODO
-    RoutingCommissions: List = field(default_factory=list)  # TODO
-    IBGNoteTransactions: List = field(default_factory=list)  # TODO
-    UnsettledTransfers: List["UnsettledTransfer"] = field(default_factory=list)
-    UnbundledCommissionDetails: List["UnbundledCommissionDetail"] = field(default_factory=list)
-    Adjustments: List = field(default_factory=list)  # TODO
-    PriorPeriodPositions: List["PriorPeriodPosition"] = field(default_factory=list)
-    CorporateActions: List["CorporateAction"] = field(default_factory=list)
-    ClientFees: List["ClientFee"] = field(default_factory=list)
-    ClientFeesDetail: List["_ClientFeesDetail"] = field(default_factory=list)
-    DebitCardActivities: List = field(default_factory=list)  # TODO
-    SoftDollars: List = field(default_factory=list)  # TODO
-    CashTransactions: List["CashTransaction"] = field(default_factory=list)
-    SalesTaxes: List = field(default_factory=list)  # TODO
-    CFDCharges: List = field(default_factory=list)  # TODO
-    InterestAccruals: List["InterestAccrualsCurrency"] = field(default_factory=list)
-    TierInterestDetails: List["TierInterestDetail"] = field(default_factory=list)
-    HardToBorrowDetails: List["HardToBorrowDetail"] = field(default_factory=list)
-    HardToBorrowMarkupDetails: List = field(default_factory=list)
-    SLBOpenContracts: List = field(default_factory=list)  # TODO
-    SLBActivities: List["SLBActivity"] = field(default_factory=list)
-    SLBFees: List = field(default_factory=list)
-    Transfers: List["Transfer"] = field(default_factory=list)
-    ChangeInDividendAccruals: List["_ChangeInDividendAccrual"] = field(default_factory=list)
-    OpenDividendAccruals: List["OpenDividendAccrual"] = field(default_factory=list)
-    SecuritiesInfo: List["SecurityInfo"] = field(default_factory=list)
-    ConversionRates: List["ConversionRate"] = field(default_factory=list)
-    HKIPOOpenSubscriptions: List = field(default_factory=list)  # TODO
+    PendingExcercises: Tuple = ()  # TODO
+    TradeTransfers: Tuple["TradeTransfer"] = ()
+    FxTransactions: Tuple = ()  # TODO
+    UnbookedTrades: Tuple = ()  # TODO
+    RoutingCommissions: Tuple = ()  # TODO
+    IBGNoteTransactions: Tuple = ()  # TODO
+    UnsettledTransfers: Tuple["UnsettledTransfer"] = ()
+    UnbundledCommissionDetails: Tuple["UnbundledCommissionDetail"] = ()
+    Adjustments: Tuple = ()  # TODO
+    PriorPeriodPositions: Tuple["PriorPeriodPosition"] = ()
+    CorporateActions: Tuple["CorporateAction"] = ()
+    ClientFees: Tuple["ClientFee"] = ()
+    ClientFeesDetail: Tuple["_ClientFeesDetail"] = ()
+    DebitCardActivities: Tuple = ()  # TODO
+    SoftDollars: Tuple = ()  # TODO
+    CashTransactions: Tuple["CashTransaction"] = ()
+    SalesTaxes: Tuple = ()  # TODO
+    CFDCharges: Tuple = ()  # TODO
+    InterestAccruals: Tuple["InterestAccrualsCurrency"] = ()
+    TierInterestDetails: Tuple["TierInterestDetail"] = ()
+    HardToBorrowDetails: Tuple["HardToBorrowDetail"] = ()
+    HardToBorrowMarkupDetails: Tuple = ()
+    SLBOpenContracts: Tuple = ()  # TODO
+    SLBActivities: Tuple["SLBActivity"] = ()
+    SLBFees: Tuple = ()
+    Transfers: Tuple["Transfer"] = ()
+    ChangeInDividendAccruals: Tuple["_ChangeInDividendAccrual"] = ()
+    OpenDividendAccruals: Tuple["OpenDividendAccrual"] = ()
+    SecuritiesInfo: Tuple["SecurityInfo"] = ()
+    ConversionRates: Tuple["ConversionRate"] = ()
+    HKIPOOpenSubscriptions: Tuple = ()  # TODO
 
     def __repr__(self):
         return (
@@ -344,8 +346,8 @@ class AccountInformation(FlexElement):
     name: Optional[str] = None
     accountType: Optional[str] = None
     customerType: Optional[str] = None
-    accountCapabilities: List[str] = field(default_factory=list)
-    tradingPermissions: List[str] = field(default_factory=list)
+    accountCapabilities: Tuple[str] = ()
+    tradingPermissions: Tuple[str] = ()
     registeredRepName: Optional[str] = None
     registeredRepPhone: Optional[str] = None
     dateOpened: Optional[datetime.date] = None
@@ -458,7 +460,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     commissions: Optional[Decimal] = None
     other: Optional[Decimal] = None
     total: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     corpActionMtm: Optional[Decimal] = None
     dividends: Optional[Decimal] = None
 
@@ -869,7 +871,7 @@ class OpenPosition(FlexElement):
     issuer: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     originatingOrderID: Optional[str] = None
     originatingTransactionID: Optional[str] = None
     accruedInt: Optional[str] = None
@@ -903,7 +905,7 @@ class FxLot(FlexElement):
     closePrice: Optional[Decimal] = None
     value: Optional[Decimal] = None
     unrealizedPL: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     lotDescription: Optional[str] = None
     lotOpenDateTime: Optional[datetime.datetime] = None
     levelOfDetail: Optional[str] = None
@@ -947,7 +949,7 @@ class Trade(FlexElement):
     netCash: Optional[Decimal] = None
     netCashInBase: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: List[Code] = field(default_factory=list) # separator = ";"
+    notes: Tuple[Code] = () # separator = ";"
     cost: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     origTradePrice: Optional[Decimal] = None
@@ -1082,7 +1084,7 @@ class TradeConfirm(FlexElement):
     ibCommissionCurrency: Optional[str] = None
     netCash: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: List[Code] = field(default_factory=list)  # separator = ";"
+    notes: Tuple[Code] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
@@ -1125,7 +1127,7 @@ class TradeConfirm(FlexElement):
     changeInQuantity: Optional[Decimal] = None
     traderID: Optional[str] = None
     isAPIOrder: Optional[bool] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     tax: Optional[Decimal] = None
     listingExchange: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
@@ -1211,7 +1213,7 @@ class TradeTransfer(FlexElement):
     ibCommission: Optional[Decimal] = None
     ibCommissionCurrency: Optional[str] = None
     closePrice: Optional[Decimal] = None
-    notes: List[Code] = field(default_factory=list)  # separator = ";"
+    notes: Tuple[Code] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
@@ -1288,7 +1290,7 @@ class TierInterestDetail(FlexElement):
     commoditiesInterest: Optional[Decimal] = None
     ibuklInterest: Optional[Decimal] = None
     totalInterest: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1326,7 +1328,7 @@ class HardToBorrowDetail(FlexElement):
     value: Optional[Decimal] = None
     borrowFeeRate: Optional[Decimal] = None
     borrowFee: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1396,7 +1398,7 @@ class Transfer(FlexElement):
     positionAmountInBase: Optional[Decimal] = None
     capitalGainsPnl: Optional[Decimal] = None
     cashTransfer: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     clientReference: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1504,7 +1506,7 @@ class CorporateAction(FlexElement):
     mtmPnl: Optional[Decimal] = None
     #  Effective 2010, CorporateAction has a `type` attribute
     type: Optional[Reorg] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     sedol: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1551,7 +1553,7 @@ class CashTransaction(FlexElement):
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     transactionID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     clientReference: Optional[str] = None
@@ -1587,7 +1589,7 @@ class ChangeInDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
@@ -1628,7 +1630,7 @@ class OpenDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
     sedol: Optional[str] = None
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
@@ -1672,7 +1674,7 @@ class SecurityInfo(FlexElement):
     issuer: Optional[str] = None
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
-    code: List[Code] = field(default_factory=list)
+    code: Tuple[Code] = ()
 
 
 @dataclass(frozen=True)

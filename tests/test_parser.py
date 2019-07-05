@@ -19,7 +19,7 @@ class ParseElementTestCase(unittest.TestCase):
     Everything else goes to parse_data_element().
     """
     def testFlexStatements(self, mock_parse_data, mock_parse_container):
-        mock_parse_container.return_value = sentinel.LIST
+        mock_parse_container.return_value = sentinel.TUPLE
         mock_parse_data.return_value = sentinel.FLEX_ELEMENT
         #  Elements without attributes get routed to parse_element_container()
 
@@ -35,17 +35,17 @@ class ParseElementTestCase(unittest.TestCase):
         ET.SubElement(elem, "FooBar")
         output = parser.parse_element(elem)
         mock_parse_container.assert_called_with(elem)
-        self.assertEqual(output, sentinel.LIST)
+        self.assertEqual(output, sentinel.TUPLE)
 
         #  <FlexStatements> missing count throws an FlexParserError.
         elem = ET.Element("FlexStatements")
         with self.assertRaises(parser.FlexParserError):
             parser.parse_element(elem)
 
-        # Empty <FlexStatements> is legal; returns an empty list.
+        # Empty <FlexStatements> is legal; returns an empty tuple.
         elem = ET.Element("FlexStatements", attrib={"count": "0"})
         output = parser.parse_element(elem)
-        self.assertEqual(output, sentinel.LIST)
+        self.assertEqual(output, sentinel.TUPLE)
 
         # <FlexStatements> count attr must match # of contained elements
         elem = ET.Element("FlexStatements", attrib={"count": "2"})
@@ -54,7 +54,7 @@ class ParseElementTestCase(unittest.TestCase):
             parser.parse_element(elem)
 
     def testEmptyAttributes(self, mock_parse_data, mock_parse_container):
-        mock_parse_container.return_value = sentinel.LIST
+        mock_parse_container.return_value = sentinel.TUPLE
         mock_parse_data.return_value = sentinel.FLEX_ELEMENT
 
         attrib = {"foo": "bar"}
@@ -62,7 +62,7 @@ class ParseElementTestCase(unittest.TestCase):
         elem0 = ET.Element("FlexStatement")
         output0 = parser.parse_element(elem0)
         mock_parse_container.assert_called_with(elem0)
-        self.assertEqual(output0, sentinel.LIST)
+        self.assertEqual(output0, sentinel.TUPLE)
 
         elem1 = ET.Element("FlexStatement", attrib=attrib)
         output1 = parser.parse_element(elem1)
@@ -80,10 +80,10 @@ class ParseElementContainerTestCase(unittest.TestCase):
 
         mock_parse_data_element.side_effect = range(10)
         output = parser.parse_element_container(elem)
-        self.assertEqual(output, [0, 1])
+        self.assertEqual(output, (0, 1))
 
-        #  Sanity check: returned list elements of different types raise error.
-        mock_parse_data_element.side_effect = [0, "1"]
+        #  Sanity check: returned tuple elements of different types raise error.
+        mock_parse_data_element.side_effect = (0, "1")
 
         with self.assertRaises(parser.FlexParserError):
             parser.parse_element_container(elem)
@@ -93,10 +93,10 @@ class ParseElementContainerTestCase(unittest.TestCase):
         """
         mock_parse_data_element.return_value = sentinel.FLEX_ELEMENT
 
-        #  <FxPositions> with no children returns an empty list
+        #  <FxPositions> with no children returns an empty tuple
         elem = ET.Element("FxPositions")
         output = parser.parse_element_container(elem)
-        self.assertEqual(output, [])
+        self.assertEqual(output, ())
 
         #  <FxPositions> with one <FxLots> child returns parse_data_element()
         #  for each <FxLot> grandchild.
@@ -106,17 +106,17 @@ class ParseElementContainerTestCase(unittest.TestCase):
         ET.SubElement(child, "Baz")
 
         output = parser.parse_element_container(elem)
-        self.assertEqual(output, [sentinel.FLEX_ELEMENT]*3)
+        self.assertEqual(output, (sentinel.FLEX_ELEMENT, )*3)
 
         #  FxPositions with multiple <FxLots> children concatenates all
-        #  <FxLot> grandchildren into a flat list.
+        #  <FxLot> grandchildren into a flat tuple.
         sibling = ET.SubElement(elem, "Bar")
         ET.SubElement(sibling, "Baz")
         ET.SubElement(sibling, "Baz")
         ET.SubElement(sibling, "Baz")
 
         output = parser.parse_element_container(elem)
-        self.assertEqual(output, [sentinel.FLEX_ELEMENT]*6)
+        self.assertEqual(output, (sentinel.FLEX_ELEMENT, )*6)
 
 
 class ParseDataElementTestCase(unittest.TestCase):
@@ -136,7 +136,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
             datetime: datetime.datetime
             date: datetime.date
             time: datetime.time
-            sequence: typing.List[str]
+            sequence: typing.Tuple[str]
 
         #  Return (attr_name, type-converted value)
 
@@ -253,11 +253,11 @@ class ParseElementAttrTestCase(unittest.TestCase):
             parser.parse_element_attr(TestClass, "time", ""),
 
     def testSequence(self):
-        """parse_element_attr(): Sequence is always converted to list."""
+        """parse_element_attr(): Sequence is always converted to tuple."""
 
         class TestClass:
             foo: str
-            sequence: typing.List[str]
+            sequence: typing.Tuple[str]
 
         self.assertEqual(
             parser.parse_element_attr(TestClass, "foo", "A,B,C"),
@@ -265,13 +265,13 @@ class ParseElementAttrTestCase(unittest.TestCase):
         )
         self.assertEqual(
             parser.parse_element_attr(TestClass, "sequence", "A,B,C"),
-            ("sequence", ["A", "B", "C"])
+            ("sequence", ("A", "B", "C"))
         )
 
-        # Sequence null data parses as empty list
+        # Sequence null data parses as empty tuple
         self.assertEqual(
             parser.parse_element_attr(TestClass, "sequence", ""),
-            ("sequence", [])
+            ("sequence", ())
         )
 
     def testEnum(self):
@@ -433,14 +433,14 @@ class ConverterFunctionTestCase(unittest.TestCase):
     def testConvertSequence(self):
         """String sequences can be comma- or semicolon-delimited.
         """
-        self.assertEqual(parser.convert_sequence("Foo,Bar"), ["Foo", "Bar"])
-        self.assertEqual(parser.convert_sequence("Foo;Bar"), ["Foo", "Bar"])
+        self.assertEqual(parser.convert_sequence("Foo,Bar"), ("Foo", "Bar"))
+        self.assertEqual(parser.convert_sequence("Foo;Bar"), ("Foo", "Bar"))
 
-        #  Single element (undelimited) still gets converted to list
-        self.assertEqual(parser.convert_sequence("Foobar"), ["Foobar"])
+        #  Single element (undelimited) still gets converted to tuple
+        self.assertEqual(parser.convert_sequence("Foobar"), ("Foobar", ))
 
-        #  Empty string returns empty list.
-        self.assertEqual(parser.convert_sequence(""), [])
+        #  Empty string returns empty tuple.
+        self.assertEqual(parser.convert_sequence(""), ())
 
     def testConvertEnum(self):
         """convert_enum() looks up by value not name.

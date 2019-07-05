@@ -13,7 +13,7 @@ import datetime
 import decimal
 import itertools
 import functools
-from typing import List, Tuple, Union, Optional, Any, Callable, Iterable
+from typing import Tuple, Union, Optional, Any, Callable, Iterable
 
 from ibflex import Types, utils
 
@@ -24,7 +24,7 @@ class FlexParserError(Exception):
 
 AttributeType = Union[
     str, int, bool, decimal.Decimal, datetime.date, datetime.time,
-    datetime.datetime, enum.Enum, List[str], None,
+    datetime.datetime, enum.Enum, Tuple[str], None,
 ]
 """ Possible type annotations for a FlexElement class attribute. """
 
@@ -50,7 +50,7 @@ def parse(source) -> Types.FlexQueryResponse:
 
 def parse_element(
     elem: ET.Element
-) -> Union[Types.FlexElement, List[Types.FlexElement]]:
+) -> Union[Types.FlexElement, Tuple[Types.FlexElement]]:
     """Distinguish XML data element from container element; dispatch accordingly.
 
     Flex format stores data as XML element attributes, while container elements
@@ -78,21 +78,21 @@ def parse_element(
     return parse_data_element(elem)
 
 
-def parse_element_container(elem: ET.Element) -> List[Types.FlexElement]:
-    """Parse XML element container into list of FlexElement subclass instances.
+def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement]:
+    """Parse XML element container into FlexElement subclass instances.
     """
     tag = elem.tag
 
     if tag == "FxPositions":
         #  <FxPositions> contains an <FxLots> wrapper per currency.
         #  Element structure here is <FxPositions><FxLots><FxLot /></FxLots><FxLots><FxLot /></FxLots></FxPositions>
-        #  Flatten the nesting to create FxPositions as a list of FxLots
-        fxlots = [parse_element_container(child) for child in elem]
-        return list(itertools.chain.from_iterable(fxlots))
+        #  Flatten the nesting to create FxPositions as a tuple of FxLots
+        fxlots = (parse_element_container(child) for child in elem)
+        return tuple(itertools.chain.from_iterable(fxlots))
 
-    instances = [parse_data_element(child) for child in elem]
+    instances = tuple(parse_data_element(child) for child in elem)
 
-    # Sanity check - list contents should all be same type
+    # Sanity check - contents should all be same type
     if not utils.all_equal(type(instance) for instance in instances):
         types = {type(instance) for instance in instances}
         raise FlexParserError(f"{tag} contains multiple element types {types}")
@@ -344,8 +344,8 @@ convert_decimal = make_converter(
 convert_date = make_converter(datetime.date, prep=prep_date)
 convert_time = make_converter(datetime.time, prep=prep_time)
 convert_datetime = make_converter(datetime.datetime, prep=prep_datetime)
-convert_sequence = make_converter(list, prep=prep_sequence)
-convert_code_sequence = make_converter(list, prep=prep_code_sequence)
+convert_sequence = make_converter(tuple, prep=prep_sequence)
+convert_code_sequence = make_converter(tuple, prep=prep_code_sequence)
 
 
 def convert_enum(Type, value):
@@ -376,8 +376,8 @@ ATTRIB_CONVERTERS = {
     Optional[datetime.time]: make_optional(convert_time),
     datetime.datetime: convert_datetime,
     Optional[datetime.datetime]: make_optional(convert_datetime),
-    List[str]: convert_sequence,
-    List[Types.Code]: convert_code_sequence,
+    Tuple[str]: convert_sequence,
+    Tuple[Types.Code]: convert_code_sequence,
     #  HACK - once upon a time, <CorporateAction> had no `type` attribute,
     #  so we have to annotate its class attribute as optional.
     Optional[Types.Reorg]: functools.partial(
