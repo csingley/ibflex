@@ -7,9 +7,9 @@ Interactive Brokers' Flex XML format into standard Python data structures,
 so it can be conveniently processed and analyzed with Python scripts.
 
 *N.B. This module has nothing to do with programmatic trading.
-It's about accounting.*
+It's about reading brokerage reports.*
 
-``ibflex`` is compatible with Python version 3.4+.  The parser has no
+``ibflex`` is compatible with Python version 3.7+.  The parser has no
 dependencies beyond the Python standard library (although the optional client
 for fetching Flex Statements from Interactive Brokers' server does depend
 on `requests`_ ).
@@ -22,6 +22,30 @@ for the existing schemata.  There are probably bugs.
 `Pull requests`_ are welcome.
 
 
+Breaking Changes in Version 0.13
+===================================
+Version 0.13 is a near-complete rewrite, with different data structures.
+Instead of returning nested dictionaries, ``ibflex.parser.parse()`` now
+returns object instances (subclasses of ``ibflex.Types.FlexElement``).
+As such, values are retrieved by attribute "dot access" rather than dictionary
+key lookups.  See below for an example.
+
+The more interesting/useful enumerated values from the Flex reference
+(e.g. trade notes, corporate action types) are now parsed into Python Enums.
+
+All sequences are tuples instead of lists.  Everything is immutable.
+
+There's now a hard dependency on Python 3.7; the whole library is built on
+dataclasses and PEP 484 type hinting.
+
+Don't upgrade to version 0.13 if you don't want to rewrite your code.
+
+Sorry for the disruption, but it was necessary to transition the library from a
+quick hack to a solid foundation that is much more maintainable.  The basic
+data structure (instance attribute access rather than dict keys) is not expected to
+change again.
+
+
 Installation
 ============
 ::
@@ -32,72 +56,34 @@ Installation
 Flex Parser
 ===========
 The primary facility provided is the ``ibflex.parser`` module, which parses
-Flex-format XML data,  converts the parsed data into normal Python types
-(e.g. datetime.datetime, list), and exposes them as a nested dictionary whose
-structure corresponds to that of the original Flex statements.
+Flex-format XML data into a hierarchy of Python objects whose structure
+corresponds to that of the original Flex statements, with the data converted
+into appropriate Python types (datetime.datetime, decimal.Decimal, etc.).
 
 Usage example:
 
 .. code:: python
 
     In [1]: from ibflex import parser
+    In [2]: response = parser.parse("2017-01_ibkr.xml")
+    In [3]: response
+    Out[3]: FlexQueryResponse(queryName='Test Query', type='AF', len(FlexStatements)=1)
+    In [4]: stmt = response.FlexStatements[0]
+    In [5]: stmt
+    Out[5]: FlexStatement(accountId='U111111', fromDate=datetime.date(2017, 1, 2), toDate=datetime.date(2017, 1, 31), period=None, whenGenerated=datetime.datetime(2017, 5, 10, 11, 41, 38), len(CashReport)=3, len(EquitySummaryInBase)=23, len(StmtFunds)=344, len(ChangeInPositionValues)=2, len(OpenPositions)=2140, len(FxPositions)=1, len(Trades)=339, len(CorporateActions)=1, len(CashTransactions)=4, len(InterestAccruals)=1, len(ChangeInDividendAccruals)=5, len(OpenDividendAccruals)=2, len(SecuritiesInfo)=30, len(ConversionRates)=550)
+    In [6]: trade = stmt.Trades[-1]
+    In [7]: trade
+    Out[7]: Trade(transactionType=<TradeType.EXCHTRADE: 'ExchTrade'>, openCloseIndicator=<OpenClose.CLOSE: 'C'>, buySell=<BuySell.SELL: 'SELL'>, orderType=<OrderType.LIMIT: 'LMT'>, accountId='U111111', currency='USD', fxRateToBase=Decimal('1'), assetCategory='STK', symbol='WMIH', description='WMIH CORP', conid='105068604', cusip=None, isin=None, listingExchange=None, multiplier=Decimal('1'), strike=None, expiry=None, putCall=None, tradeID='1742757182', reportDate=datetime.date(2017, 1, 30), tradeDate=datetime.date(2017, 1, 30), tradeTime=datetime.time(15, 39, 36), settleDateTarget=datetime.date(2017, 2, 2), exchange='BYX', quantity=Decimal('-8'), tradePrice=Decimal('1.4'), tradeMoney=Decimal('-11.2'), taxes=Decimal('0'), ibCommission=Decimal('-0.00680792'), ibCommissionCurrency='USD', netCash=Decimal('11.19319208'), netCashInBase=None, closePrice=Decimal('1.4'), notes=(<Code.PARTIAL: 'P'>,), cost=Decimal('-10.853621'), mtmPnl=Decimal('0'), origTradePrice=Decimal('0'), origTradeDate=None, origTradeID=None, origOrderID='0', openDateTime=None, fifoPnlRealized=Decimal('0.339571'), capitalGainsPnl=None, levelOfDetail='EXECUTION', ibOrderID='865480117', orderTime=datetime.datetime(2017, 1, 30, 15, 39, 36), changeInPrice=Decimal('0'), changeInQuantity=Decimal('0'), proceeds=Decimal('11.2'), fxPnl=Decimal('0'), clearingFirmID=None, transactionID='7248583136', holdingPeriodDateTime=None, ibExecID='0001090f.588f449a.01.01', brokerageOrderID=None, orderReference=None, volatilityOrderLink=None, exchOrderId=None, extExecID='S2367553204796', traderID=None, isAPIOrder=False, acctAlias='Test Alias', model=None, securityID=None, securityIDType=None, principalAdjustFactor=None, dateTime=None, underlyingConid=None, underlyingSecurityID=None, underlyingSymbol=None, underlyingListingExchange=None, issuer=None, sedol=None, whenRealized=None, whenReopened=None)
+    In [8]: print(f"{trade.tradeDate} {trade.buySell.name} {abs(trade.quantity)} {trade.symbol} @ {trade.tradePrice} {trade.currency}")
+    2017-01-30 SELL 8 WMIH @ 1.4 USD
+    In [9]: pos = stmt.OpenPositions[-1]
+    In [10]: pos
+    Out[10]: OpenPosition(side=<LongShort.SHORT: 'Short'>, accountId='U111111', currency='USD', fxRateToBase=Decimal('1'), reportDate=datetime.date(2017, 1, 31), assetCategory='STK', symbol='VXX', description='IPATH S&P 500 VIX S/T FU ETN', conid='242500577', securityID=None, cusip=None, isin=None, multiplier=Decimal('1'), position=Decimal('-75'), markPrice=Decimal('19.42'), positionValue=Decimal('-1456.5'), openPrice=Decimal('109.210703693'), costBasisPrice=Decimal('109.210703693'), costBasisMoney=Decimal('-8190.802777'), fifoPnlUnrealized=Decimal('6734.302777'), levelOfDetail='LOT', openDateTime=datetime.datetime(2015, 8, 24, 9, 28, 9), holdingPeriodDateTime=datetime.datetime(2015, 8, 24, 9, 28, 9), securityIDType=None, issuer=None, underlyingConid=None, underlyingSymbol=None, code=(), originatingOrderID='699501861', originatingTransactionID='5634129129', accruedInt=None, acctAlias='Test Alias', model=None, sedol=None, percentOfNAV=None, strike=None, expiry=None, putCall=None, principalAdjustFactor=None, listingExchange=None, underlyingSecurityID=None, underlyingListingExchange=None, positionValueInBase=None, unrealizedCapitalGainsPnl=None, unrealizedlFxPnl=None)
+    In [11]: print(f"{pos.side.name} {abs(pos.position)} {pos.symbol} @ {pos.costBasisPrice} since {pos.openDateTime.date()}")
+    SHORT 75 VXX @ 109.210703693 since 2015-08-24
+    In [12]: [sec for sec in stmt.SecuritiesInfo if sec.conid == trade.conid][0]
+    Out[12]: SecurityInfo(assetCategory='STK', symbol='WMIH', description='WMIH CORP', conid='105068604', securityID=None, cusip=None, isin=None, listingExchange=None, underlyingSecurityID=None, underlyingListingExchange=None, underlyingConid=None, underlyingCategory=None, subCategory=None, multiplier=Decimal('1'), strike=None, expiry=None, maturity=None, issueDate=None, type=None, sedol=None, securityIDType=None, underlyingSymbol=None, issuer=None, putCall=None, principalAdjustFactor=Decimal('1'), code=())
 
-    In [2]: with open('/home/user/Downloads/2017-08_ibkr.xml', 'r') as xmlfile:
-       ...:     response = parser.parse(xmlfile)
-       ...:
-
-    In [3]: stmt = response['FlexStatements'][0]
-
-    In [4]: trades = stmt['Trades']
-
-    In [5]: {k:v for k,v in trades[-1] if v is not None}
-    Out[5]:
-    {'accountId': 'U1111111',
-     'acctAlias': 'Test Account',
-     'assetCategory': 'STK',
-     'buySell': 'BUY',
-     'changeInPrice': Decimal('0'),
-     'changeInQuantity': Decimal('0'),
-     'closePrice': Decimal('4.66'),
-     'conid': '148510778',
-     'cost': Decimal('369.3162058'),
-     'currency': 'USD',
-     'description': 'HC2 HOLDINGS INC',
-     'exchOrderId': 'N/A',
-     'exchange': 'NYSE',
-     'extExecID': 'L|AAA 9683/08152017|0000100001',
-     'fifoPnlRealized': Decimal('0'),
-     'fxPnl': Decimal('0'),
-     'fxRateToBase': Decimal('1'),
-     'ibCommission': Decimal('-0.5162058'),
-     'ibCommissionCurrency': 'USD',
-     'ibExecID': '0000e352.5992e388.01.01',
-     'ibOrderID': '931273568',
-     'isAPIOrder': False,
-     'levelOfDetail': 'EXECUTION',
-     'mtmPnl': Decimal('4'),
-     'multiplier': Decimal('1'),
-     'netCash': Decimal('-369.3162058'),
-     'notes': ['P'],
-     'openCloseIndicator': 'O',
-     'orderTime': datetime.datetime(2017, 8, 15, 11, 53, 18),
-     'orderType': 'LMT',
-     'origOrderID': '0',
-     'origTradePrice': Decimal('0'),
-     'proceeds': Decimal('-368.8'),
-     'quantity': Decimal('80'),
-     'reportDate': datetime.date(2017, 8, 15),
-     'settleDateTarget': datetime.date(2017, 8, 18),
-     'symbol': 'HCHC',
-     'taxes': Decimal('0'),
-     'tradeDate': datetime.date(2017, 8, 15),
-     'tradeID': '1885957768',
-     'tradeMoney': Decimal('368.8'),
-     'tradePrice': Decimal('4.61'),
-     'tradeTime': datetime.time(11, 53, 18),
-     'transactionID': '7933669307',
-     'transactionType': 'ExchTrade'}
-    
 
 Flex Data Format
 ================
@@ -162,7 +148,7 @@ Resources
 
 .. _Pull requests: https://github.com/csingley/ibflex/pull/new/master
 .. _requests: https://github.com/requests/requests
-.. _Interactive Brokers account management: https://gdcdyn.interactivebrokers.com/sso/Login 
+.. _Interactive Brokers account management: https://gdcdyn.interactivebrokers.com/sso/Login
 .. _Activity Flex Query Reference: https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm#reportguide/activity_flex_query_reference.htm
 .. _FlexWeb Service Reference: https://www.interactivebrokers.com/en/software/am/am/reports/flex_web_service_version_3.htm
 .. _capgains: https://github.com/csingley/capgains
