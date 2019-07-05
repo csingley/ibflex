@@ -1,5 +1,24 @@
 # coding: utf-8
-"""
+"""Python data types for IB Flex format XML data.
+
+These class definitions are introspected by ibflex.parser to type-convert
+IB data.  They're dataclasses, made immutable by passing `Frozen=True` to t
+the class  decorator.  Class attributes are annotated with PEP 484 type hints.
+
+XML element attributes are represented by class attributes hinted with the
+Python type to which their values should be converted.  Almost all are marked
+`Optional`, since Flex report configuration allows any of them to be included
+or omitted individually.  Default value is `None` unless the attribute is a
+List type.
+
+Specifically defined enums are an exception; the parser handles missing values
+for them, so you shouldn't specify a default value.  The enums therefore need
+to come first in the class definition to avoid offending dataclass.
+
+XML container types are represented as a `List` of their contained children.
+These are also marked `Optional`; the default value should be an empty list,
+which necessitates the use of `dataclass.field`.  See the stdlib documentation.
+
 TODO - need types for:
     FdicInsuredDepositsByBank
     ComplexPositions
@@ -45,6 +64,8 @@ from typing import List, Optional
 
 ###############################################################################
 #  ENUMS
+#  Values are the text sent by IB in XML element attribute.
+#  Names keep the convention of using UPPERCASE for Enums.
 ###############################################################################
 @enum.unique
 class CashAction(enum.Enum):
@@ -61,57 +82,59 @@ class CashAction(enum.Enum):
 
 @enum.unique
 class Code(enum.Enum):
+    """Used for both `code` and `notes` attributes.
+    """
     ASSIGNMENT = "A"
-    AUTOEXERCISE = "AEx"  # Automatic exercise for dividend-related recommendation
-    ADJUSTMENT = "Adj"  # Adjustment
-    ALLOCATION = "Al"  # Allocation
-    AWAY = "Aw"  # Away Trade
-    BUYIN = "B"  # Automatic Buy-in
-    BORROW = "Bo"  # Direct Borrow
-    CLOSING = "C"  # Closing Trade
-    CASHDELIVERY = "CD"  # Cash Delivery
-    COMPLEX = "CP"  # Complex Position
-    CANCEL = "Ca"  # Cancelled
-    CORRECT = "Co"  # Corrected Trade
-    CROSSING = "Cx"  # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
-    ETF = "ETF"  # ETF Creation/Redemption
-    EXPIRED = "Ep"  # Resulted from an Expired Position
-    EXERCISE = "Ex"  # Exercise
-    GUARANTEED = "G"  # Trade in Guaranteed Account Segment
-    HIGHESTCOST = "HC"  # Highest Cost tax lot-matching method
-    HFINVESTMENT = "HFI"  # Investment Transferred to Hedge Fund
-    HFREDEMPTION = "HFR"  # Redemption from Hedge Fund
-    INTERNAL = "I"  # Internal Transfer
-    AFFILIATE = "IA"  # This transaction was executed against an IB affiliate
-    INVESTOR = "INV"  # Investment Transfer from Investor
-    MARGIN = "L"  # Ordered by IB (Margin Violation)
-    WASHSALE = "LD"  # Adjusted by Loss Disallowed from Wash Sale
-    LIFO = "LI"  # Last In, First Out (LIFO) tax lot-matching method
-    LTCG = "LT"  # Long-term P/L
-    LOAN = "Lo"  # Direct Loan
-    MANUAL = "M"  # Entered manually by IB
-    MANUALEXERCISE = "MEx"  # Manual exercise for dividend-related recommendation
-    MAXLOSS = "ML"  # Maximize Losses tax basis election
-    MAXLTCG = "MLG"  # Maximize Long-Term Gain tax lot-matching method
-    MINLTCG = "MLL"  # Maximize Long-Term Loss tax lot-matching method
-    MAXSTCG = "MSG"  # Maximize Short-Term Gain tax lot-matching method
-    MINSTCG = "MSL"  # Maximize Short-Term Loss tax lot-matching method
-    OPENING = "O"  # Opening Trade
-    PARTIAL = "P"  # Partial Execution
-    PRICEIMPROVEMENT = "PI"  # Price Improvement
-    POSTACCRUAL = "Po"  # Interest or Dividend Accrual Posting
-    PRINCIPAL = "Pr"  # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
-    REINVESTMENT = "R"  # Dividend Reinvestment
-    REDEMPTION = "RED"  # Redemption to Investor
-    REVERSE = "Re"  # Interest or Dividend Accrual Reversal
-    REIMBURSEMENT = "Ri"  # Reimbursement
-    SOLICITEDIB = "SI"  # This order was solicited by Interactive Brokers
-    SPECIFICLOT = "SL"  # Specific Lot tax lot-matching method
-    SOLICITEDOTHER = "SO"  # This order was marked as solicited by your Introducing Broker
+    AUTOEXERCISE = "AEx"        # Automatic exercise for dividend-related recommendation
+    ADJUSTMENT = "Adj"          # Adjustment
+    ALLOCATION = "Al"           # Allocation
+    AWAY = "Aw"                 # Away Trade
+    BUYIN = "B"                 # Automatic Buy-in
+    BORROW = "Bo"               # Direct Borrow
+    CLOSING = "C"               # Closing Trade
+    CASHDELIVERY = "CD"         # Cash Delivery
+    COMPLEX = "CP"              # Complex Position
+    CANCEL = "Ca"               # Cancelled
+    CORRECT = "Co"              # Corrected Trade
+    CROSSING = "Cx"             # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
+    ETF = "ETF"                 # ETF Creation/Redemption
+    EXPIRED = "Ep"              # Resulted from an Expired Position
+    EXERCISE = "Ex"             # Exercise
+    GUARANTEED = "G"            # Trade in Guaranteed Account Segment
+    HIGHESTCOST = "HC"          # Highest Cost tax lot-matching method
+    HFINVESTMENT = "HFI"        # Investment Transferred to Hedge Fund
+    HFREDEMPTION = "HFR"        # Redemption from Hedge Fund
+    INTERNAL = "I"              # Internal Transfer
+    AFFILIATE = "IA"            # This transaction was executed against an IB affiliate
+    INVESTOR = "INV"            # Investment Transfer from Investor
+    MARGINLOW = "L"             # Ordered by IB (Margin Violation)
+    WASHSALE = "LD"             # Adjusted by Loss Disallowed from Wash Sale
+    LIFO = "LI"                 # Last In, First Out (LIFO) tax lot-matching method
+    LTCG = "LT"                 # Long-term P/L
+    LOAN = "Lo"                 # Direct Loan
+    MANUAL = "M"                # Entered manually by IB
+    MANUALEXERCISE = "MEx"      # Manual exercise for dividend-related recommendation
+    MAXLOSS = "ML"              # Maximize Losses tax basis election
+    MAXLTCG = "MLG"             # Maximize Long-Term Gain tax lot-matching method
+    MINLTCG = "MLL"             # Maximize Long-Term Loss tax lot-matching method
+    MAXSTCG = "MSG"             # Maximize Short-Term Gain tax lot-matching method
+    MINSTCG = "MSL"             # Maximize Short-Term Loss tax lot-matching method
+    OPENING = "O"               # Opening Trade
+    PARTIAL = "P"               # Partial Execution
+    PRICEIMPROVEMENT = "PI"     # Price Improvement
+    POSTACCRUAL = "Po"          # Interest or Dividend Accrual Posting
+    PRINCIPAL = "Pr"            # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
+    REINVESTMENT = "R"          # Dividend Reinvestment
+    REDEMPTION = "RED"          # Redemption to Investor
+    REVERSE = "Re"              # Interest or Dividend Accrual Reversal
+    REIMBURSEMENT = "Ri"        # Reimbursement
+    SOLICITEDIB = "SI"          # This order was solicited by Interactive Brokers
+    SPECIFICLOT = "SL"          # Specific Lot tax lot-matching method
+    SOLICITEDOTHER = "SO"       # This order was marked as solicited by your Introducing Broker
     SHORTENEDSETTLEMENT = "SS"  # Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
-    STCG = "ST"  # Short-term P/L
-    STOCKYIELD = "SY"  # Positions that may be eligible for Stock Yield. Potential for additional annualized income of 25.20 USD
-    TRANSFER = "T"  # Transfer
+    STCG = "ST"                 # Short-term P/L
+    STOCKYIELD = "SY"           # Positions that may be eligible for Stock Yield.
+    TRANSFER = "T"              # Transfer
 
 
 @enum.unique
@@ -245,11 +268,6 @@ class FlexStatement(FlexElement):
     toDate: datetime.date
     period: str
     whenGenerated: datetime.datetime
-    #  accountId: Optional[str] = None
-    #  fromDate: Optional[datetime.date] = None
-    #  toDate: Optional[datetime.date] = None
-    #  period: Optional[str] = None
-    #  whenGenerated: Optional[datetime.datetime] = None
     AccountInformation: Optional["_AccountInformation"] = None
     CashReport: List["CashReportCurrency"] = field(default_factory=list)
     MTDYTDPerformanceSummary: List["MTDYTDPerformanceSummaryUnderlying"] = field(default_factory=list)
@@ -257,42 +275,42 @@ class FlexStatement(FlexElement):
     MTMPerformanceSummaryInBase: List["MTMPerformanceSummaryUnderlying"] = field(default_factory=list)
     EquitySummaryInBase: List["EquitySummaryByReportDateInBase"] = field(default_factory=list)
     FIFOPerformanceSummaryInBase: List["FIFOPerformanceSummaryUnderlying"] = field(default_factory=list)
-    FdicInsuredDepositsByBank: List = field(default_factory=list)  # FIXME
+    FdicInsuredDepositsByBank: List = field(default_factory=list)  # TODO
     StmtFunds: List["StatementOfFundsLine"] = field(default_factory=list)
     ChangeInPositionValues: List["ChangeInPositionValue"] = field(default_factory=list)
     OpenPositions: List["OpenPosition"] = field(default_factory=list)
     NetStockPositionSummary: List["NetStockPosition"] = field(default_factory=list)
-    ComplexPositions: List = field(default_factory=list)  # FIXME
+    ComplexPositions: List = field(default_factory=list)  # TODO
     FxPositions: List["FxLot"] = field(default_factory=list)  # N.B. FXLot wrapped in FxLots
     Trades: List["Trade"] = field(default_factory=list)
-    HKIPOSubscriptionActivity: List = field(default_factory=list)  # FIXME
+    HKIPOSubscriptionActivity: List = field(default_factory=list)  # TODO
     TradeConfirms: List["TradeConfirm"] = field(default_factory=list)
     TransactionTaxes: List = field(default_factory=list)
     OptionEAE: List["_OptionEAE"] = field(default_factory=list)
     # Not a typo - they really spell it "Excercises"
-    PendingExcercises: List = field(default_factory=list)  # FIXME
+    PendingExcercises: List = field(default_factory=list)  # TODO
     TradeTransfers: List["TradeTransfer"] = field(default_factory=list)
-    FxTransactions: List = field(default_factory=list)  # FIXME
-    UnbookedTrades: List = field(default_factory=list)  # FIXME
-    RoutingCommissions: List = field(default_factory=list)  # FIXME
-    IBGNoteTransactions: List = field(default_factory=list)  # FIXME
+    FxTransactions: List = field(default_factory=list)  # TODO
+    UnbookedTrades: List = field(default_factory=list)  # TODO
+    RoutingCommissions: List = field(default_factory=list)  # TODO
+    IBGNoteTransactions: List = field(default_factory=list)  # TODO
     UnsettledTransfers: List["UnsettledTransfer"] = field(default_factory=list)
     UnbundledCommissionDetails: List["UnbundledCommissionDetail"] = field(default_factory=list)
-    Adjustments: List = field(default_factory=list)  # FIXME
+    Adjustments: List = field(default_factory=list)  # TODO
     PriorPeriodPositions: List["PriorPeriodPosition"] = field(default_factory=list)
     CorporateActions: List["CorporateAction"] = field(default_factory=list)
     ClientFees: List["ClientFee"] = field(default_factory=list)
     ClientFeesDetail: List["_ClientFeesDetail"] = field(default_factory=list)
-    DebitCardActivities: List = field(default_factory=list)  # FIXME
-    SoftDollars: List = field(default_factory=list)  # FIXME
+    DebitCardActivities: List = field(default_factory=list)  # TODO
+    SoftDollars: List = field(default_factory=list)  # TODO
     CashTransactions: List["CashTransaction"] = field(default_factory=list)
-    SalesTaxes: List = field(default_factory=list)  # FIXME
-    CFDCharges: List = field(default_factory=list)  # FIXME
+    SalesTaxes: List = field(default_factory=list)  # TODO
+    CFDCharges: List = field(default_factory=list)  # TODO
     InterestAccruals: List["InterestAccrualsCurrency"] = field(default_factory=list)
     TierInterestDetails: List["TierInterestDetail"] = field(default_factory=list)
     HardToBorrowDetails: List["HardToBorrowDetail"] = field(default_factory=list)
     HardToBorrowMarkupDetails: List = field(default_factory=list)
-    SLBOpenContracts: List = field(default_factory=list)  # FIXME
+    SLBOpenContracts: List = field(default_factory=list)  # TODO
     SLBActivities: List["SLBActivity"] = field(default_factory=list)
     SLBFees: List = field(default_factory=list)
     Transfers: List["Transfer"] = field(default_factory=list)
@@ -300,7 +318,7 @@ class FlexStatement(FlexElement):
     OpenDividendAccruals: List["OpenDividendAccrual"] = field(default_factory=list)
     SecuritiesInfo: List["SecurityInfo"] = field(default_factory=list)
     ConversionRates: List["ConversionRate"] = field(default_factory=list)
-    HKIPOOpenSubscriptions: List = field(default_factory=list)  # FIXME
+    HKIPOOpenSubscriptions: List = field(default_factory=list)  # TODO
 
     def __repr__(self):
         return (
@@ -346,6 +364,7 @@ class AccountInformation(FlexElement):
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _AccountInformation = AccountInformation
+
 
 @dataclass(frozen=True)
 class ChangeInNAV(FlexElement):
