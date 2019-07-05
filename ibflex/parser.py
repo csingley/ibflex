@@ -50,7 +50,7 @@ def parse(source) -> Types.FlexQueryResponse:
 
 def parse_element(
     elem: ET.Element
-) -> Union[Types.FlexElement, Tuple[Types.FlexElement]]:
+) -> Union[Types.FlexElement, Tuple[Types.FlexElement, ...]]:
     """Distinguish XML data element from container element; dispatch accordingly.
 
     Flex format stores data as XML element attributes, while container elements
@@ -78,7 +78,7 @@ def parse_element(
     return parse_data_element(elem)
 
 
-def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement]:
+def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
     """Parse XML element container into FlexElement subclass instances.
     """
     tag = elem.tag

@@ -23,9 +23,11 @@ to come first in the class definition to avoid offending dataclass.
 
 Some data elements have XML attributes whose values are sequences delimited by
 commas or semicolons.  These are represented as by class attributes hinted as
-`Tuple` of their sequence item type (i.e. `str` or an Enum type).
+a variable-length `Tuple` of their sequence item type (`str` or an Enum type).
 
-XML container elements are represented as `Tuple` of contained child type.
+XML container elements are represented as variable-length `Tuple` of contained
+child type.
+
 
 TODO - need types for:
     FdicInsuredDepositsByBank
@@ -265,7 +267,7 @@ class FlexQueryResponse(FlexElement):
     """ Root element """
     queryName: str
     type: str
-    FlexStatements: Tuple["FlexStatement"]
+    FlexStatements: Tuple["FlexStatement", ...]
 
 
 @dataclass(frozen=True)
@@ -277,55 +279,55 @@ class FlexStatement(FlexElement):
     period: str
     whenGenerated: datetime.datetime
     AccountInformation: Optional["_AccountInformation"] = None
-    CashReport: Tuple["CashReportCurrency"] = ()
-    MTDYTDPerformanceSummary: Tuple["MTDYTDPerformanceSummaryUnderlying"] = ()
     ChangeInNAV: Optional["_ChangeInNAV"] = None
-    MTMPerformanceSummaryInBase: Tuple["MTMPerformanceSummaryUnderlying"] = ()
-    EquitySummaryInBase: Tuple["EquitySummaryByReportDateInBase"] = ()
-    FIFOPerformanceSummaryInBase: Tuple["FIFOPerformanceSummaryUnderlying"] = ()
+    CashReport: Tuple["CashReportCurrency", ...] = ()
+    MTDYTDPerformanceSummary: Tuple["MTDYTDPerformanceSummaryUnderlying", ...] = ()
+    MTMPerformanceSummaryInBase: Tuple["MTMPerformanceSummaryUnderlying", ...] = ()
+    EquitySummaryInBase: Tuple["EquitySummaryByReportDateInBase", ...] = ()
+    FIFOPerformanceSummaryInBase: Tuple["FIFOPerformanceSummaryUnderlying", ...] = ()
     FdicInsuredDepositsByBank: Tuple = ()  # TODO
-    StmtFunds: Tuple["StatementOfFundsLine"] = ()
-    ChangeInPositionValues: Tuple["ChangeInPositionValue"] = ()
-    OpenPositions: Tuple["OpenPosition"] = ()
-    NetStockPositionSummary: Tuple["NetStockPosition"] = ()
+    StmtFunds: Tuple["StatementOfFundsLine", ...] = ()
+    ChangeInPositionValues: Tuple["ChangeInPositionValue", ...] = ()
+    OpenPositions: Tuple["OpenPosition", ...] = ()
+    NetStockPositionSummary: Tuple["NetStockPosition", ...] = ()
     ComplexPositions: Tuple = ()  # TODO
-    FxPositions: Tuple["FxLot"] = ()  # N.B. FXLot wrapped in FxLots
-    Trades: Tuple["Trade"] = ()
+    FxPositions: Tuple["FxLot", ...] = ()  # N.B. FXLot wrapped in FxLots
+    Trades: Tuple["Trade", ...] = ()
     HKIPOSubscriptionActivity: Tuple = ()  # TODO
-    TradeConfirms: Tuple["TradeConfirm"] = ()
+    TradeConfirms: Tuple["TradeConfirm", ...] = ()
     TransactionTaxes: Tuple = ()
-    OptionEAE: Tuple["_OptionEAE"] = ()
+    OptionEAE: Tuple["_OptionEAE", ...] = ()
     # Not a typo - they really spell it "Excercises"
     PendingExcercises: Tuple = ()  # TODO
-    TradeTransfers: Tuple["TradeTransfer"] = ()
+    TradeTransfers: Tuple["TradeTransfer", ...] = ()
     FxTransactions: Tuple = ()  # TODO
     UnbookedTrades: Tuple = ()  # TODO
     RoutingCommissions: Tuple = ()  # TODO
     IBGNoteTransactions: Tuple = ()  # TODO
-    UnsettledTransfers: Tuple["UnsettledTransfer"] = ()
-    UnbundledCommissionDetails: Tuple["UnbundledCommissionDetail"] = ()
+    UnsettledTransfers: Tuple["UnsettledTransfer", ...] = ()
+    UnbundledCommissionDetails: Tuple["UnbundledCommissionDetail", ...] = ()
     Adjustments: Tuple = ()  # TODO
-    PriorPeriodPositions: Tuple["PriorPeriodPosition"] = ()
-    CorporateActions: Tuple["CorporateAction"] = ()
-    ClientFees: Tuple["ClientFee"] = ()
-    ClientFeesDetail: Tuple["_ClientFeesDetail"] = ()
+    PriorPeriodPositions: Tuple["PriorPeriodPosition", ...] = ()
+    CorporateActions: Tuple["CorporateAction", ...] = ()
+    ClientFees: Tuple["ClientFee", ...] = ()
+    ClientFeesDetail: Tuple["_ClientFeesDetail", ...] = ()
     DebitCardActivities: Tuple = ()  # TODO
     SoftDollars: Tuple = ()  # TODO
-    CashTransactions: Tuple["CashTransaction"] = ()
+    CashTransactions: Tuple["CashTransaction", ...] = ()
     SalesTaxes: Tuple = ()  # TODO
     CFDCharges: Tuple = ()  # TODO
-    InterestAccruals: Tuple["InterestAccrualsCurrency"] = ()
-    TierInterestDetails: Tuple["TierInterestDetail"] = ()
-    HardToBorrowDetails: Tuple["HardToBorrowDetail"] = ()
+    InterestAccruals: Tuple["InterestAccrualsCurrency", ...] = ()
+    TierInterestDetails: Tuple["TierInterestDetail", ...] = ()
+    HardToBorrowDetails: Tuple["HardToBorrowDetail", ...] = ()
     HardToBorrowMarkupDetails: Tuple = ()
     SLBOpenContracts: Tuple = ()  # TODO
-    SLBActivities: Tuple["SLBActivity"] = ()
+    SLBActivities: Tuple["SLBActivity", ...] = ()
     SLBFees: Tuple = ()
-    Transfers: Tuple["Transfer"] = ()
-    ChangeInDividendAccruals: Tuple["_ChangeInDividendAccrual"] = ()
-    OpenDividendAccruals: Tuple["OpenDividendAccrual"] = ()
-    SecuritiesInfo: Tuple["SecurityInfo"] = ()
-    ConversionRates: Tuple["ConversionRate"] = ()
+    Transfers: Tuple["Transfer", ...] = ()
+    ChangeInDividendAccruals: Tuple["_ChangeInDividendAccrual", ...] = ()
+    OpenDividendAccruals: Tuple["OpenDividendAccrual", ...] = ()
+    SecuritiesInfo: Tuple["SecurityInfo", ...] = ()
+    ConversionRates: Tuple["ConversionRate", ...] = ()
     HKIPOOpenSubscriptions: Tuple = ()  # TODO
 
     def __repr__(self):
@@ -346,8 +348,8 @@ class AccountInformation(FlexElement):
     name: Optional[str] = None
     accountType: Optional[str] = None
     customerType: Optional[str] = None
-    accountCapabilities: Tuple[str] = ()
-    tradingPermissions: Tuple[str] = ()
+    accountCapabilities: Tuple[str, ...] = ()
+    tradingPermissions: Tuple[str, ...] = ()
     registeredRepName: Optional[str] = None
     registeredRepPhone: Optional[str] = None
     dateOpened: Optional[datetime.date] = None
@@ -460,7 +462,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     commissions: Optional[Decimal] = None
     other: Optional[Decimal] = None
     total: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     corpActionMtm: Optional[Decimal] = None
     dividends: Optional[Decimal] = None
 
@@ -871,7 +873,7 @@ class OpenPosition(FlexElement):
     issuer: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     originatingOrderID: Optional[str] = None
     originatingTransactionID: Optional[str] = None
     accruedInt: Optional[str] = None
@@ -905,7 +907,7 @@ class FxLot(FlexElement):
     closePrice: Optional[Decimal] = None
     value: Optional[Decimal] = None
     unrealizedPL: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     lotDescription: Optional[str] = None
     lotOpenDateTime: Optional[datetime.datetime] = None
     levelOfDetail: Optional[str] = None
@@ -949,7 +951,7 @@ class Trade(FlexElement):
     netCash: Optional[Decimal] = None
     netCashInBase: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code] = () # separator = ";"
+    notes: Tuple[Code, ...] = () # separator = ";"
     cost: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     origTradePrice: Optional[Decimal] = None
@@ -1084,7 +1086,7 @@ class TradeConfirm(FlexElement):
     ibCommissionCurrency: Optional[str] = None
     netCash: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code] = ()  # separator = ";"
+    notes: Tuple[Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
@@ -1127,7 +1129,7 @@ class TradeConfirm(FlexElement):
     changeInQuantity: Optional[Decimal] = None
     traderID: Optional[str] = None
     isAPIOrder: Optional[bool] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     tax: Optional[Decimal] = None
     listingExchange: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
@@ -1213,7 +1215,7 @@ class TradeTransfer(FlexElement):
     ibCommission: Optional[Decimal] = None
     ibCommissionCurrency: Optional[str] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code] = ()  # separator = ";"
+    notes: Tuple[Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
@@ -1290,7 +1292,7 @@ class TierInterestDetail(FlexElement):
     commoditiesInterest: Optional[Decimal] = None
     ibuklInterest: Optional[Decimal] = None
     totalInterest: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1328,7 +1330,7 @@ class HardToBorrowDetail(FlexElement):
     value: Optional[Decimal] = None
     borrowFeeRate: Optional[Decimal] = None
     borrowFee: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1398,7 +1400,7 @@ class Transfer(FlexElement):
     positionAmountInBase: Optional[Decimal] = None
     capitalGainsPnl: Optional[Decimal] = None
     cashTransfer: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     clientReference: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1506,7 +1508,7 @@ class CorporateAction(FlexElement):
     mtmPnl: Optional[Decimal] = None
     #  Effective 2010, CorporateAction has a `type` attribute
     type: Optional[Reorg] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     sedol: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1553,7 +1555,7 @@ class CashTransaction(FlexElement):
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     transactionID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     clientReference: Optional[str] = None
@@ -1589,7 +1591,7 @@ class ChangeInDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
@@ -1630,7 +1632,7 @@ class OpenDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
     sedol: Optional[str] = None
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
@@ -1674,7 +1676,7 @@ class SecurityInfo(FlexElement):
     issuer: Optional[str] = None
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
-    code: Tuple[Code] = ()
+    code: Tuple[Code, ...] = ()
 
 
 @dataclass(frozen=True)
