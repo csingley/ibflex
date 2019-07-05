@@ -136,7 +136,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
             datetime: datetime.datetime
             date: datetime.date
             time: datetime.time
-            sequence: typing.Tuple[str]
+            sequence: typing.Tuple[str, ...]
 
         #  Return (attr_name, type-converted value)
 
@@ -257,7 +257,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
 
         class TestClass:
             foo: str
-            sequence: typing.Tuple[str]
+            sequence: typing.Tuple[str, ...]
 
         self.assertEqual(
             parser.parse_element_attr(TestClass, "foo", "A,B,C"),

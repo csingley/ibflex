@@ -376,8 +376,8 @@ ATTRIB_CONVERTERS = {
     Optional[datetime.time]: make_optional(convert_time),
     datetime.datetime: convert_datetime,
     Optional[datetime.datetime]: make_optional(convert_datetime),
-    Tuple[str]: convert_sequence,
-    Tuple[Types.Code]: convert_code_sequence,
+    Tuple[str, ...]: convert_sequence,
+    Tuple[Types.Code, ...]: convert_code_sequence,
     #  HACK - once upon a time, <CorporateAction> had no `type` attribute,
     #  so we have to annotate its class attribute as optional.
     Optional[Types.Reorg]: functools.partial(
