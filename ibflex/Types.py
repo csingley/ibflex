@@ -69,7 +69,7 @@ import decimal
 from decimal import Decimal
 import enum
 from dataclasses import dataclass
-from typing import Tuple, Optional,
+from typing import Tuple, Optional
 
 
 ###############################################################################
