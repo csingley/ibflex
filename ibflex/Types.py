@@ -69,7 +69,7 @@ import decimal
 from decimal import Decimal
 import enum
 from dataclasses import dataclass
-from typing import Tuple, Optional, _GenericAlias, _VariadicGenericAlias
+from typing import Tuple, Optional,
 
 
 ###############################################################################
@@ -361,8 +361,7 @@ class FlexStatement(FlexElement):
 
         sequences = (
             (k, getattr(self, k)) for k, v in self.__annotations__.items()
-            if type(v) in (_GenericAlias, _VariadicGenericAlias)
-            and v.__origin__ is tuple
+            if hasattr(v, "__origin__") and v.__origin__ is tuple
         )
         nonempty_sequences = ", ".join(
             f"len({name})={len(value)}" for (name, value) in sequences if value
