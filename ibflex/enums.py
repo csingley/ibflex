@@ -23,6 +23,8 @@ __all__ = [
     "ToFrom",
     "InOut",
     "DeliveredReceived",
+    "ENUMS",
+    "EnumType",
 ]
 
 import enum
