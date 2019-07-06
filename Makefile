@@ -1,5 +1,7 @@
 test:
 	coverage erase
+	mypy ibflex
+	mypy tests
 	python `which nosetests` -dsv --with-coverage --cover-package ibflex tests/*.py
 
 clean:
