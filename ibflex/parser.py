@@ -5,7 +5,7 @@ https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm
 
 Flex report configuration needed by this module:
     Date format: choose yyyy-MM-dd
-    Trades: uncheck "Symbol Summary", "Asset Summary", "Orders"
+    Trades: uncheck "Symbol Summary", "Asset Class", "Orders"
 """
 import xml.etree.ElementTree as ET
 import enum
@@ -85,7 +85,8 @@ def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
 
     if tag == "FxPositions":
         #  <FxPositions> contains an <FxLots> wrapper per currency.
-        #  Element structure here is <FxPositions><FxLots><FxLot /></FxLots><FxLots><FxLot /></FxLots></FxPositions>
+        #  Element structure here is:
+        #       <FxPositions><FxLots><FxLot /></FxLots></FxPositions>
         #  Flatten the nesting to create FxPositions as a tuple of FxLots
         fxlots = (parse_element_container(child) for child in elem)
         return tuple(itertools.chain.from_iterable(fxlots))
@@ -142,24 +143,16 @@ def parse_element_attr(
         name: XML attribute name
         value: XML attribute value
     """
-    #  FIXME
-    #  This "dot reference" gets hit a lot by parse_data_element(), and
-    #  `Class` is always the same in the list comprehension.
-    #  Consider moving `Class.__annotations__` out of the loop
-    #  and instead defining it as a function argument.
-    Type = Class.__annotations__[name]
-
-    if isinstance(Type, enum.EnumMeta):
-        #  Dispatch Enums by metaclass, not class;
-        #  Enums are all converted the same way.
-        try:
-            return name, convert_enum(Type, value)
-        except Exception as exc:
-            raise FlexParserError(str(exc))
-
     #  Validate currency of any field named something like "currency".
     if "currency" in name.lower() and value not in CURRENCY_CODES:
         raise FlexParserError(f"Unknown currency {value!r}")
+
+    #  FIXME
+    #  This "dot reference" gets hit a lot by parse_data_element(), and `Class`
+    #  is always the same in the list comprehension that calls this function.
+    #  Consider moving `Class.__annotations__` up out of the list comprehension
+    #  in parse_data_element(), instead accepting it as a function arg here.
+    Type = Class.__annotations__[name]
 
     try:
         converted = ATTRIB_CONVERTERS[Type](value=value)
@@ -378,15 +371,16 @@ ATTRIB_CONVERTERS = {
     Optional[datetime.datetime]: make_optional(convert_datetime),
     Tuple[str, ...]: convert_sequence,
     Tuple[Types.Code, ...]: convert_code_sequence,
-    Optional[Types.Reorg]: functools.partial(
-        convert_enum, Type=Types.Reorg
-    ),
-    Optional[Types.Asset]: functools.partial(
-        convert_enum, Type=Types.Asset
-    ),
 }
 """Map of FlexElement attribute type hint to corresponding converter function.
 """
+
+ENUMS = (
+    v for v in Types.__dict__.values() if type(v) is enum.EnumMeta
+)
+ATTRIB_CONVERTERS.update(
+    {Optional[typ]: functools.partial(convert_enum, Type=typ) for typ in ENUMS}
+)
 
 
 ###############################################################################
@@ -478,14 +472,8 @@ def main():
     args = argparser.parse_args()
 
     for file in args.file:
-        print(file)
-        response = parse(file)
-        for stmt in response.FlexStatements:
-            for trade in stmt.Trades:
-                print(
-                    (f"{trade.tradeDate} {trade.buySell.value} {abs(trade.quantity)} "
-                     f"{trade.symbol} @ {trade.tradePrice}")
-                )
+        parse(file)
+        print(f"Successfully parsed {file}")
 
 
 if __name__ == "__main__":

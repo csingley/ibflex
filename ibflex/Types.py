@@ -48,19 +48,52 @@ TODO - need types for:
 """
 
 __all__ = [
-    "CashAction", "TradeType", "BuySell", "OpenClose", "OrderType", "Reorg",
-    "OptionAction", "LongShort", "TransferType", "ToFrom", "InOut",
-    "DeliveredReceived", "FlexElement", "FlexQueryResponse", "FlexStatement",
-    "AccountInformation", "ChangeInNAV", "MTMPerformanceSummaryUnderlying",
-    "EquitySummaryByReportDateInBase", "MTDYTDPerformanceSummaryUnderlying",
-    "CashReportCurrency", "FIFOPerformanceSummaryUnderlying",
-    "NetStockPosition", "UnsettledTransfer", "UnbundledCommissionDetail",
-    "StatementOfFundsLine", "ChangeInPositionValue", "OpenPosition", "FxLot",
-    "Trade", "TradeConfirm", "OptionEAE", "TradeTransfer",
-    "TierInterestDetail", "HardToBorrowDetail", "InterestAccrualsCurrency",
-    "SLBActivity", "Transfer", "CorporateAction", "CashTransaction",
-    "ChangeInDividendAccrual", "OpenDividendAccrual", "SecurityInfo",
-    "ConversionRate", "PriorPeriodPosition",
+    "CashAction",
+    "Code",
+    "TradeType",
+    "BuySell",
+    "OpenClose",
+    "OrderType",
+    "Reorg",
+    "OptionAction",
+    "LongShort",
+    "TransferType",
+    "ToFrom",
+    "InOut",
+    "DeliveredReceived",
+    "FlexElement",
+    "FlexQueryResponse",
+    "FlexStatement",
+    "AccountInformation",
+    "ChangeInNAV",
+    "MTMPerformanceSummaryUnderlying",
+    "EquitySummaryByReportDateInBase",
+    "MTDYTDPerformanceSummaryUnderlying",
+    "CashReportCurrency",
+    "FIFOPerformanceSummaryUnderlying",
+    "NetStockPosition",
+    "UnsettledTransfer",
+    "UnbundledCommissionDetail",
+    "StatementOfFundsLine",
+    "ChangeInPositionValue",
+    "OpenPosition",
+    "FxLot",
+    "Trade",
+    "TradeConfirm",
+    "OptionEAE",
+    "TradeTransfer",
+    "TierInterestDetail",
+    "HardToBorrowDetail",
+    "InterestAccrualsCurrency",
+    "SLBActivity",
+    "Transfer",
+    "CorporateAction",
+    "CashTransaction",
+    "ChangeInDividendAccrual",
+    "OpenDividendAccrual",
+    "SecurityInfo",
+    "ConversionRate",
+    "PriorPeriodPosition",
 ]
 
 
@@ -274,6 +307,7 @@ class FlexElement:
 @dataclass(frozen=True)
 class FlexQueryResponse(FlexElement):
     """ Root element """
+
     queryName: str
     type: str
     FlexStatements: Tuple["FlexStatement", ...]
@@ -292,6 +326,7 @@ class FlexQueryResponse(FlexElement):
 @dataclass(frozen=True)
 class FlexStatement(FlexElement):
     """ Wrapped in <FlexStatements> """
+
     accountId: str
     fromDate: datetime.date
     toDate: datetime.date
@@ -360,7 +395,8 @@ class FlexStatement(FlexElement):
         )
 
         sequences = (
-            (k, getattr(self, k)) for k, v in self.__annotations__.items()
+            (k, getattr(self, k))
+            for k, v in self.__annotations__.items()
             if hasattr(v, "__origin__") and v.__origin__ is tuple
         )
         nonempty_sequences = ", ".join(
@@ -377,6 +413,7 @@ class FlexStatement(FlexElement):
 @dataclass(frozen=True)
 class AccountInformation(FlexElement):
     """ Child of <FlexStatement> """
+
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -415,6 +452,7 @@ _AccountInformation = AccountInformation
 @dataclass(frozen=True)
 class ChangeInNAV(FlexElement):
     """ Child of <FlexStatement> """
+
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -465,6 +503,7 @@ _ChangeInNAV = ChangeInNAV
 @dataclass(frozen=True)
 class MTMPerformanceSummaryUnderlying(FlexElement):
     """ Wrapped in <MTMPerformanceSummaryInBase> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -506,6 +545,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
 @dataclass(frozen=True)
 class EquitySummaryByReportDateInBase(FlexElement):
     """ Wrapped in <EquitySummaryInBase> """
+
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -581,6 +621,7 @@ class EquitySummaryByReportDateInBase(FlexElement):
 @dataclass(frozen=True)
 class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     """ Wrapped in <MTDYTDPerformanceSummary> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -620,6 +661,7 @@ class MTDYTDPerformanceSummaryUnderlying(FlexElement):
 @dataclass(frozen=True)
 class CashReportCurrency(FlexElement):
     """ Wrapped in <CashReport> """
+
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fromDate: Optional[datetime.date] = None
@@ -811,6 +853,7 @@ class CashReportCurrency(FlexElement):
 @dataclass(frozen=True)
 class StatementOfFundsLine(FlexElement):
     """ Wrapped in <StmtFunds> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     balance: Optional[Decimal] = None
@@ -860,6 +903,7 @@ class StatementOfFundsLine(FlexElement):
 @dataclass(frozen=True)
 class ChangeInPositionValue(FlexElement):
     """ Wrapped in <ChangeInPositionValues> """
+
     assetCategory: Optional[Asset] = None
     currency: Optional[str] = None
     priorPeriodValue: Optional[Decimal] = None
@@ -882,7 +926,8 @@ class ChangeInPositionValue(FlexElement):
 @dataclass(frozen=True)
 class OpenPosition(FlexElement):
     """ Wrapped in <OpenPositions> """
-    side: LongShort
+
+    side: Optional[LongShort] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -932,6 +977,7 @@ class OpenPosition(FlexElement):
 @dataclass(frozen=True)
 class FxLot(FlexElement):
     """ Wrapped in <FxLots>, which in turn is wrapped in <FxPositions> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     reportDate: Optional[datetime.date] = None
@@ -954,10 +1000,11 @@ class FxLot(FlexElement):
 @dataclass(frozen=True)
 class Trade(FlexElement):
     """ Wrapped in <Trades> """
-    transactionType: TradeType
-    openCloseIndicator: OpenClose
-    buySell: BuySell
-    orderType: OrderType
+
+    transactionType: Optional[TradeType] = None
+    openCloseIndicator: Optional[OpenClose] = None
+    buySell: Optional[BuySell] = None
+    orderType: Optional[OrderType] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -987,7 +1034,7 @@ class Trade(FlexElement):
     netCash: Optional[Decimal] = None
     netCashInBase: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code, ...] = () # separator = ";"
+    notes: Tuple[Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     origTradePrice: Optional[Decimal] = None
@@ -1037,7 +1084,8 @@ class Trade(FlexElement):
 @dataclass(frozen=True)
 class UnbundledCommissionDetail(FlexElement):
     """ Wrapped in <UnbundledCommissionDetails> """
-    buySell: BuySell
+
+    buySell: Optional[BuySell] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -1084,10 +1132,11 @@ class UnbundledCommissionDetail(FlexElement):
 @dataclass(frozen=True)
 class TradeConfirm(FlexElement):
     """ Wrapped in <TradeConfirms> """
-    transactionType: TradeType
-    openCloseIndicator: OpenClose
-    buySell: BuySell
-    orderType: OrderType
+
+    transactionType: Optional[TradeType] = None
+    openCloseIndicator: Optional[OpenClose] = None
+    buySell: Optional[BuySell] = None
+    orderType: Optional[OrderType] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1182,7 +1231,8 @@ class OptionEAE(FlexElement):
 
     Wrapped in (identically-named) <OptionEAE>
     """
-    transactionType: OptionAction
+
+    transactionType: Optional[OptionAction] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1224,10 +1274,11 @@ _OptionEAE = OptionEAE
 @dataclass(frozen=True)
 class TradeTransfer(FlexElement):
     """ Wrapped in <TradeTransfers> """
-    transactionType: TradeType
-    openCloseIndicator: OpenClose
-    direction: ToFrom
-    deliveredReceived: DeliveredReceived
+
+    transactionType: Optional[TradeType] = None
+    openCloseIndicator: Optional[OpenClose] = None
+    direction: Optional[ToFrom] = None
+    deliveredReceived: Optional[DeliveredReceived] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1295,6 +1346,7 @@ class TradeTransfer(FlexElement):
 @dataclass(frozen=True)
 class InterestAccrualsCurrency(FlexElement):
     """ Wrapped in <InterestAccruals> """
+
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fromDate: Optional[datetime.date] = None
@@ -1336,6 +1388,7 @@ class TierInterestDetail(FlexElement):
 @dataclass(frozen=True)
 class HardToBorrowDetail(FlexElement):
     """ Wrapped in <HardToBorrowDetails> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -1374,6 +1427,7 @@ class HardToBorrowDetail(FlexElement):
 @dataclass(frozen=True)
 class SLBActivity(FlexElement):
     """ Wrapped in <SLBActivities> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -1411,8 +1465,9 @@ class SLBActivity(FlexElement):
 @dataclass(frozen=True)
 class Transfer(FlexElement):
     """ Wrapped in <Transfers> """
-    type: TransferType
-    direction: InOut
+
+    type: Optional[TransferType] = None
+    direction: Optional[InOut] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1460,6 +1515,7 @@ class Transfer(FlexElement):
 @dataclass(frozen=True)
 class UnsettledTransfer(FlexElement):
     """ Wrapped in <UnsettledTransfers> """
+
     direction: ToFrom
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
@@ -1487,6 +1543,7 @@ class UnsettledTransfer(FlexElement):
 @dataclass(frozen=True)
 class PriorPeriodPosition(FlexElement):
     """ Wrapped in <PriorPeriodPositions> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1520,6 +1577,7 @@ class PriorPeriodPosition(FlexElement):
 @dataclass(frozen=True)
 class CorporateAction(FlexElement):
     """ Wrapped in <CorporateActions> """
+
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1564,7 +1622,8 @@ class CorporateAction(FlexElement):
 @dataclass(frozen=True)
 class CashTransaction(FlexElement):
     """ Wrapped in <CashTransactions> """
-    type: CashAction
+
+    type: Optional[CashAction] = None
     assetCategory: Optional[Asset] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
@@ -1602,7 +1661,8 @@ class CashTransaction(FlexElement):
 @dataclass(frozen=True)
 class ChangeInDividendAccrual(FlexElement):
     """ Wrapped in <ChangeInDividendAccruals> """
-    date: datetime.date
+
+    date: Optional[datetime.date] = None
     assetCategory: Optional[Asset] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1649,6 +1709,7 @@ _ChangeInDividendAccrual = ChangeInDividendAccrual
 @dataclass(frozen=True)
 class OpenDividendAccrual(FlexElement):
     """ Wrapped in <OpenDividendAccruals> """
+
     assetCategory: Optional[Asset] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1687,6 +1748,7 @@ class OpenDividendAccrual(FlexElement):
 @dataclass(frozen=True)
 class SecurityInfo(FlexElement):
     """ Wrapped in <SecuritiesInfo> """
+
     assetCategory: Optional[Asset] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
@@ -1718,6 +1780,7 @@ class SecurityInfo(FlexElement):
 @dataclass(frozen=True)
 class ConversionRate(FlexElement):
     """ Wrapped in <ConversionRates> """
+
     reportDate: Optional[datetime.date] = None
     fromCurrency: Optional[str] = None
     toCurrency: Optional[str] = None
@@ -1726,6 +1789,7 @@ class ConversionRate(FlexElement):
 
 @dataclass(frozen=True)
 class FIFOPerformanceSummaryUnderlying(FlexElement):
+    accountId: Optional[str] = None
     assetCategory: Optional[Asset] = None
     symbol: Optional[str] = None
     description: Optional[str] = None

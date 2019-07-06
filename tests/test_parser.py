@@ -8,6 +8,7 @@ import datetime
 import decimal
 import enum
 import typing
+import functools
 
 from ibflex import parser, Types
 
@@ -282,22 +283,26 @@ class ParseElementAttrTestCase(unittest.TestCase):
             FOO = "1"
             BAR = "2"
 
-
         class TestClass:
-            foobar: TestEnum
+            foobar: typing.Optional[TestEnum] = None
 
-        self.assertEqual(
-            parser.parse_element_attr(TestClass, "foobar", "1"),
-            ("foobar", TestEnum.FOO)
-        )
-        self.assertEqual(
-            parser.parse_element_attr(TestClass, "foobar", "2"),
-            ("foobar", TestEnum.BAR)
-        )
+        #  Enum must be added to ATTRIB_CONVERTERS in order to be converted.
+        with patch.dict(
+            "ibflex.parser.ATTRIB_CONVERTERS",
+            {typing.Optional[TestEnum]: functools.partial(parser.convert_enum, Type=TestEnum)}
+        ):
+            self.assertEqual(
+                parser.parse_element_attr(TestClass, "foobar", "1"),
+                ("foobar", TestEnum.FOO)
+            )
+            self.assertEqual(
+                parser.parse_element_attr(TestClass, "foobar", "2"),
+                ("foobar", TestEnum.BAR)
+            )
 
-        #  Illegal enum values raise FlexParserError
-        with self.assertRaises(parser.FlexParserError):
-            parser.parse_element_attr(TestClass, "foobar", "3")
+            #  Illegal enum values raise FlexParserError
+            with self.assertRaises(parser.FlexParserError):
+                parser.parse_element_attr(TestClass, "foobar", "3")
 
     def testCurrency(self):
         """parse_element_attr() checks attributes named 'currency' vs ISO4217.
