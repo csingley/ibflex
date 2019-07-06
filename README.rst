@@ -24,6 +24,9 @@ for the existing schemata.  There are probably bugs.
 
 Breaking Changes in Version 0.13
 ===================================
+
+Don't upgrade to version 0.13 if you don't want to rewrite your code.
+
 Version 0.13 is a near-complete rewrite, with different data structures.
 Instead of returning nested dictionaries, ``ibflex.parser.parse()`` now
 returns object instances (subclasses of ``ibflex.Types.FlexElement``).
@@ -37,8 +40,6 @@ All sequences are tuples instead of lists.  Everything is immutable.
 
 There's now a hard dependency on Python 3.7; the whole library is built on
 dataclasses and PEP 484 type hinting.
-
-Don't upgrade to version 0.13 if you don't want to rewrite your code.
 
 Sorry for the disruption, but it was necessary to transition the library from a
 quick hack to a solid foundation that is much more maintainable.  The basic
