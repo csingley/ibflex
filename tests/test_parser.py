@@ -10,7 +10,7 @@ import enum
 import typing
 import functools
 
-from ibflex import parser, Types
+from ibflex import parser, Types, enums
 
 
 @patch("ibflex.parser.parse_element_container")
@@ -462,21 +462,21 @@ class ConverterFunctionTestCase(unittest.TestCase):
 
         #  Old and new versions of enum values work.
         self.assertEqual(
-            parser.convert_enum(Types.CashAction, "Deposits/Withdrawals"),
-            Types.CashAction.DEPOSITWITHDRAW,
+            parser.convert_enum(enums.CashAction, "Deposits/Withdrawals"),
+            enums.CashAction.DEPOSITWITHDRAW,
         )
         self.assertEqual(
-            parser.convert_enum(Types.CashAction, "Deposits & Withdrawals"),
-            Types.CashAction.DEPOSITWITHDRAW,
+            parser.convert_enum(enums.CashAction, "Deposits & Withdrawals"),
+            enums.CashAction.DEPOSITWITHDRAW,
         )
 
         self.assertEqual(
-            parser.convert_enum(Types.TransferType, "ACAT"),
-            Types.TransferType.ACATS,
+            parser.convert_enum(enums.TransferType, "ACAT"),
+            enums.TransferType.ACATS,
         )
         self.assertEqual(
-            parser.convert_enum(Types.TransferType, "ACATS"),
-            Types.TransferType.ACATS,
+            parser.convert_enum(enums.TransferType, "ACATS"),
+            enums.TransferType.ACATS,
         )
 
     def testMakeOptional(self):

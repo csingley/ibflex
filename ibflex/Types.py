@@ -48,19 +48,6 @@ TODO - need types for:
 """
 
 __all__ = [
-    "CashAction",
-    "Code",
-    "TradeType",
-    "BuySell",
-    "OpenClose",
-    "OrderType",
-    "Reorg",
-    "OptionAction",
-    "LongShort",
-    "TransferType",
-    "ToFrom",
-    "InOut",
-    "DeliveredReceived",
     "FlexElement",
     "FlexQueryResponse",
     "FlexStatement",
@@ -94,211 +81,20 @@ __all__ = [
     "SecurityInfo",
     "ConversionRate",
     "PriorPeriodPosition",
+    "ClientFee",
+    "ClientFeesDetail",
 ]
 
 
 import datetime
 import decimal
 from decimal import Decimal
-import enum
 from dataclasses import dataclass
 from typing import Tuple, Optional
 
-
-###############################################################################
-#  ENUMS
-#  Values are the text sent by IB in XML element attribute.
-#  Names keep the convention of using UPPERCASE for Enums.
-###############################################################################
-@enum.unique
-class CashAction(enum.Enum):
-    DEPOSITWITHDRAW = "Deposits & Withdrawals"
-    BROKERINTPAID = "Broker Interest Paid"
-    BROKERINTRCVD = "Broker Interest Received"
-    WHTAX = "Withholding Tax"
-    BONDINTRCVD = "Bond Interest Received"
-    BONDINTPAID = "Bond Interest Paid"
-    FEES = "Other Fees"
-    DIVIDEND = "Dividends"
-    PAYMENTINLIEU = "Payment In Lieu Of Dividends"
+from ibflex import enums
 
 
-@enum.unique
-class Code(enum.Enum):
-    """Used for both `code` and `notes` attributes.
-    """
-    ASSIGNMENT = "A"
-    AUTOEXERCISE = "AEx"        # Automatic exercise for dividend-related recommendation
-    ADJUSTMENT = "Adj"          # Adjustment
-    ALLOCATION = "Al"           # Allocation
-    AWAY = "Aw"                 # Away Trade
-    BUYIN = "B"                 # Automatic Buy-in
-    BORROW = "Bo"               # Direct Borrow
-    CLOSING = "C"               # Closing Trade
-    CASHDELIVERY = "CD"         # Cash Delivery
-    COMPLEX = "CP"              # Complex Position
-    CANCEL = "Ca"               # Cancelled
-    CORRECT = "Co"              # Corrected Trade
-    CROSSING = "Cx"             # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
-    ETF = "ETF"                 # ETF Creation/Redemption
-    EXPIRED = "Ep"              # Resulted from an Expired Position
-    EXERCISE = "Ex"             # Exercise
-    GUARANTEED = "G"            # Trade in Guaranteed Account Segment
-    HIGHESTCOST = "HC"          # Highest Cost tax lot-matching method
-    HFINVESTMENT = "HFI"        # Investment Transferred to Hedge Fund
-    HFREDEMPTION = "HFR"        # Redemption from Hedge Fund
-    INTERNAL = "I"              # Internal Transfer
-    AFFILIATE = "IA"            # This transaction was executed against an IB affiliate
-    INVESTOR = "INV"            # Investment Transfer from Investor
-    MARGINLOW = "L"             # Ordered by IB (Margin Violation)
-    WASHSALE = "LD"             # Adjusted by Loss Disallowed from Wash Sale
-    LIFO = "LI"                 # Last In, First Out (LIFO) tax lot-matching method
-    LTCG = "LT"                 # Long-term P/L
-    LOAN = "Lo"                 # Direct Loan
-    MANUAL = "M"                # Entered manually by IB
-    MANUALEXERCISE = "MEx"      # Manual exercise for dividend-related recommendation
-    MAXLOSS = "ML"              # Maximize Losses tax basis election
-    MAXLTCG = "MLG"             # Maximize Long-Term Gain tax lot-matching method
-    MINLTCG = "MLL"             # Maximize Long-Term Loss tax lot-matching method
-    MAXSTCG = "MSG"             # Maximize Short-Term Gain tax lot-matching method
-    MINSTCG = "MSL"             # Maximize Short-Term Loss tax lot-matching method
-    OPENING = "O"               # Opening Trade
-    PARTIAL = "P"               # Partial Execution
-    PRICEIMPROVEMENT = "PI"     # Price Improvement
-    POSTACCRUAL = "Po"          # Interest or Dividend Accrual Posting
-    PRINCIPAL = "Pr"            # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
-    REINVESTMENT = "R"          # Dividend Reinvestment
-    REDEMPTION = "RED"          # Redemption to Investor
-    REVERSE = "Re"              # Interest or Dividend Accrual Reversal
-    REIMBURSEMENT = "Ri"        # Reimbursement
-    SOLICITEDIB = "SI"          # This order was solicited by Interactive Brokers
-    SPECIFICLOT = "SL"          # Specific Lot tax lot-matching method
-    SOLICITEDOTHER = "SO"       # This order was marked as solicited by your Introducing Broker
-    SHORTENEDSETTLEMENT = "SS"  # Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
-    STCG = "ST"                 # Short-term P/L
-    STOCKYIELD = "SY"           # Positions that may be eligible for Stock Yield.
-    TRANSFER = "T"              # Transfer
-
-
-@enum.unique
-class Asset(enum.Enum):
-    CASH = "CASH"
-    BOND = "BOND"
-    STOCK = "STK"
-    OPTION = "OPT"
-    WARRANT = "WAR"
-
-
-@enum.unique
-class TradeType(enum.Enum):
-    EXCHTRADE = "ExchTrade"
-    TRADECANCEL = "TradeCancel"
-    FRACSHARE = "FracShare"
-    FRACSHARECANCEL = "FracShareCancel"
-    TRADECORRECT = "TradeCorrect"
-    BOOKTRADE = "BookTrade"
-    DVPTRADE = "DvpTrade"
-
-
-@enum.unique
-class BuySell(enum.Enum):
-    BUY = "BUY"
-    CANCELBUY = "BUY (Ca.)"
-    SELL = "SELL"
-    CANCELSELL = "SELL (Ca.)"
-
-
-@enum.unique
-class OpenClose(enum.Enum):
-    OPEN = "O"
-    CLOSE = "C"
-    OPENCLOSE = "C;O"
-
-
-@enum.unique
-class OrderType(enum.Enum):
-    LIMIT = "LMT"
-    MARKET = "MKT"
-    MARKETONCLOSE = "MOC"
-
-
-@enum.unique
-class Reorg(enum.Enum):
-    BONDCONVERSION = "BC"
-    BONDMATURITY = "BM"
-    CONTRACTSOULTE = "CA"
-    CONTRACTCONSOLIDATION = "CC"
-    CASHDIV = "CD"
-    CHOICEDIV = "CH"
-    CONVERTIBLEISSUE = "CI"
-    CONTRACTSPINOFF = "CO"
-    COUPONPAYMENT = "CP"
-    CONTRACTSPLIT = "CS"
-    CFDTERMINATION = "CT"
-    DIVRIGHTSISSUE = "DI"
-    DELISTWORTHLESS = "DW"
-    EXPIREDIVRIGHT = "ED"
-    FEEALLOCATION = "FA"
-    FORWARDSPLITISSUE = "FI"
-    FORWARDSPLIT = "FS"
-    GENERICVOLUNTARY = "GV"
-    CHOICEDIVDELIVERY = "HD"
-    CHOICEDIVISSUE = "HI"
-    ISSUECHANGE = "IC"
-    ASSETPURCHASE = "OR"
-    PURCHASEISSUE = "PI"
-    PROXYVOTE = "PV"
-    RIGHTSISSUE = "RI"
-    REVERSESPLIT = "RS"
-    STOCKDIV = "SD"
-    SPINOFF = "SO"
-    SUBSCRIBERIGHTS = "SR"
-    MERGER = "TC"
-    TENDERISSUE = "TI"
-    TENDER = "TO"
-
-
-@enum.unique
-class OptionAction(enum.Enum):
-    ASSIGN = "Assignment"
-    EXERCISE = "Exercise"
-    EXPIRE = "Expiration"
-    SELL = "Sell"
-
-
-@enum.unique
-class LongShort(enum.Enum):
-    LONG = "Long"
-    SHORT = "Short"
-
-
-@enum.unique
-class ToFrom(enum.Enum):
-    TO = "To"
-    FROM = "From"
-
-
-@enum.unique
-class TransferType(enum.Enum):
-    INTERNAL = "INTERNAL"
-    ACATS = "ACATS"
-
-
-@enum.unique
-class InOut(enum.Enum):
-    IN = "IN"
-    OUT = "OUT"
-
-
-@enum.unique
-class DeliveredReceived(enum.Enum):
-    DELIVERED = "Delivered"
-    RECEIVED = "Received"
-
-
-###############################################################################
-#  ELEMENTS
-###############################################################################
 @dataclass(frozen=True)
 class FlexElement:
     """ Base class for data element types """
@@ -504,7 +300,7 @@ _ChangeInNAV = ChangeInNAV
 class MTMPerformanceSummaryUnderlying(FlexElement):
     """ Wrapped in <MTMPerformanceSummaryInBase> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -537,7 +333,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     commissions: Optional[Decimal] = None
     other: Optional[Decimal] = None
     total: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     corpActionMtm: Optional[Decimal] = None
     dividends: Optional[Decimal] = None
 
@@ -622,7 +418,7 @@ class EquitySummaryByReportDateInBase(FlexElement):
 class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     """ Wrapped in <MTDYTDPerformanceSummary> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -854,7 +650,7 @@ class CashReportCurrency(FlexElement):
 class StatementOfFundsLine(FlexElement):
     """ Wrapped in <StmtFunds> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     balance: Optional[Decimal] = None
     debit: Optional[Decimal] = None
@@ -904,7 +700,7 @@ class StatementOfFundsLine(FlexElement):
 class ChangeInPositionValue(FlexElement):
     """ Wrapped in <ChangeInPositionValues> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     currency: Optional[str] = None
     priorPeriodValue: Optional[Decimal] = None
     transactions: Optional[Decimal] = None
@@ -927,8 +723,8 @@ class ChangeInPositionValue(FlexElement):
 class OpenPosition(FlexElement):
     """ Wrapped in <OpenPositions> """
 
-    side: Optional[LongShort] = None
-    assetCategory: Optional[Asset] = None
+    side: Optional[enums.LongShort] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
@@ -954,7 +750,7 @@ class OpenPosition(FlexElement):
     issuer: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     originatingOrderID: Optional[str] = None
     originatingTransactionID: Optional[str] = None
     accruedInt: Optional[str] = None
@@ -978,7 +774,7 @@ class OpenPosition(FlexElement):
 class FxLot(FlexElement):
     """ Wrapped in <FxLots>, which in turn is wrapped in <FxPositions> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     functionalCurrency: Optional[str] = None
@@ -989,7 +785,7 @@ class FxLot(FlexElement):
     closePrice: Optional[Decimal] = None
     value: Optional[Decimal] = None
     unrealizedPL: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     lotDescription: Optional[str] = None
     lotOpenDateTime: Optional[datetime.datetime] = None
     levelOfDetail: Optional[str] = None
@@ -1001,11 +797,11 @@ class FxLot(FlexElement):
 class Trade(FlexElement):
     """ Wrapped in <Trades> """
 
-    transactionType: Optional[TradeType] = None
-    openCloseIndicator: Optional[OpenClose] = None
-    buySell: Optional[BuySell] = None
-    orderType: Optional[OrderType] = None
-    assetCategory: Optional[Asset] = None
+    transactionType: Optional[enums.TradeType] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    buySell: Optional[enums.BuySell] = None
+    orderType: Optional[enums.OrderType] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1034,7 +830,7 @@ class Trade(FlexElement):
     netCash: Optional[Decimal] = None
     netCashInBase: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code, ...] = ()  # separator = ";"
+    notes: Tuple[enums.Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     origTradePrice: Optional[Decimal] = None
@@ -1085,8 +881,8 @@ class Trade(FlexElement):
 class UnbundledCommissionDetail(FlexElement):
     """ Wrapped in <UnbundledCommissionDetails> """
 
-    buySell: Optional[BuySell] = None
-    assetCategory: Optional[Asset] = None
+    buySell: Optional[enums.BuySell] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1133,11 +929,11 @@ class UnbundledCommissionDetail(FlexElement):
 class TradeConfirm(FlexElement):
     """ Wrapped in <TradeConfirms> """
 
-    transactionType: Optional[TradeType] = None
-    openCloseIndicator: Optional[OpenClose] = None
-    buySell: Optional[BuySell] = None
-    orderType: Optional[OrderType] = None
-    assetCategory: Optional[Asset] = None
+    transactionType: Optional[enums.TradeType] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    buySell: Optional[enums.BuySell] = None
+    orderType: Optional[enums.OrderType] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1171,7 +967,7 @@ class TradeConfirm(FlexElement):
     ibCommissionCurrency: Optional[str] = None
     netCash: Optional[Decimal] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code, ...] = ()  # separator = ";"
+    notes: Tuple[enums.Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
@@ -1214,7 +1010,7 @@ class TradeConfirm(FlexElement):
     changeInQuantity: Optional[Decimal] = None
     traderID: Optional[str] = None
     isAPIOrder: Optional[bool] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     tax: Optional[Decimal] = None
     listingExchange: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
@@ -1232,8 +1028,8 @@ class OptionEAE(FlexElement):
     Wrapped in (identically-named) <OptionEAE>
     """
 
-    transactionType: Optional[OptionAction] = None
-    assetCategory: Optional[Asset] = None
+    transactionType: Optional[enums.OptionAction] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1275,11 +1071,11 @@ _OptionEAE = OptionEAE
 class TradeTransfer(FlexElement):
     """ Wrapped in <TradeTransfers> """
 
-    transactionType: Optional[TradeType] = None
-    openCloseIndicator: Optional[OpenClose] = None
-    direction: Optional[ToFrom] = None
-    deliveredReceived: Optional[DeliveredReceived] = None
-    assetCategory: Optional[Asset] = None
+    transactionType: Optional[enums.TradeType] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    direction: Optional[enums.ToFrom] = None
+    deliveredReceived: Optional[enums.DeliveredReceived] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1302,7 +1098,7 @@ class TradeTransfer(FlexElement):
     ibCommission: Optional[Decimal] = None
     ibCommissionCurrency: Optional[str] = None
     closePrice: Optional[Decimal] = None
-    notes: Tuple[Code, ...] = ()  # separator = ";"
+    notes: Tuple[enums.Code, ...] = ()  # separator = ";"
     cost: Optional[Decimal] = None
     fifoPnlRealized: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
@@ -1380,7 +1176,7 @@ class TierInterestDetail(FlexElement):
     commoditiesInterest: Optional[Decimal] = None
     ibuklInterest: Optional[Decimal] = None
     totalInterest: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1389,7 +1185,7 @@ class TierInterestDetail(FlexElement):
 class HardToBorrowDetail(FlexElement):
     """ Wrapped in <HardToBorrowDetails> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1419,7 +1215,7 @@ class HardToBorrowDetail(FlexElement):
     value: Optional[Decimal] = None
     borrowFeeRate: Optional[Decimal] = None
     borrowFee: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
 
@@ -1428,7 +1224,7 @@ class HardToBorrowDetail(FlexElement):
 class SLBActivity(FlexElement):
     """ Wrapped in <SLBActivities> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1466,9 +1262,9 @@ class SLBActivity(FlexElement):
 class Transfer(FlexElement):
     """ Wrapped in <Transfers> """
 
-    type: Optional[TransferType] = None
-    direction: Optional[InOut] = None
-    assetCategory: Optional[Asset] = None
+    type: Optional[enums.TransferType] = None
+    direction: Optional[enums.InOut] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1491,7 +1287,7 @@ class Transfer(FlexElement):
     positionAmountInBase: Optional[Decimal] = None
     capitalGainsPnl: Optional[Decimal] = None
     cashTransfer: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     clientReference: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1516,8 +1312,8 @@ class Transfer(FlexElement):
 class UnsettledTransfer(FlexElement):
     """ Wrapped in <UnsettledTransfers> """
 
-    direction: ToFrom
-    assetCategory: Optional[Asset] = None
+    direction: Optional[enums.ToFrom] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1544,7 +1340,7 @@ class UnsettledTransfer(FlexElement):
 class PriorPeriodPosition(FlexElement):
     """ Wrapped in <PriorPeriodPositions> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1578,7 +1374,7 @@ class PriorPeriodPosition(FlexElement):
 class CorporateAction(FlexElement):
     """ Wrapped in <CorporateActions> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1601,8 +1397,8 @@ class CorporateAction(FlexElement):
     fxPnl: Optional[Decimal] = None
     mtmPnl: Optional[Decimal] = None
     #  Effective 2010, CorporateAction has a `type` attribute
-    type: Optional[Reorg] = None
-    code: Tuple[Code, ...] = ()
+    type: Optional[enums.Reorg] = None
+    code: Tuple[enums.Code, ...] = ()
     sedol: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1623,8 +1419,8 @@ class CorporateAction(FlexElement):
 class CashTransaction(FlexElement):
     """ Wrapped in <CashTransactions> """
 
-    type: Optional[CashAction] = None
-    assetCategory: Optional[Asset] = None
+    type: Optional[enums.CashAction] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
@@ -1650,7 +1446,7 @@ class CashTransaction(FlexElement):
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     transactionID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     clientReference: Optional[str] = None
@@ -1663,7 +1459,7 @@ class ChangeInDividendAccrual(FlexElement):
     """ Wrapped in <ChangeInDividendAccruals> """
 
     date: Optional[datetime.date] = None
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
     accountId: Optional[str] = None
@@ -1687,7 +1483,7 @@ class ChangeInDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
@@ -1710,7 +1506,7 @@ _ChangeInDividendAccrual = ChangeInDividendAccrual
 class OpenDividendAccrual(FlexElement):
     """ Wrapped in <OpenDividendAccruals> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[Decimal] = None
     accountId: Optional[str] = None
@@ -1729,7 +1525,7 @@ class OpenDividendAccrual(FlexElement):
     grossRate: Optional[Decimal] = None
     grossAmount: Optional[Decimal] = None
     netAmount: Optional[Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
     sedol: Optional[str] = None
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
@@ -1749,7 +1545,7 @@ class OpenDividendAccrual(FlexElement):
 class SecurityInfo(FlexElement):
     """ Wrapped in <SecuritiesInfo> """
 
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
     conid: Optional[str] = None
@@ -1774,7 +1570,7 @@ class SecurityInfo(FlexElement):
     issuer: Optional[str] = None
     putCall: Optional[str] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
-    code: Tuple[Code, ...] = ()
+    code: Tuple[enums.Code, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -1790,7 +1586,7 @@ class ConversionRate(FlexElement):
 @dataclass(frozen=True)
 class FIFOPerformanceSummaryUnderlying(FlexElement):
     accountId: Optional[str] = None
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
     conid: Optional[str] = None
@@ -1819,7 +1615,7 @@ class FIFOPerformanceSummaryUnderlying(FlexElement):
 
 @dataclass(frozen=True)
 class NetStockPosition(FlexElement):
-    assetCategory: Optional[Asset] = None
+    assetCategory: Optional[enums.AssetClass] = None
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None

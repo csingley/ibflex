@@ -15,18 +15,20 @@ import itertools
 import functools
 from typing import Tuple, Union, Optional, Any, Callable, Iterable
 
-from ibflex import Types, utils
+from ibflex import Types, enums, utils
 
 
 class FlexParserError(Exception):
     """ Error experienced while parsing Flex XML data. """
 
 
-AttributeType = Union[
-    str, int, bool, decimal.Decimal, datetime.date, datetime.time,
-    datetime.datetime, enum.Enum, Tuple[str], None,
+DataType = Union[
+    None, str, int, bool, decimal.Decimal, datetime.date, datetime.time,
+    datetime.datetime, enums.EnumType, Tuple[str, ...], Tuple[enums.Code, ...]
 ]
-""" Possible type annotations for a FlexElement class attribute. """
+"""Possible type annotations for class attributes of a FlexElement that is
+a data element (not a container).
+"""
 
 
 ###############################################################################
@@ -267,7 +269,7 @@ def prep_sequence(value: str) -> Iterable[str]:
     return (v for v in value.split(sep) if v) if value != "" else []
 
 
-def prep_code_sequence(value: str) -> Iterable[Types.Code]:
+def prep_code_sequence(value: str) -> Iterable[enums.Code]:
     """Split a code sequence string into its component codes.
 
     Flex `notes` attribute is semicolon-delimited; other sequences use commas.
@@ -276,7 +278,7 @@ def prep_code_sequence(value: str) -> Iterable[Types.Code]:
     """
     sep = ";" if ";" in value else ","
     return (
-        Types.Code(v)
+        enums.Code(v)
         for v in value.split(sep)
         if v
     ) if value != "" else []
@@ -287,7 +289,7 @@ def prep_code_sequence(value: str) -> Iterable[Types.Code]:
 ###############################################################################
 def make_converter(
     Type: type, *, prep: Callable[[str], Any]
-) -> Callable[[str], AttributeType]:
+) -> Callable[[str], DataType]:
     """Factory producing converter function for type.
 
     Args:
@@ -297,7 +299,7 @@ def make_converter(
 
     Returns: a function that accepts string input and returns a Type instance.
     """
-    def convert(value: str) -> AttributeType:
+    def convert(value: str) -> DataType:
         try:
             prepped_value = prep(value)
             if prepped_value is None:
@@ -343,12 +345,12 @@ convert_code_sequence = make_converter(tuple, prep=prep_code_sequence)
 
 def convert_enum(Type, value):
     #  Work around old versions of values; convert to the new format
-    if Type is Types.CashAction and value == "Deposits/Withdrawals":
+    if Type is enums.CashAction and value == "Deposits/Withdrawals":
         value = "Deposits & Withdrawals"
-    elif Type is Types.TransferType and value == "ACAT":
+    elif Type is enums.TransferType and value == "ACAT":
         value = "ACATS"
 
-    #  Enums defined in Types bind custom names to the IB-supplied values.
+    #  Enums bind custom names to the IB-supplied values.
     #  To convert, just do a by-value lookup on the incoming string.
     #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
     return Type(value) if value != "" else None
@@ -370,17 +372,19 @@ ATTRIB_CONVERTERS = {
     datetime.datetime: convert_datetime,
     Optional[datetime.datetime]: make_optional(convert_datetime),
     Tuple[str, ...]: convert_sequence,
-    Tuple[Types.Code, ...]: convert_code_sequence,
+    Tuple[enums.Code, ...]: convert_code_sequence,
 }
 """Map of FlexElement attribute type hint to corresponding converter function.
 """
 
-ENUMS = (
-    v for v in Types.__dict__.values() if type(v) is enum.EnumMeta
-)
 ATTRIB_CONVERTERS.update(
-    {Optional[typ]: functools.partial(convert_enum, Type=typ) for typ in ENUMS}
+    {
+        Optional[typ]: functools.partial(convert_enum, Type=typ)
+        for typ in enums.ENUMS
+    }
 )
+"""Map all Enum subclasses as Optional.
+"""
 
 
 ###############################################################################
