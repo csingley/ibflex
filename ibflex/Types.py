@@ -172,7 +172,7 @@ class FlexStatement(FlexElement):
     HardToBorrowMarkupDetails: Tuple = ()
     SLBOpenContracts: Tuple = ()  # TODO
     SLBActivities: Tuple["SLBActivity", ...] = ()
-    SLBFees: Tuple = ()
+    SLBFees: Tuple["SLBFee", ...] = ()
     Transfers: Tuple["Transfer", ...] = ()
     ChangeInDividendAccruals: Tuple["_ChangeInDividendAccrual", ...] = ()
     OpenDividendAccruals: Tuple["OpenDividendAccrual", ...] = ()
@@ -1256,6 +1256,53 @@ class SLBActivity(FlexElement):
     markQuantity: Optional[Decimal] = None
     markPriorPrice: Optional[Decimal] = None
     markCurrentPrice: Optional[Decimal] = None
+
+
+@dataclass(frozen=True)
+class SLBFee:
+    """ Wrapped in <SLBFees> """
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[str] = None
+    assetCategory: Optional[str] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    multiplier: Optional[Decimal] = None
+    strike: Optional[Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[Decimal] = None
+    valueDate: Optional[datetime.date] = None
+    startDate: Optional[datetime.date] = None
+    type: Optional[str] = None  # FIXME
+    exchange: Optional[str] = None
+    quantity: Optional[Decimal] = None
+    collateralAmount: Optional[Decimal] = None
+    feeRate: Optional[Decimal] = None
+    fee: Optional[Decimal] = None
+    carryCharge: Optional[Decimal] = None
+    ticketCharge: Optional[Decimal] = None
+    totalCharges: Optional[Decimal] = None
+    marketFeeRate: Optional[Decimal] = None
+    grossLendFee: Optional[Decimal] = None
+    netLendFeeRate: Optional[Decimal] = None
+    netLendFee: Optional[Decimal] = None
+    code: Tuple[enums.Code, ...] = ()
+    fromAcct: Optional[str] = None
+    toAcct: Optional[str] = None
 
 
 @dataclass(frozen=True)

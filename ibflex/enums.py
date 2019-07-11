@@ -104,10 +104,13 @@ class Code(enum.Enum):
 @enum.unique
 class AssetClass(enum.Enum):
     CASH = "CASH"
+    BILL = "BILL"
     BOND = "BOND"
     STOCK = "STK"
     OPTION = "OPT"
     WARRANT = "WAR"
+    FUTURE = "FUT"
+    FUTUREOPTION = "FOP"
 
 
 @enum.unique
