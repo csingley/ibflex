@@ -4,8 +4,8 @@
 Values are the text sent by IB in XML element attribute.
 Names keep the convention of using UPPERCASE for Enums.
 
-When creating a new Enum subclass, be sure to add it to ENUMS and EnumType
-at the end of the file.
+When creating a new Enum subclass, be sure to add it to ENUMS
+and EnumType (as Optional type) at the end of the file.
 """
 
 __all__ = [
@@ -217,6 +217,12 @@ class DeliveredReceived(enum.Enum):
     RECEIVED = "Received"
 
 
+@enum.unique
+class PutCall(enum.Enum):
+    PUT = "P"
+    CALL = "C"
+
+
 ENUMS = [
     CashAction,
     Code,
@@ -232,24 +238,26 @@ ENUMS = [
     TransferType,
     InOut,
     DeliveredReceived,
+    PutCall,
 ]
 """Used by ibflex.parser.ATTRIB_CONVERTERS"""
 
 
 EnumType = typing.Union[
-    CashAction,
-    Code,
-    AssetClass,
-    TradeType,
-    BuySell,
-    OpenClose,
-    OrderType,
-    Reorg,
-    OptionAction,
-    LongShort,
-    ToFrom,
-    TransferType,
-    InOut,
-    DeliveredReceived,
+    typing.Optional[CashAction],
+    typing.Optional[Code],
+    typing.Optional[AssetClass],
+    typing.Optional[TradeType],
+    typing.Optional[BuySell],
+    typing.Optional[OpenClose],
+    typing.Optional[OrderType],
+    typing.Optional[Reorg],
+    typing.Optional[OptionAction],
+    typing.Optional[LongShort],
+    typing.Optional[ToFrom],
+    typing.Optional[TransferType],
+    typing.Optional[InOut],
+    typing.Optional[DeliveredReceived],
+    typing.Optional[PutCall],
 ]
-"""Used by ibflex.parser.AttributeType"""
+"""Used by ibflex.parser.DataType"""

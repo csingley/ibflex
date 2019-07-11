@@ -8,7 +8,6 @@ Flex report configuration needed by this module:
     Trades: uncheck "Symbol Summary", "Asset Class", "Orders"
 """
 import xml.etree.ElementTree as ET
-import enum
 import datetime
 import decimal
 import itertools
@@ -379,8 +378,8 @@ ATTRIB_CONVERTERS = {
 
 ATTRIB_CONVERTERS.update(
     {
-        Optional[typ]: functools.partial(convert_enum, Type=typ)
-        for typ in enums.ENUMS
+        Optional[Enum]: functools.partial(convert_enum, Type=Enum)
+        for Enum in enums.ENUMS
     }
 )
 """Map all Enum subclasses as Optional.

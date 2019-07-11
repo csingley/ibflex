@@ -321,7 +321,7 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     reportDate: Optional[datetime.date] = None
     prevCloseQuantity: Optional[Decimal] = None
@@ -444,7 +444,7 @@ class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     realizedPnlMTD: Optional[Decimal] = None
     realizedCapitalGainsPnlMTD: Optional[Decimal] = None
@@ -678,7 +678,7 @@ class StatementOfFundsLine(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     fxRateToBase: Optional[Decimal] = None
     listingExchange: Optional[str] = None
@@ -760,7 +760,7 @@ class OpenPosition(FlexElement):
     percentOfNAV: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     listingExchange: Optional[str] = None
     underlyingSecurityID: Optional[str] = None
@@ -814,7 +814,7 @@ class Trade(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     tradeID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     tradeDate: Optional[datetime.date] = None
@@ -905,7 +905,7 @@ class UnbundledCommissionDetail(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     dateTime: Optional[datetime.datetime] = None
     exchange: Optional[str] = None
@@ -950,7 +950,7 @@ class TradeConfirm(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     tradeID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
@@ -1046,7 +1046,7 @@ class OptionEAE(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     date: Optional[datetime.date] = None
     quantity: Optional[Decimal] = None
@@ -1118,7 +1118,7 @@ class TradeTransfer(FlexElement):
     issuer: Optional[str] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     proceeds: Optional[Decimal] = None
     fxPnl: Optional[Decimal] = None
@@ -1207,7 +1207,7 @@ class HardToBorrowDetail(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     valueDate: Optional[datetime.date] = None
     quantity: Optional[Decimal] = None
@@ -1243,7 +1243,7 @@ class SLBActivity(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     date: Optional[datetime.date] = None
     slbTransactionId: Optional[str] = None
@@ -1298,7 +1298,7 @@ class Transfer(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     company: Optional[str] = None
     accountName: Optional[str] = None
@@ -1366,7 +1366,7 @@ class PriorPeriodPosition(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
 
 
@@ -1408,7 +1408,7 @@ class CorporateAction(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     reportDate: Optional[datetime.date] = None
     proceeds: Optional[Decimal] = None
@@ -1443,7 +1443,7 @@ class CashTransaction(FlexElement):
     multiplier: Optional[decimal.Decimal] = None
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
@@ -1490,7 +1490,7 @@ class ChangeInDividendAccrual(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
@@ -1533,7 +1533,7 @@ class OpenDividendAccrual(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
@@ -1568,7 +1568,7 @@ class SecurityInfo(FlexElement):
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     code: Tuple[enums.Code, ...] = ()
 
@@ -1637,7 +1637,7 @@ class NetStockPosition(FlexElement):
     multiplier: Optional[Decimal] = None
     strike: Optional[Decimal] = None
     expiry: Optional[datetime.date] = None
-    putCall: Optional[str] = None
+    putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[Decimal] = None
     reportDate: Optional[datetime.date] = None
     sharesAtIb: Optional[Decimal] = None

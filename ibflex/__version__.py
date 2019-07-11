@@ -1,9 +1,16 @@
 """
-The Doomsday Machine is not sufficiently controllable. Even though it maximizes
-the probability that deterrence will work (including minimizing the probability
-of accidents or miscalculations), it is totally unsatisfactory.  One must still
-examine the consequences of a failure. In this case a failure kills too many
-people and kills them too automatically.
+Get a job, save your money, listen to Jane
+Everybody knows umbrellas cost more in the rain
+All the news is bad
+Is there any other kind?
+Everybody's talking at the same time
+
+It's hard times for some
+For others it's sweet
+Someone makes money when there's blood in the street
+Don't take any lip
+Stay in line
+Everybody's talking at the same time
 """
 __title__ = "ibflex"
 __description__ = (
