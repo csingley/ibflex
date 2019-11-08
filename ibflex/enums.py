@@ -111,6 +111,7 @@ class AssetClass(enum.Enum):
     WARRANT = "WAR"
     FUTURE = "FUT"
     FUTUREOPTION = "FOP"
+    CFD = "CFD"
 
 
 @enum.unique
