@@ -37,11 +37,17 @@ def parse(source) -> Types.FlexQueryResponse:
     """Parse Flex XML data into a hierarchy of ibflex.Types class instances.
 
     Args:
-        source: file name or file object.
+        source: file name, file object, or bytes.
     """
     tree = ET.ElementTree()
-    tree.parse(source)
-    root = tree.getroot()
+
+    #  Accept output of client.download(), which is bytes.
+    if isinstance(source, bytes):
+        root = ET.XML(source)
+    #  Accept file name or file object.
+    else:
+        root = tree.parse(source)
+
     if root.tag != "FlexQueryResponse":
         raise FlexParserError("Not a FlexQueryResponse")
     parsed = parse_element(root)
@@ -62,9 +68,9 @@ def parse_element(
         #  Verify that # of contained <FlexStatement> elements matches
         #  what's reported in <FlexStatements count> attribute.
         try:
-            count = int(elem.get("count", None))
+            count = int(elem.get("count", ""))
             assert len(elem) == count
-        except (TypeError, ValueError):
+        except (ValueError):
             msg = f"Malformed FlexStatements.count={elem.get('count', '')}"
             raise FlexParserError(msg)
         except AssertionError:
@@ -146,7 +152,7 @@ def parse_element_attr(
     """
     #  Validate currency of any field named something like "currency".
     if "currency" in name.lower() and value not in CURRENCY_CODES:
-        raise FlexParserError(f"Unknown currency {value!r}")
+        raise FlexParserError(f"{name}: Unknown currency {value!r}")
 
     #  FIXME
     #  This "dot reference" gets hit a lot by parse_data_element(), and `Class`
