@@ -99,12 +99,6 @@ def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
         return tuple(itertools.chain.from_iterable(fxlots))
 
     instances = tuple(parse_data_element(child) for child in elem)
-
-    # Sanity check - contents should all be same type
-    if not utils.all_equal(type(instance) for instance in instances):
-        types = {type(instance) for instance in instances}
-        raise FlexParserError(f"{tag} contains multiple element types {types}")
-
     return instances
 
 
@@ -465,6 +459,7 @@ ISO4217 = (
 CURRENCY_CODES = ISO4217 + (
     "CNH",           # RMB traded in HK
     "BASE_SUMMARY",  # Fake currency code used in IB NAV/Performance reports
+    "",              # Lot element allows blank currency ?!
 )
 
 
