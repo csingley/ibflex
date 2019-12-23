@@ -239,6 +239,8 @@ class AccountInformation(FlexElement):
     masterName: Optional[str] = None
     ibEntity: Optional[str] = None
     primaryEmail: Optional[str] = None
+    accountRepName: Optional[str] = None
+    accountRepPhone: Optional[str] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -290,6 +292,7 @@ class ChangeInNAV(FlexElement):
     endingValue: Optional[Decimal] = None
     twr: Optional[Decimal] = None
     corporateActionProceeds: Optional[Decimal] = None
+    commissionCreditsRedemption: Optional[Decimal] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -412,6 +415,9 @@ class EquitySummaryByReportDateInBase(FlexElement):
     brokerInterestAccrualsComponentShort: Optional[Decimal] = None
     cfdUnrealizedPlLong: Optional[Decimal] = None
     cfdUnrealizedPlShort: Optional[Decimal] = None
+    ipoSubscription: Optional[Decimal] = None
+    ipoSubscriptionLong: Optional[Decimal] = None
+    ipoSubscriptionShort: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -644,6 +650,11 @@ class CashReportCurrency(FlexElement):
     ipoSubscriptionCom: Optional[Decimal] = None
     ipoSubscriptionMTD: Optional[Decimal] = None
     ipoSubscriptionYTD: Optional[Decimal] = None
+    commissionCreditsRedemption: Optional[Decimal] = None
+    commissionCreditsRedemptionSec: Optional[Decimal] = None
+    commissionCreditsRedemptionCom: Optional[Decimal] = None
+    commissionCreditsRedemptionMTD: Optional[Decimal] = None
+    commissionCreditsRedemptionYTD: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -684,7 +695,7 @@ class StatementOfFundsLine(FlexElement):
     listingExchange: Optional[str] = None
     underlyingSecurityID: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
-    settleDate: Optional[str] = None
+    settleDate: Optional[datetime.date] = None
     activityCode: Optional[str] = None  # FIXME
     orderID: Optional[str] = None
     tradeQuantity: Optional[Decimal] = None
@@ -694,6 +705,7 @@ class StatementOfFundsLine(FlexElement):
     tradeTax: Optional[Decimal] = None
     tradeCode: Optional[str] = None
     levelOfDetail: Optional[str] = None
+    transactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -795,6 +807,90 @@ class FxLot(FlexElement):
 
 @dataclass(frozen=True)
 class Trade(FlexElement):
+    """ Wrapped in <Trades> """
+
+    transactionType: Optional[enums.TradeType] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    buySell: Optional[enums.BuySell] = None
+    orderType: Optional[enums.OrderType] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    accountId: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    multiplier: Optional[Decimal] = None
+    strike: Optional[Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    tradeID: Optional[str] = None
+    reportDate: Optional[datetime.date] = None
+    tradeDate: Optional[datetime.date] = None
+    tradeTime: Optional[datetime.time] = None
+    settleDateTarget: Optional[datetime.date] = None
+    exchange: Optional[str] = None
+    quantity: Optional[Decimal] = None
+    tradePrice: Optional[Decimal] = None
+    tradeMoney: Optional[Decimal] = None
+    taxes: Optional[Decimal] = None
+    ibCommission: Optional[Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    netCash: Optional[Decimal] = None
+    netCashInBase: Optional[Decimal] = None
+    closePrice: Optional[Decimal] = None
+    notes: Tuple[enums.Code, ...] = ()  # separator = ";"
+    cost: Optional[Decimal] = None
+    mtmPnl: Optional[Decimal] = None
+    origTradePrice: Optional[Decimal] = None
+    origTradeDate: Optional[datetime.date] = None
+    origTradeID: Optional[str] = None
+    origOrderID: Optional[str] = None
+    openDateTime: Optional[datetime.datetime] = None
+    fifoPnlRealized: Optional[Decimal] = None
+    capitalGainsPnl: Optional[Decimal] = None
+    levelOfDetail: Optional[str] = None
+    ibOrderID: Optional[str] = None
+    # Despite the name, `orderTime` actually contains date/time data.
+    orderTime: Optional[datetime.datetime] = None
+    changeInPrice: Optional[Decimal] = None
+    changeInQuantity: Optional[Decimal] = None
+    proceeds: Optional[decimal.Decimal] = None
+    fxPnl: Optional[decimal.Decimal] = None
+    clearingFirmID: Optional[str] = None
+    #  Effective 2013, every Trade has a `transactionID` attribute that can't
+    #  be deselected in the Flex query template.
+    transactionID: Optional[str] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    ibExecID: Optional[str] = None
+    brokerageOrderID: Optional[str] = None
+    orderReference: Optional[str] = None
+    volatilityOrderLink: Optional[str] = None
+    exchOrderId: Optional[str] = None
+    extExecID: Optional[str] = None
+    traderID: Optional[str] = None
+    isAPIOrder: Optional[bool] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    principalAdjustFactor: Optional[Decimal] = None
+    dateTime: Optional[datetime.datetime] = None
+    underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    sedol: Optional[str] = None
+    whenRealized: Optional[datetime.datetime] = None
+    whenReopened: Optional[datetime.datetime] = None
+
+
+@dataclass(frozen=True)
+class Lot(FlexElement):
     """ Wrapped in <Trades> """
 
     transactionType: Optional[enums.TradeType] = None
@@ -1014,7 +1110,7 @@ class TradeConfirm(FlexElement):
     tax: Optional[Decimal] = None
     listingExchange: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
-    settleDate: Optional[str] = None
+    settleDate: Optional[datetime.date] = None
     underlyingSecurityID: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
@@ -1460,6 +1556,7 @@ class CorporateAction(FlexElement):
     reportDate: Optional[datetime.date] = None
     proceeds: Optional[Decimal] = None
     value: Optional[Decimal] = None
+    transactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1497,6 +1594,7 @@ class CashTransaction(FlexElement):
     transactionID: Optional[str] = None
     reportDate: Optional[datetime.date] = None
     clientReference: Optional[str] = None
+    settleDate: Optional[datetime.date] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
 
@@ -1618,6 +1716,7 @@ class SecurityInfo(FlexElement):
     putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
     code: Tuple[enums.Code, ...] = ()
+    currency: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1633,6 +1732,9 @@ class ConversionRate(FlexElement):
 @dataclass(frozen=True)
 class FIFOPerformanceSummaryUnderlying(FlexElement):
     accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    listingExchange: Optional[str] = None
     assetCategory: Optional[enums.AssetClass] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
@@ -1641,6 +1743,8 @@ class FIFOPerformanceSummaryUnderlying(FlexElement):
     cusip: Optional[str] = None
     isin: Optional[str] = None
     underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
     realizedSTProfit: Optional[Decimal] = None
     realizedSTLoss: Optional[Decimal] = None
     realizedLTProfit: Optional[Decimal] = None
@@ -1650,14 +1754,31 @@ class FIFOPerformanceSummaryUnderlying(FlexElement):
     unrealizedLoss: Optional[Decimal] = None
     totalUnrealizedPnl: Optional[Decimal] = None
     totalFifoPnl: Optional[Decimal] = None
+    totalRealizedCapitalGainsPnl: Optional[Decimal] = None
+    totalRealizedFxPnl: Optional[Decimal] = None
+    totalUnrealizedCapitalGainsPnl: Optional[Decimal] = None
+    totalUnrealizedFxPnl: Optional[Decimal] = None
+    totalCapitalGainsPnl: Optional[Decimal] = None
+    totalFxPnl: Optional[Decimal] = None
+    transferredPnl: Optional[Decimal] = None
+    transferredCapitalGainsPnl: Optional[Decimal] = None
+    transferredFxPnl: Optional[Decimal] = None
     sedol: Optional[str] = None
     securityIDType: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
+    multiplier: Optional[Decimal] = None
+    strike: Optional[Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[Decimal] = None
+    reportDate: Optional[datetime.date] = None
     unrealizedSTProfit: Optional[decimal.Decimal] = None
     unrealizedSTLoss: Optional[decimal.Decimal] = None
     unrealizedLTProfit: Optional[decimal.Decimal] = None
     unrealizedLTLoss: Optional[decimal.Decimal] = None
+    costAdj: Optional[Decimal] = None
+    code: Tuple[enums.Code, ...] = ()
 
 
 @dataclass(frozen=True)
