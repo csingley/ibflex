@@ -83,12 +83,6 @@ class ParseElementContainerTestCase(unittest.TestCase):
         output = parser.parse_element_container(elem)
         self.assertEqual(output, (0, 1))
 
-        #  Sanity check: returned tuple elements of different types raise error.
-        mock_parse_data_element.side_effect = (0, "1")
-
-        with self.assertRaises(parser.FlexParserError):
-            parser.parse_element_container(elem)
-
     def testFxPositions(self, mock_parse_data_element):
         """parse_element_container() concatenates <FxPositions> grandchildren.
         """
