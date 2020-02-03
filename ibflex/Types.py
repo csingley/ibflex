@@ -1860,6 +1860,44 @@ class ClientFeesDetail(FlexElement):
     levelOfDetail: Optional[str] = None
     other: Optional[Decimal] = None
 
+       
+@dataclass(frozen=True)
+class TransactionTax(FlexElement):
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None 
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    multiplier: Optional[Decimal] = None
+    strike: Optional[Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[Decimal] = None
+    date: Optional[datetime.date] = None
+    taxDescription: Optional[str] = None
+    quantity: Optional[Decimal] = None
+    reportDate: Optional[datetime.date] = None
+    taxAmount: Optional[Decimal] = None
+    tradeId: Optional[str] = None
+    tradePrice: Optional[Decimal] = None
+    source: Optional[str] = None
+    code: Tuple[enums.Code, ...] = ()
+    levelOfDetail: Optional[str] = None
+
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _ClientFeesDetail = ClientFeesDetail
