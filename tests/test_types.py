@@ -1129,5 +1129,57 @@ class ConversionRateTestCase(unittest.TestCase):
         self.assertEqual(instance.rate, decimal.Decimal("0.12876"))
 
 
+class TransactionTaxTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<TransactionTax accountId="U123456" acctAlias="ibflex test" model="" currency="USD" '
+        'fxRateToBase="1" assetCategory="STK" symbol="SNY" description="SANOFI-ADR" '
+        'conid="1234578" securityID="80105N105" securityIDType="CUSIP" cusip="80105N105" '
+         'isin="" listingExchange="NASDAQ" underlyingConid="" underlyingSymbol="" '
+         'underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" '
+         'strike="" expiry="" putCall="" principalAdjustFactor="" date="2013-11-02" '
+         'taxDescription="French Transaction Tax" quantity="0" reportDate="2013-11-02" '
+         'taxAmount="-0.347098" tradeId="12345678550" tradePrice="0.0000" '
+         'source="STANDALONE" code="" levelOfDetail="SUMMARY" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.TransactionTax)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal('1'))
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
+        self.assertEqual(instance.symbol, "SNY")
+        self.assertEqual(instance.description, "SANOFI-ADR")
+        self.assertEqual(instance.conid, "1234578")
+        self.assertEqual(instance.securityID, "80105N105")
+        self.assertEqual(instance.securityIDType, "CUSIP")
+        self.assertEqual(instance.cusip, "80105N105")
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, "NASDAQ")
+        self.assertEqual(instance.underlyingConid, None)
+        self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, decimal.Decimal("1"))
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.date, datetime.date(2013, 11, 2))
+        self.assertEqual(instance.taxDescription, "French Transaction Tax")
+        self.assertEqual(instance.quantity, decimal.Decimal('0'))
+        self.assertEqual(instance.reportDate, datetime.date(2013, 11, 2))
+        self.assertEqual(instance.taxAmount, decimal.Decimal("-0.347098"))
+        self.assertEqual(instance.tradeId, "12345678550")
+        self.assertEqual(instance.tradePrice, decimal.Decimal("0"))
+        self.assertEqual(instance.source, "STANDALONE")
+        self.assertEqual(instance.code, ())
+        self.assertEqual(instance.levelOfDetail, "SUMMARY")
+
+        
 if __name__ == '__main__':
     unittest.main(verbosity=3)
