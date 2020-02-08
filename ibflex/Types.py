@@ -1661,7 +1661,10 @@ class OpenDividendAccrual(FlexElement):
     securityID: Optional[str] = None
     cusip: Optional[str] = None
     isin: Optional[str] = None
+    listingExchange: Optional[str] = None
     underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
     exDate: Optional[datetime.date] = None
     payDate: Optional[datetime.date] = None
     quantity: Optional[Decimal] = None
