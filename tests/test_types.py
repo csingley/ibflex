@@ -1038,7 +1038,8 @@ class OpenDividendAccrualTestCase(unittest.TestCase):
         ('<OpenDividendAccrual accountId="U123456" acctAlias="ibflex test" model="" '
          'currency="USD" fxRateToBase="1" assetCategory="STK" symbol="CASH" '
          'description="META FINANCIAL GROUP INC" conid="3655441" securityID="" '
-         'securityIDType="" cusip="" isin="" underlyingConid="" underlyingSymbol="" '
+         'securityIDType="" cusip="" isin="" listingExchange="NYSE" underlyingConid="" '
+         'underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" '
          'issuer="" multiplier="1" strike="" expiry="" putCall="" '
          'principalAdjustFactor="" exDate="2011-12-08" payDate="2012-01-01" '
          'quantity="25383" tax="0" fee="0" grossRate="0.13" grossAmount="3299.79" '
@@ -1061,8 +1062,11 @@ class OpenDividendAccrualTestCase(unittest.TestCase):
         self.assertEqual(instance.securityIDType, None)
         self.assertEqual(instance.cusip, None)
         self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, "NYSE")
         self.assertEqual(instance.underlyingConid, None)
         self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
         self.assertEqual(instance.issuer, None)
         self.assertEqual(instance.multiplier, decimal.Decimal("1"))
         self.assertEqual(instance.strike, None)
