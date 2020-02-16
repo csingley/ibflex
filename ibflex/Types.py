@@ -179,6 +179,8 @@ class FlexStatement(FlexElement):
     SecuritiesInfo: Tuple["SecurityInfo", ...] = ()
     ConversionRates: Tuple["ConversionRate", ...] = ()
     HKIPOOpenSubscriptions: Tuple = ()  # TODO
+    CommissionCredits: Tuple = () # TODO
+    StockGrantActivities: Tuple = () # TODO
 
     def __repr__(self):
         repr = (
@@ -293,6 +295,7 @@ class ChangeInNAV(FlexElement):
     twr: Optional[Decimal] = None
     corporateActionProceeds: Optional[Decimal] = None
     commissionCreditsRedemption: Optional[Decimal] = None
+    grantActivity: Optional[Decimal] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -780,6 +783,7 @@ class OpenPosition(FlexElement):
     positionValueInBase: Optional[Decimal] = None
     unrealizedCapitalGainsPnl: Optional[Decimal] = None
     unrealizedlFxPnl: Optional[Decimal] = None
+    vestingDate: Optional[datetime.date] = None
 
 
 @dataclass(frozen=True)
