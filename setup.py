@@ -55,6 +55,7 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     keywords=["Interactive Brokers", "ibkr", "flex", "xml"],
     extras_require={
