@@ -1,11 +1,17 @@
 """
 Release process:
-    1. Update ibflex.__version__.__version__
-    2. Change download_url below
-    3. Commit changes & push
-    4. `git tag` the release
-    5. Push tags
-    6. Change download_url back to master; commit & push
+    1.  Update ibflex.__version__.__version__
+    2.  Change download_url below
+    3.  Commit changes & push
+    4.  `git tag` the release
+    5.  `git push --tags`
+    6.  Verify that new tag shows at https://github.com/csingley/ibflex/releases
+    7.  `python setup.py sdist`
+    8.  `twine upload --repository-url https://test.pypi.org/legacy/ dist/*`
+    9.  Check https://test.pypi.org/project/ibflex
+    10. `twine upload dist/*`
+    11. `make clean`
+    12. Change download_url back to master; commit & push
 """
 import os.path
 from setuptools import setup, find_packages
