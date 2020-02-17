@@ -19,32 +19,12 @@ API, data structures, etc. are likely to see major changes.  Several XML
 schemata are missing, and a few of the more newly-introduced attributes
 for the existing schemata.  There are probably bugs.
 
-`Pull requests`_ are welcome.
-
-
-Breaking Changes in Version 0.13
-===================================
-
-Don't upgrade to version 0.13 if you don't want to rewrite your code.
-
-Version 0.13 is a near-complete rewrite, with different data structures.
-Instead of returning nested dictionaries, ``ibflex.parser.parse()`` now
-returns object instances (subclasses of ``ibflex.Types.FlexElement``).
-As such, values are retrieved by attribute "dot access" rather than dictionary
-key lookups.  See below for an example.
-
-The more interesting/useful enumerated values from the Flex reference
-(e.g. trade notes, corporate action types) are now parsed into Python Enums.
-
-All sequences are tuples instead of lists.  Everything is immutable.
-
-There's now a hard dependency on Python 3.7; the whole library is built on
-dataclasses and PEP 484 type hinting.
-
-Sorry for the disruption, but it was necessary to transition the library from a
-quick hack to a solid foundation that is much more maintainable.  The basic
-data structure (instance attribute access rather than dict keys) is not expected to
-change again.
+`Pull requests`_ are welcome.  If you're submitting a pull request for an updated
+type, please do me a favor and include a test case based on your real-world data
+(censored to remove any personal information) in `tests.test_types.py`.  You should
+easily be able to cut&paste one of the existing `unittest.TestCase` subclasses in
+that file and adapt it to your own data.  Thanks very much; my own datastream does
+not have full coverage of the object model!
 
 
 Installation
