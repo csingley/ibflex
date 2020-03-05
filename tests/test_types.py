@@ -1184,6 +1184,59 @@ class TransactionTaxTestCase(unittest.TestCase):
         self.assertEqual(instance.code, ())
         self.assertEqual(instance.levelOfDetail, "SUMMARY")
 
-        
+
+class SalesTaxTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<SalesTax accountId="U123456" acctAlias="" model="" currency="USD" '
+         'fxRateToBase="1" assetCategory="" symbol="" description="" conid="" '
+         'securityID="" securityIDType="" cusip="" isin="" listingExchange="" '
+         'underlyingConid="" underlyingSymbol="" underlyingSecurityID="" '
+         'underlyingListingExchange="" issuer="" multiplier="" strike="" '
+         'expiry="" putCall="" principalAdjustFactor="" date="2015-01-03" '
+         'country="Finland" taxType="VAT" payer="U123456" '
+         'taxableDescription="b****32:CUSIP (NP)" taxableAmount="0.2" '
+         'taxRate="0.21" salesTax="-0.042" taxableTransactionID="12913231356" '
+         'transactionID="12913221785" code="" />'))
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.SalesTax)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, None)
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal('1'))
+        self.assertEqual(instance.assetCategory, None)
+        self.assertEqual(instance.symbol, None)
+        self.assertEqual(instance.description, None)
+        self.assertEqual(instance.conid, None)
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, None)
+        self.assertEqual(instance.underlyingConid, None)
+        self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, None)
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.date, datetime.date(2015, 1, 3))
+        self.assertEqual(instance.country, "Finland")
+        self.assertEqual(instance.taxType, "VAT")
+        self.assertEqual(instance.payer, "U123456")
+        self.assertEqual(instance.taxableDescription, "b****32:CUSIP (NP)")
+        self.assertEqual(instance.taxableAmount, decimal.Decimal('0.2'))
+        self.assertEqual(instance.taxRate, decimal.Decimal('0.21'))
+        self.assertEqual(instance.salesTax, decimal.Decimal('-0.042'))
+        self.assertEqual(instance.taxableTransactionID, "12913231356")
+        self.assertEqual(instance.transactionID, "12913221785")
+        self.assertEqual(instance.code, ())
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=3)

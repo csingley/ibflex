@@ -41,7 +41,6 @@ TODO - need types for:
     Adjustments
     DebitCardActivities
     SoftDollars
-    SalesTaxes
     CFDCharges
     SLBOpenContracts
     HKIPOOpenSubscriptions
@@ -83,6 +82,7 @@ __all__ = [
     "PriorPeriodPosition",
     "ClientFee",
     "ClientFeesDetail",
+    "SalesTax",
 ]
 
 
@@ -164,7 +164,7 @@ class FlexStatement(FlexElement):
     DebitCardActivities: Tuple = ()  # TODO
     SoftDollars: Tuple = ()  # TODO
     CashTransactions: Tuple["CashTransaction", ...] = ()
-    SalesTaxes: Tuple = ()  # TODO
+    SalesTaxes: Tuple["SalesTax", ...] = ()
     CFDCharges: Tuple = ()  # TODO
     InterestAccruals: Tuple["InterestAccrualsCurrency", ...] = ()
     TierInterestDetails: Tuple["TierInterestDetail", ...] = ()
@@ -1904,6 +1904,44 @@ class TransactionTax(FlexElement):
     source: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
     levelOfDetail: Optional[str] = None
+
+@dataclass(frozen=True)
+class SalesTax(FlexElement):
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    multiplier: Optional[Decimal] = None
+    strike: Optional[Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[Decimal] = None
+    date: Optional[datetime.date] = None
+    country: Optional[str] = None
+    taxType: Optional[str] = None
+    payer: Optional[str] = None
+    taxableDescription: Optional[str] = None
+    taxableAmount: Optional[Decimal] = None
+    taxRate: Optional[Decimal] = None
+    salesTax: Optional[Decimal] = None
+    taxableTransactionID: Optional[str] = None
+    transactionID: Optional[str] = None
+    code: Tuple[enums.Code, ...] = ()
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
