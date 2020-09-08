@@ -891,6 +891,7 @@ class Trade(FlexElement):
     sedol: Optional[str] = None
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
+    accruedInt: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1724,6 +1725,7 @@ class SecurityInfo(FlexElement):
     principalAdjustFactor: Optional[decimal.Decimal] = None
     code: Tuple[enums.Code, ...] = ()
     currency: Optional[str] = None
+    settlementPolicyMethod: Optional[str] = None
 
 
 @dataclass(frozen=True)
