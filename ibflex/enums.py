@@ -42,6 +42,7 @@ class CashAction(enum.Enum):
     FEES = "Other Fees"
     DIVIDEND = "Dividends"
     PAYMENTINLIEU = "Payment In Lieu Of Dividends"
+    COMMADJ = "Commission Adjustments"
 
 
 @enum.unique
