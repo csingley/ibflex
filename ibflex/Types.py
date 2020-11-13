@@ -39,7 +39,6 @@ TODO - need types for:
     RoutingCommissions
     IBGNoteTransactions
     Adjustments
-    DebitCardActivities
     SoftDollars
     CFDCharges
     SLBOpenContracts
@@ -83,6 +82,7 @@ __all__ = [
     "ClientFee",
     "ClientFeesDetail",
     "SalesTax",
+    "DebitCardActivity",
 ]
 
 
@@ -161,7 +161,7 @@ class FlexStatement(FlexElement):
     CorporateActions: Tuple["CorporateAction", ...] = ()
     ClientFees: Tuple["ClientFee", ...] = ()
     ClientFeesDetail: Tuple["_ClientFeesDetail", ...] = ()
-    DebitCardActivities: Tuple = ()  # TODO
+    DebitCardActivities: Tuple["DebitCardActivity", ...] = ()
     SoftDollars: Tuple = ()  # TODO
     CashTransactions: Tuple["CashTransaction", ...] = ()
     SalesTaxes: Tuple["SalesTax", ...] = ()
@@ -1601,6 +1601,25 @@ class CashTransaction(FlexElement):
     clientReference: Optional[str] = None
     settleDate: Optional[datetime.date] = None
     acctAlias: Optional[str] = None
+    model: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class DebitCardActivity(FlexElement):
+    """ Wrapped in <DebitCardActivities> """
+
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    status: Optional[str] = None
+    reportDate: Optional[datetime.date] = None
+    postingDate: Optional[datetime.date] = None
+    transactionDateTime: Optional[datetime.datetime] = None
+    category: Optional[str] = None
+    merchantNameLocation: Optional[str] = None
+    amount: Optional[Decimal] = None
     model: Optional[str] = None
 
 
