@@ -1173,7 +1173,7 @@ class TransactionTaxTestCase(unittest.TestCase):
         self.assertEqual(instance.expiry, None)
         self.assertEqual(instance.putCall, None)
         self.assertEqual(instance.principalAdjustFactor, None)
-        self.assertEqual(instance.date, datetime.date(2013, 11, 2))
+        self.assertEqual(instance.date, datetime.datetime(2013, 11, 2))
         self.assertEqual(instance.taxDescription, "French Transaction Tax")
         self.assertEqual(instance.quantity, decimal.Decimal('0'))
         self.assertEqual(instance.reportDate, datetime.date(2013, 11, 2))
