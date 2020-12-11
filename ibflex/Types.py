@@ -559,6 +559,11 @@ class CashReportCurrency(FlexElement):
     accountTransfersYTD: Optional[Decimal] = None
     internalTransfersMTD: Optional[Decimal] = None
     internalTransfersYTD: Optional[Decimal] = None
+    excessFundSweep: Optional[Decimal] = None
+    excessFundSweepSec: Optional[Decimal] = None
+    excessFundSweepCom: Optional[Decimal] = None
+    excessFundSweepMTD: Optional[Decimal] = None
+    excessFundSweepYTD: Optional[Decimal] = None
     dividendsMTD: Optional[Decimal] = None
     dividendsYTD: Optional[Decimal] = None
     insuredDepositInterestMTD: Optional[Decimal] = None
@@ -653,6 +658,11 @@ class CashReportCurrency(FlexElement):
     ipoSubscriptionCom: Optional[Decimal] = None
     ipoSubscriptionMTD: Optional[Decimal] = None
     ipoSubscriptionYTD: Optional[Decimal] = None
+    billableSalesTax: Optional[Decimal] = None
+    billableSalesTaxSec: Optional[Decimal] = None
+    billableSalesTaxCom: Optional[Decimal] = None
+    billableSalesTaxMTD: Optional[Decimal] = None
+    billableSalesTaxYTD: Optional[Decimal] = None
     commissionCreditsRedemption: Optional[Decimal] = None
     commissionCreditsRedemptionSec: Optional[Decimal] = None
     commissionCreditsRedemptionCom: Optional[Decimal] = None
