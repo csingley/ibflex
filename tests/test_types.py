@@ -804,6 +804,33 @@ class CashTransactionTestCase(unittest.TestCase):
         self.assertEqual(instance.clientReference, None)
 
 
+class DebitCardActivityTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<DebitCardActivity accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="BASE_SUMMARY" fxRateToBase="1" assetCategory="" status="Settled" '
+         'reportDate="20201101" postingDate="20201102" transactionDateTime="20201110;172030" '
+         'category="RETAIL" merchantNameLocation="DTN" '
+         'amount="-117.00" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.DebitCardActivity)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "BASE_SUMMARY")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.assetCategory, None)
+        self.assertEqual(instance.status, "Settled")
+        self.assertEqual(instance.reportDate, datetime.date(2020, 11, 1))
+        self.assertEqual(instance.postingDate, datetime.date(2020, 11, 2))
+        self.assertEqual(instance.transactionDateTime, datetime.datetime(2020, 11, 10, 17, 20, 30))
+        self.assertEqual(instance.category, "RETAIL")
+        self.assertEqual(instance.merchantNameLocation, "DTN")
+        self.assertEqual(instance.amount, decimal.Decimal("-117.00"))
+
+
 class InterestAccrualsCurrencyTestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<InterestAccrualsCurrency accountId="U123456" acctAlias="ibflex test" '
