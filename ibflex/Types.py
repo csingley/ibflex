@@ -1612,7 +1612,7 @@ class CashTransaction(FlexElement):
     settleDate: Optional[datetime.date] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
-    levelOfDetail: Optional[str] = None 
+    levelOfDetail: Optional[str] = None
 
 
 @dataclass(frozen=True)
