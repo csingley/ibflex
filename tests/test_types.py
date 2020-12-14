@@ -211,9 +211,10 @@ class CashReportCurrencyTestCase(unittest.TestCase):
          'withdrawalsCom="0" accountTransfers="0" accountTransfersSec="0" '
          'accountTransfersCom="0" linkingAdjustments="0" linkingAdjustmentsSec="0" '
          'linkingAdjustmentsCom="0" internalTransfers="0" internalTransfersSec="0" '
-         'internalTransfersCom="0" dividends="34.74" dividendsSec="34.74" '
-         'dividendsCom="0" insuredDepositInterest="0" insuredDepositInterestSec="0" '
-         'insuredDepositInterestCom="0" brokerInterest="-64.57" '
+         'internalTransfersCom="0" excessFundSweep="0" excessFundSweepSec="0" '
+         'excessFundSweepCom="0" excessFundSweepMTD="0" excessFundSweepYTD="0" '
+         'dividends="34.74" dividendsSec="34.74" dividendsCom="0" insuredDepositInterest="0" '
+         'insuredDepositInterestSec="0" insuredDepositInterestCom="0" brokerInterest="-64.57" '
          'brokerInterestSec="-64.57" brokerInterestCom="0" bondInterest="0" '
          'bondInterestSec="0" bondInterestCom="0" cashSettlingMtm="0" '
          'cashSettlingMtmSec="0" cashSettlingMtmCom="0" realizedVm="0" '
@@ -229,7 +230,8 @@ class CashReportCurrencyTestCase(unittest.TestCase):
          'withholdingTaxSec="-27.07" withholdingTaxCom="0" withholding871m="0" '
          'withholding871mSec="0" withholding871mCom="0" withholdingCollectedTax="0" '
          'withholdingCollectedTaxSec="0" withholdingCollectedTaxCom="0" salesTax="0" '
-         'salesTaxSec="0" salesTaxCom="0" fxTranslationGainLoss="0" '
+         'salesTaxSec="0" salesTaxCom="0" billableSalesTax="0" billableSalesTaxSec="0" '
+         'billableSalesTaxCom="0" billableSalesTaxMTD="0" billableSalesTaxYTD="0" fxTranslationGainLoss="0" '
          'fxTranslationGainLossSec="0" fxTranslationGainLossCom="0" '
          'otherFees="-521.22" otherFeesSec="-521.22" otherFeesCom="0" other="0" '
          'otherSec="0" otherCom="0" endingCash="51.730897778" '
@@ -802,6 +804,33 @@ class CashTransactionTestCase(unittest.TestCase):
         self.assertEqual(instance.transactionID, "5767420360")
         self.assertEqual(instance.reportDate, datetime.date(2015,10, 6))
         self.assertEqual(instance.clientReference, None)
+
+
+class DebitCardActivityTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<DebitCardActivity accountId="U123456" acctAlias="ibflex test" model="" '
+         'currency="BASE_SUMMARY" fxRateToBase="1" assetCategory="" status="Settled" '
+         'reportDate="20201101" postingDate="20201102" transactionDateTime="20201110;172030" '
+         'category="RETAIL" merchantNameLocation="DTN" '
+         'amount="-117.00" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.DebitCardActivity)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "BASE_SUMMARY")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.assetCategory, None)
+        self.assertEqual(instance.status, "Settled")
+        self.assertEqual(instance.reportDate, datetime.date(2020, 11, 1))
+        self.assertEqual(instance.postingDate, datetime.date(2020, 11, 2))
+        self.assertEqual(instance.transactionDateTime, datetime.datetime(2020, 11, 10, 17, 20, 30))
+        self.assertEqual(instance.category, "RETAIL")
+        self.assertEqual(instance.merchantNameLocation, "DTN")
+        self.assertEqual(instance.amount, decimal.Decimal("-117.00"))
 
 
 class InterestAccrualsCurrencyTestCase(unittest.TestCase):
