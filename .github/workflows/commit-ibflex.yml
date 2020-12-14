@@ -1,6 +1,6 @@
 name: commit-ibflex
 
-on: [push, pull-request]
+on: [push, pull_request]
 
 jobs:
   build:
