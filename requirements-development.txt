@@ -1,0 +1,14 @@
+--index-url https://pypi.python.org/simple/
+
+# `setup.py develop`
+-e .
+
+# web client
+requests
+
+# test running
+nose
+coverage
+pylint
+mypy
+black
