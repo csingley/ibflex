@@ -62,6 +62,7 @@ class Code(enum.Enum):
     CANCEL = "Ca"               # Cancelled
     CORRECT = "Co"              # Corrected Trade
     CROSSING = "Cx"             # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
+    DUAL = "D"                  # IB acted as Dual Agent, UNIQUE TO TRADE CONFIRM REPORT
     ETF = "ETF"                 # ETF Creation/Redemption
     EXPIRED = "Ep"              # Resulted from an Expired Position
     EXERCISE = "Ex"             # Exercise
