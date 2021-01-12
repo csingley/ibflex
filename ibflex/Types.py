@@ -83,7 +83,8 @@ __all__ = [
     "ClientFeesDetail",
     "SalesTax",
     "DebitCardActivity",
-    "SymbolSummary"
+    "SymbolSummary",
+    "Order"
 ]
 
 
