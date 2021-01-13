@@ -1267,5 +1267,184 @@ class SalesTaxTestCase(unittest.TestCase):
         self.assertEqual(instance.code, ())
 
 
+class OrderTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<Order accountId="U123456" acctAlias="Test Account" model="" '
+         'currency="USD" assetCategory="CASH" symbol="EUR.USD" '
+         'description="EUR.USD" conid="12087792" securityID="" '
+         'securityIDType="" cusip="" isin="" listingExchange="" '
+         'underlyingConid="" underlyingSymbol="" underlyingSecurityID="" '
+         'underlyingListingExchange="" issuer="" multiplier="1" strike="" '
+         'expiry="" putCall="" principalAdjustFactor="" transactionType="" '
+         'tradeID="" orderID="92965807" execID="" brokerageOrderID="" '
+         'orderReference="" volatilityOrderLink="" clearingFirmID="" '
+         'origTradePrice="" origTradeDate="" origTradeID="" '
+         'orderTime="20210111;221652" dateTime="20210112;021624" '
+         'reportDate="20210112" settleDate="20210114" tradeDate="20210112" '
+         'exchange="" buySell="BUY" quantity="30000" price="1.21621" '
+         'amount="36486.3" proceeds="-36486.3" commission="-2.557" '
+         'brokerExecutionCommission="" brokerClearingCommission="" '
+         'thirdPartyExecutionCommission="" thirdPartyClearingCommission="" '
+         'thirdPartyRegulatoryCommission="" otherCommission="" '
+         'commissionCurrency="CAD" tax="0" code="" orderType="LMT" '
+         'levelOfDetail="ORDER" traderID="" isAPIOrder="" allocatedTo="" accruedInt="0" />'))
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.Order)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "Test Account")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.assetCategory, enums.AssetClass.CASH)
+        self.assertEqual(instance.symbol, "EUR.USD")
+        self.assertEqual(instance.description, "EUR.USD")
+        self.assertEqual(instance.conid, "12087792")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, None)
+        self.assertEqual(instance.underlyingConid, None)
+        self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, decimal.Decimal('1'))
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.transactionType, None)
+        self.assertEqual(instance.tradeID, None)
+        self.assertEqual(instance.orderID, decimal.Decimal('92965807'))
+        self.assertEqual(instance.execID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.origTradePrice, None)
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        #  Despite the name, `orderTime` actually contains date/time data.
+        self.assertEqual(instance.orderTime, datetime.datetime(2021, 1, 11, 22, 16, 52))
+        self.assertEqual(instance.dateTime, datetime.datetime(2021, 1, 12, 2, 16, 24))
+        self.assertEqual(instance.reportDate, datetime.date(2021, 1, 12))
+        self.assertEqual(instance.settleDate, datetime.date(2021, 1, 14))
+        self.assertEqual(instance.tradeDate, datetime.date(2021, 1, 12))
+        self.assertEqual(instance.exchange, None)
+        self.assertEqual(instance.buySell, enums.BuySell.BUY)
+        self.assertEqual(instance.quantity, decimal.Decimal("30000"))
+        self.assertEqual(instance.price, decimal.Decimal("1.21621"))
+        self.assertEqual(instance.amount, decimal.Decimal("36486.3"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("-36486.3"))
+        self.assertEqual(instance.commission, decimal.Decimal("-2.557"))
+        self.assertEqual(instance.brokerExecutionCommission, None)
+        self.assertEqual(instance.brokerClearingCommission, None)
+        self.assertEqual(instance.thirdPartyExecutionCommission, None)
+        self.assertEqual(instance.thirdPartyClearingCommission, None)
+        self.assertEqual(instance.thirdPartyRegulatoryCommission, None)
+        self.assertEqual(instance.otherCommission, None)
+        self.assertEqual(instance.commissionCurrency, "CAD")
+        self.assertEqual(instance.tax, decimal.Decimal("0"))
+        self.assertEqual(instance.code, ())
+        self.assertEqual(instance.orderType, enums.OrderType.LIMIT)
+        self.assertEqual(instance.levelOfDetail, "ORDER")
+        self.assertEqual(instance.traderID, None)
+        self.assertEqual(instance.isAPIOrder, None)
+        self.assertEqual(instance.allocatedTo, None)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+
+
+class SymbolSummaryTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<SymbolSummary accountId="U123456" acctAlias="Test Account" '
+         'model="" currency="USD" assetCategory="CASH" symbol="EUR.USD" '
+         'description="EUR.USD" conid="12087792" securityID="" '
+         'securityIDType="" cusip="" isin="" listingExchange="" '
+         'underlyingConid="" underlyingSymbol="" underlyingSecurityID="" '
+         'underlyingListingExchange="" issuer="" multiplier="1" strike="" '
+         'expiry="" putCall="" principalAdjustFactor="" transactionType="" '
+         'tradeID="" orderID="" execID="" brokerageOrderID="" orderReference="" '
+         'volatilityOrderLink="" clearingFirmID="" origTradePrice="" '
+         'origTradeDate="" origTradeID="" orderTime="" dateTime="" '
+         'reportDate="20210112" settleDate="20210114" tradeDate="20210112" '
+         'exchange="IDEALFX" buySell="BUY" quantity="30000" price="1.21621" '
+         'amount="36486.3" proceeds="-36486.3" commission="-2.557" '
+         'brokerExecutionCommission="" brokerClearingCommission="" '
+         'thirdPartyExecutionCommission="" thirdPartyClearingCommission="" '
+         'thirdPartyRegulatoryCommission="" otherCommission="" '
+         'commissionCurrency="CAD" tax="0" code="" orderType="" '
+         'levelOfDetail="SYMBOL_SUMMARY" traderID="" isAPIOrder="" '
+         'allocatedTo="" accruedInt="0" />'))
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.SymbolSummary)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "Test Account")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.assetCategory, enums.AssetClass.CASH)
+        self.assertEqual(instance.symbol, "EUR.USD")
+        self.assertEqual(instance.description, "EUR.USD")
+        self.assertEqual(instance.conid, "12087792")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, None)
+        self.assertEqual(instance.underlyingConid, None)
+        self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, decimal.Decimal('1'))
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.transactionType, None)
+        self.assertEqual(instance.tradeID, None)
+        self.assertEqual(instance.orderID, None)
+        self.assertEqual(instance.execID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.origTradePrice, None)
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        #  Despite the name, `orderTime` actually contains date/time data.
+        self.assertEqual(instance.orderTime, None)
+        self.assertEqual(instance.dateTime, None)
+        self.assertEqual(instance.reportDate, datetime.date(2021, 1, 12))
+        self.assertEqual(instance.settleDate, datetime.date(2021, 1, 14))
+        self.assertEqual(instance.tradeDate, datetime.date(2021, 1, 12))
+        self.assertEqual(instance.exchange, "IDEALFX")
+        self.assertEqual(instance.buySell, enums.BuySell.BUY)
+        self.assertEqual(instance.quantity, decimal.Decimal("30000"))
+        self.assertEqual(instance.price, decimal.Decimal("1.21621"))
+        self.assertEqual(instance.amount, decimal.Decimal("36486.3"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("-36486.3"))
+        self.assertEqual(instance.commission, decimal.Decimal("-2.557"))
+        self.assertEqual(instance.brokerExecutionCommission, None)
+        self.assertEqual(instance.brokerClearingCommission, None)
+        self.assertEqual(instance.thirdPartyExecutionCommission, None)
+        self.assertEqual(instance.thirdPartyClearingCommission, None)
+        self.assertEqual(instance.thirdPartyRegulatoryCommission, None)
+        self.assertEqual(instance.otherCommission, None)
+        self.assertEqual(instance.commissionCurrency, "CAD")
+        self.assertEqual(instance.tax, decimal.Decimal("0"))
+        self.assertEqual(instance.code, ())
+        self.assertEqual(instance.orderType, None)
+        self.assertEqual(instance.levelOfDetail, "SYMBOL_SUMMARY")
+        self.assertEqual(instance.traderID, None)
+        self.assertEqual(instance.isAPIOrder, None)
+        self.assertEqual(instance.allocatedTo, None)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=3)
