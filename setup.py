@@ -43,8 +43,8 @@ setup(
     python_requires=">=3.7",
     license=ABOUT["__license__"],
     # Note: change 'master' to the tag name when releasing a new verion
-    download_url="{}/master".format(URL_BASE),
-    #  download_url="{}/{}".format(URL_BASE, ABOUT["__version__"]),
+    #  download_url="{}/master".format(URL_BASE),
+    download_url="{}/{}".format(URL_BASE, ABOUT["__version__"]),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
