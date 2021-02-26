@@ -1445,6 +1445,164 @@ class SymbolSummaryTestCase(unittest.TestCase):
         self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
 
 
+class ChangeInNAVTestCase(unittest.TestCase):
+
+    data = ET.fromstring(
+    ('<ChangeInNAV accountId="myaccount" acctAlias="myaccount" fromDate="20210224" toDate="20210224" startingValue="234.567" '
+    'endingValue="1234.56" depositsWithdrawals="0" debitCardActivity="0" billPay="0" mtm="11.11" model="" '
+    'realized="0" changeInUnrealized="0" costAdjustments="0" transferredPnlAdjustments="0" internalCashTransfers="0" '
+    'excessFundSweep="0" assetTransfers="0" grantActivity="0" dividends="0" withholdingTax="0" withholding871m="0" '
+    'withholdingTaxCollected="0" changeInDividendAccruals="0" interest="0" changeInInterestAccruals="0" advisorFees="0" '
+    'clientFees="0" otherFees="0" feesReceivables="0" commissions="-7.5951887" commissionCreditsRedemption="0" '
+    'commissionReceivables="0" forexCommissions="0" transactionTax="0" taxReceivables="0" salesTax="0" billableSalesTax="0" '
+    'softDollars="0" netFxTrading="0" fxTranslation="0" linkingAdjustments="0" other="0" twr="0.30531605"'
+    ' corporateActionProceeds="0" />'))
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.ChangeInNAV)
+        self.assertEqual(instance.accountId, "myaccount")
+        self.assertEqual(instance.acctAlias, "myaccount")
+        self.assertEqual(instance.fromDate, datetime.date(2021, 2, 24))
+        self.assertEqual(instance.toDate, datetime.date(2021, 2, 24))
+        self.assertEqual(instance.startingValue, decimal.Decimal("234.567"))
+        self.assertEqual(instance.endingValue, decimal.Decimal("1234.56"))
+        self.assertEqual(instance.depositsWithdrawals, decimal.Decimal("0"))
+        self.assertEqual(instance.debitCardActivity, decimal.Decimal("0"))
+        self.assertEqual(instance.billPay, decimal.Decimal("0"))
+        self.assertEqual(instance.mtm, decimal.Decimal("11.11"))
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.realized, decimal.Decimal("0"))
+        self.assertEqual(instance.changeInUnrealized, decimal.Decimal("0"))
+        self.assertEqual(instance.costAdjustments, decimal.Decimal("0"))
+        self.assertEqual(instance.transferredPnlAdjustments, decimal.Decimal("0"))
+        self.assertEqual(instance.internalCashTransfers, decimal.Decimal("0"))
+        self.assertEqual(instance.excessFundSweep, decimal.Decimal("0"))
+        self.assertEqual(instance.assetTransfers, decimal.Decimal("0"))
+        self.assertEqual(instance.grantActivity, decimal.Decimal("0"))
+        self.assertEqual(instance.dividends, decimal.Decimal("0"))
+        self.assertEqual(instance.withholdingTax, decimal.Decimal("0"))
+        self.assertEqual(instance.withholding871m, decimal.Decimal("0"))
+        self.assertEqual(instance.withholdingTaxCollected, decimal.Decimal("0"))
+        self.assertEqual(instance.changeInDividendAccruals, decimal.Decimal("0"))
+        self.assertEqual(instance.interest, decimal.Decimal("0"))
+        self.assertEqual(instance.changeInInterestAccruals, decimal.Decimal("0"))
+        self.assertEqual(instance.advisorFees, decimal.Decimal("0"))
+        self.assertEqual(instance.clientFees, decimal.Decimal("0"))
+        self.assertEqual(instance.otherFees, decimal.Decimal("0"))
+        self.assertEqual(instance.feesReceivables, decimal.Decimal("0"))
+        self.assertEqual(instance.commissions, decimal.Decimal("-7.5951887"))
+        self.assertEqual(instance.commissionCreditsRedemption, decimal.Decimal("0"))
+        self.assertEqual(instance.commissionReceivables, decimal.Decimal("0"))
+        self.assertEqual(instance.forexCommissions, decimal.Decimal("0"))
+        self.assertEqual(instance.transactionTax, decimal.Decimal("0"))
+        self.assertEqual(instance.taxReceivables, decimal.Decimal("0"))
+        self.assertEqual(instance.salesTax, decimal.Decimal("0"))
+        self.assertEqual(instance.billableSalesTax, decimal.Decimal("0"))
+        self.assertEqual(instance.softDollars, decimal.Decimal("0"))
+        self.assertEqual(instance.netFxTrading, decimal.Decimal("0"))
+        self.assertEqual(instance.fxTranslation, decimal.Decimal("0"))
+        self.assertEqual(instance.linkingAdjustments, decimal.Decimal("0"))
+        self.assertEqual(instance.other, decimal.Decimal("0"))
+        self.assertEqual(instance.twr, decimal.Decimal("0.30531605"))
+
+
+class TradesOrderTestCase(unittest.TestCase):
+    """This example of Order comes from a flex report made by clicking Trades->Orders->Select All"""
+
+    data = ET.fromstring(
+    ('<Order buySell="BUY" quantity="3" netCash="-876.9314" dateTime="2021-02-03 10:01:50" tradePrice="2.92" '
+    'acctAlias="myaccount" assetCategory="OPT" description="IWM 19MAR21 226.0 C" conid="467957000" '
+    'underlyingConid="9579970" underlyingSymbol="IWM" multiplier="100" strike="226" expiry="2021-03-19" '
+    'putCall="C" ibCommission="-0.9314" ibOrderID="1722040385" accountId="myaccount" model="Independent" '
+    'currency="USD" fxRateToBase="1" symbol="IWM   210319C00226000" securityID="" securityIDType="" cusip="" '
+    'isin="" listingExchange="CBOE" underlyingSecurityID="US4642876555" underlyingListingExchange="ARCA" issuer="" '
+    'tradeID="" reportDate="2021-02-03" principalAdjustFactor="" tradeDate="2021-02-03" settleDateTarget="2021-02-04" '
+    'transactionType="" exchange="" tradeMoney="876" proceeds="-876" taxes="0" ibCommissionCurrency="USD" closePrice="3.08" '
+    'openCloseIndicator="-" notes="P" cost="876.9314" fifoPnlRealized="0" fxPnl="0" mtmPnl="48" origTradePrice="" '
+    'origTradeDate="" origTradeID="" origOrderID="" clearingFirmID="" transactionID="" ibExecID="" brokerageOrderID="" '
+    'orderReference="" volatilityOrderLink="" exchOrderId="" extExecID="" orderTime="2021-02-03 10:01:50" openDateTime="" '
+    'holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="ORDER" changeInPrice="" changeInQuantity="" '
+    'orderType="LMT" traderID="" isAPIOrder="" accruedInt="0" />'))
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.Order)
+
+        self.assertEqual(instance.buySell, enums.BuySell.BUY)
+        self.assertEqual(instance.quantity, decimal.Decimal("3"))
+        self.assertEqual(instance.netCash, decimal.Decimal("-876.9314"))
+        self.assertEqual(instance.dateTime, datetime.datetime(2021, 2, 3, 10, 1, 50))
+        self.assertEqual(instance.tradePrice, decimal.Decimal("2.92"))
+        self.assertEqual(instance.acctAlias, "myaccount")
+        self.assertEqual(instance.assetCategory, enums.AssetClass.OPTION)
+        self.assertEqual(instance.description, "IWM 19MAR21 226.0 C")
+        self.assertEqual(instance.conid, "467957000")
+        self.assertEqual(instance.underlyingConid, "9579970")
+        self.assertEqual(instance.underlyingSymbol, "IWM")
+        self.assertEqual(instance.multiplier, decimal.Decimal("100"))
+        self.assertEqual(instance.strike, decimal.Decimal("226"))
+        self.assertEqual(instance.expiry, datetime.date(2021, 3, 19))
+        self.assertEqual(instance.putCall, enums.PutCall.CALL)
+        self.assertEqual(instance.ibCommission, decimal.Decimal("-0.9314"))
+        self.assertEqual(instance.ibOrderID, "1722040385")
+        self.assertEqual(instance.accountId, "myaccount")
+        self.assertEqual(instance.model, "Independent")
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.symbol, "IWM   210319C00226000")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, "CBOE")
+        self.assertEqual(instance.underlyingSecurityID, "US4642876555")
+        self.assertEqual(instance.underlyingListingExchange, "ARCA")
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.tradeID, None)
+        self.assertEqual(instance.reportDate, datetime.date(2021, 2, 3))
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.tradeDate, datetime.date(2021, 2, 3))
+        self.assertEqual(instance.settleDateTarget, datetime.date(2021, 2, 4))
+        self.assertEqual(instance.transactionType, None)
+        self.assertEqual(instance.exchange, None)
+        self.assertEqual(instance.tradeMoney, decimal.Decimal("876"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("-876"))
+        self.assertEqual(instance.taxes, decimal.Decimal("0"))
+        self.assertEqual(instance.ibCommissionCurrency, "USD")
+        self.assertEqual(instance.closePrice, decimal.Decimal("3.08"))
+        self.assertEqual(instance.openCloseIndicator, enums.OpenClose.UNKNOWN)
+        self.assertEqual(instance.notes, "P")
+        self.assertEqual(instance.cost, decimal.Decimal("876.9314"))
+        self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("0"))
+        self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
+        self.assertEqual(instance.mtmPnl, decimal.Decimal("48")) 
+        self.assertEqual(instance.origTradePrice, None)
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        self.assertEqual(instance.origOrderID, None)
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.transactionID, None)
+        self.assertEqual(instance.ibExecID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.exchOrderId, None)
+        self.assertEqual(instance.extExecID, None)
+        self.assertEqual(instance.orderTime, datetime.datetime(2021, 2, 3, 10, 1, 50))
+        self.assertEqual(instance.openDateTime, None) 
+        self.assertEqual(instance.holdingPeriodDateTime, None)
+        self.assertEqual(instance.whenRealized, None)
+        self.assertEqual(instance.whenReopened, None)
+        self.assertEqual(instance.levelOfDetail, "ORDER")
+        self.assertEqual(instance.changeInPrice, None)
+        self.assertEqual(instance.changeInQuantity, None)
+        self.assertEqual(instance.orderType, enums.OrderType.LIMIT)
+        self.assertEqual(instance.traderID, None)
+        self.assertEqual(instance.isAPIOrder, None)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=3)

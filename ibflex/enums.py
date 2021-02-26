@@ -140,6 +140,7 @@ class OpenClose(enum.Enum):
     OPEN = "O"
     CLOSE = "C"
     OPENCLOSE = "C;O"
+    UNKNOWN = "-"
 
 
 @enum.unique

@@ -298,6 +298,8 @@ class ChangeInNAV(FlexElement):
     corporateActionProceeds: Optional[Decimal] = None
     commissionCreditsRedemption: Optional[Decimal] = None
     grantActivity: Optional[Decimal] = None
+    excessFundSweep: Optional[Decimal] = None
+    billableSalesTax: Optional[Decimal] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -1108,7 +1110,7 @@ class SymbolSummary(FlexElement):
 
 @dataclass(frozen=True)
 class Order(FlexElement):
-    """ Wrapped in <TradeConfirms> """
+    """ Wrapped in <TradeConfirms> or <Trades>"""
 
     accountId: Optional[str] = None
     acctAlias: Optional[str] = None
@@ -1172,6 +1174,33 @@ class Order(FlexElement):
     isAPIOrder: Optional[bool] = None
     allocatedTo: Optional[str] = None
     accruedInt: Optional[Decimal] = None
+    netCash: Optional[Decimal] = None
+    tradePrice: Optional[Decimal] = None
+    ibCommission: Optional[Decimal] = None
+    ibOrderID: Optional[str] = None
+    fxRateToBase: Optional[Decimal] = None
+    settleDateTarget: Optional[datetime.date] = None
+    tradeMoney: Optional[Decimal] = None
+    taxes: Optional[Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    closePrice: Optional[Decimal] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    notes: Optional[str] = None
+    cost: Optional[Decimal] = None
+    fifoPnlRealized: Optional[Decimal] = None
+    fxPnl: Optional[Decimal] = None
+    mtmPnl: Optional[Decimal] = None
+    origOrderID: Optional[str] = None
+    transactionID: Optional[str] = None
+    ibExecID: Optional[str] = None
+    exchOrderId: Optional[str] = None
+    extExecID: Optional[str] = None
+    openDateTime: Optional[datetime.datetime] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    whenRealized: Optional[datetime.datetime] = None
+    whenReopened: Optional[datetime.datetime] = None
+    changeInPrice: Optional[Decimal] = None
+    changeInQuantity: Optional[Decimal] = None
 
 
 @dataclass(frozen=True)
