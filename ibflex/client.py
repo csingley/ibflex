@@ -65,6 +65,12 @@ class BadResponseError(IbflexClientError):
     def __init__(self, response: requests.Response):
         self.response = response
         super(BadResponseError, self).__init__(response.content)
+        
+
+class StatementGenerationTimeout(IbflexClientError):
+    """ Exception raised when the Flex server says it is generating the response,
+        but does not finish generating the statement in a timely fashion.
+    """
 
 
 class ResponseCodeError(IbflexClientError):
@@ -97,7 +103,7 @@ class StatementError:
 ###############################################################################
 # FUNCTIONS
 ###############################################################################
-def download(token: str, query_id: str) -> bytes:
+def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
     """2-step FlexQueryReport download process.
 
     Args:
@@ -107,14 +113,20 @@ def download(token: str, query_id: str) -> bytes:
     """
     stmt_access = request_statement(token, query_id)
     status = 0
+    tries = 0
     while status is not True:
         time.sleep(status)
+        tries += 1
         response = submit_request(
             url=stmt_access.Url or STMT_URL,
             token=token,
             query=stmt_access.ReferenceCode,
         )
         status = check_statement_response(response)
+        if max_tries and tries > max_tries:
+            raise StatementGenerationTimeout(
+                "Exceeded max number of tries while attempting download"
+            )
     return response.content
 
 
