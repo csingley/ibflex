@@ -1523,7 +1523,7 @@ class TradesOrderTestCase(unittest.TestCase):
     'origTradeDate="" origTradeID="" origOrderID="" clearingFirmID="" transactionID="" ibExecID="" brokerageOrderID="" '
     'orderReference="" volatilityOrderLink="" exchOrderId="" extExecID="" orderTime="2021-02-03 10:01:50" openDateTime="" '
     'holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="ORDER" changeInPrice="" changeInQuantity="" '
-    'orderType="LMT" traderID="" isAPIOrder="" accruedInt="0" />'))
+    'orderType="LMT;MKT" traderID="" isAPIOrder="" accruedInt="0" />'))
 
     def testParse(self):
         instance = parser.parse_data_element(self.data)
@@ -1597,7 +1597,7 @@ class TradesOrderTestCase(unittest.TestCase):
         self.assertEqual(instance.levelOfDetail, "ORDER")
         self.assertEqual(instance.changeInPrice, None)
         self.assertEqual(instance.changeInQuantity, None)
-        self.assertEqual(instance.orderType, enums.OrderType.LIMIT)
+        self.assertEqual(instance.orderType, enums.OrderType.MULTIPLE)
         self.assertEqual(instance.traderID, None)
         self.assertEqual(instance.isAPIOrder, None)
         self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
