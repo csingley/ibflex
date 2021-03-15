@@ -346,6 +346,9 @@ def convert_enum(Type, value):
     #  Work around old versions of values; convert to the new format
     if Type is enums.CashAction and value == "Deposits/Withdrawals":
         value = "Deposits & Withdrawals"
+    #  Work around for Orders with orderType like "LMT;MKT" -> "MULTIPLE"
+    if Type is enums.OrderType and ';' in value:
+        value = "MULTIPLE"
     elif Type is enums.TransferType and value == "ACAT":
         value = "ACATS"
 
