@@ -87,6 +87,8 @@ class Code(enum.Enum):
     MINSTCG = "MSL"             # Maximize Short-Term Loss tax lot-matching method
     OPENING = "O"               # Opening Trade
     PARTIAL = "P"               # Partial Execution
+    PARTIALFRACTIONAL = "P;RP"  # Partial Execution of fractional shares
+    FULLFRACTIONAL = "FP;P"     # Full Execution of fractional shares
     PRICEIMPROVEMENT = "PI"     # Price Improvement
     POSTACCRUAL = "Po"          # Interest or Dividend Accrual Posting
     PRINCIPAL = "Pr"            # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
