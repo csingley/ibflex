@@ -906,6 +906,13 @@ class Trade(FlexElement):
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
     accruedInt: Optional[Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
+    
+        
 
 
 @dataclass(frozen=True)
