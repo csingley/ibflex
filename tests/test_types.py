@@ -540,7 +540,8 @@ class TradeTestCase(unittest.TestCase):
          'exchOrderId="N/A" extExecID="N/A" orderTime="" openDateTime="" '
          'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
          'levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" '
-         'orderType="" traderID="" isAPIOrder="N" />')
+         'orderType="" traderID="" isAPIOrder="N" accruedInt="0" serialNumber="" '
+         'deliveryType="" commodityType="" fineness="0.0" weight="0.0 ()" />')
     )
 
     def testParse(self):
@@ -614,6 +615,12 @@ class TradeTestCase(unittest.TestCase):
         self.assertEqual(instance.orderType, None)
         self.assertEqual(instance.traderID, None)
         self.assertEqual(instance.isAPIOrder, False)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+        self.assertEqual(instance.serialNumber, None)
+        self.assertEqual(instance.deliveryType, None)
+        self.assertEqual(instance.commodityType, None)
+        self.assertEqual(instance.fineness, decimal.Decimal("0"))
+        self.assertEqual(instance.weight, "0.0 ()")
 
 
 class OptionEAETestCase(unittest.TestCase):
