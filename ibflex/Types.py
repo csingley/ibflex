@@ -909,7 +909,7 @@ class Trade(FlexElement):
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
     commodityType: Optional[str] = None
-    fineness: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     
         
