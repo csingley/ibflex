@@ -198,6 +198,7 @@ class OptionAction(enum.Enum):
     EXERCISE = "Exercise"
     EXPIRE = "Expiration"
     SELL = "Sell"
+    BUY = "Buy"
 
 
 @enum.unique
