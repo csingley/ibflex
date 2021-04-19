@@ -1632,7 +1632,7 @@ class OptionEAEBuyTestCase(unittest.TestCase):
         self.assertEqual(instance.model, None)
         self.assertEqual(instance.currency, "USD")
         self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
-        self.assertEqual(instance.assetCategory, enums.AssetClass.OPTION)
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
         self.assertEqual(instance.symbol, "PSTH")
         self.assertEqual(instance.description, "PERSHING SQUARE TONTINE -A")
         self.assertEqual(instance.conid, "91900358")
