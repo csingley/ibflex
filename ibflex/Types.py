@@ -93,7 +93,7 @@ __all__ = [
 
 import datetime
 import decimal
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 from typing import Tuple, Optional
 
 from ibflex import enums
@@ -102,7 +102,13 @@ from ibflex import enums
 @dataclass(frozen=True)
 class FlexElement:
     """ Base class for data element types """
+    
+    def __iter__(self):
+        return iter(astuple(self))
 
+    def items(self):
+        for attr, val in self.__dict__.items():
+            yield attr, val
 
 @dataclass(frozen=True)
 class FlexQueryResponse(FlexElement):
