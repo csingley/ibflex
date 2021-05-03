@@ -361,8 +361,8 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-    otherWithAccruals: Optional[Decimal] = None
-    totalWithAccruals: Optional[Decimal] = None
+    otherWithAccruals: Optional[decimal.Decimal] = None
+    totalWithAccruals: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
