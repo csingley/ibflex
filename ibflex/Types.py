@@ -281,6 +281,8 @@ class ChangeInNAV(FlexElement):
     interest: Optional[decimal.Decimal] = None
     changeInInterestAccruals: Optional[decimal.Decimal] = None
     advisorFees: Optional[decimal.Decimal] = None
+    brokerFees: Optional[decimal.Decimal] = None
+    changeInBrokerFeeAccruals: Optional[decimal.Decimal] = None
     clientFees: Optional[decimal.Decimal] = None
     otherFees: Optional[decimal.Decimal] = None
     feesReceivables: Optional[decimal.Decimal] = None
@@ -348,6 +350,13 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     code: Tuple[enums.Code, ...] = ()
     corpActionMtm: Optional[decimal.Decimal] = None
     dividends: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
+    otherWithAccruals: Optional[decimal.Decimal] = None
+    totalWithAccruals: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -379,6 +388,9 @@ class EquitySummaryByReportDateInBase(FlexElement):
     bonds: Optional[decimal.Decimal] = None
     bondsLong: Optional[decimal.Decimal] = None
     bondsShort: Optional[decimal.Decimal] = None
+    bondInterestAccrualsComponent: Optional[decimal.Decimal] = None
+    bondInterestAccrualsComponentLong: Optional[decimal.Decimal] = None
+    bondInterestAccrualsComponentShort: Optional[decimal.Decimal] = None
     notes: Optional[decimal.Decimal] = None
     notesLong: Optional[decimal.Decimal] = None
     notesShort: Optional[decimal.Decimal] = None
@@ -405,6 +417,9 @@ class EquitySummaryByReportDateInBase(FlexElement):
     forexCfdUnrealizedPlShort: Optional[decimal.Decimal] = None
     brokerInterestAccrualsComponent: Optional[decimal.Decimal] = None
     brokerCashComponent: Optional[decimal.Decimal] = None
+    brokerFeesAccrualsComponent: Optional[decimal.Decimal] = None
+    brokerFeesAccrualsComponentLong: Optional[decimal.Decimal] = None
+    brokerFeesAccrualsComponentShort: Optional[decimal.Decimal] = None
     cfdUnrealizedPl: Optional[decimal.Decimal] = None
     fdicInsuredBankSweepAccount: Optional[decimal.Decimal] = None
     fdicInsuredBankSweepAccountLong: Optional[decimal.Decimal] = None
@@ -427,6 +442,9 @@ class EquitySummaryByReportDateInBase(FlexElement):
     ipoSubscription: Optional[decimal.Decimal] = None
     ipoSubscriptionLong: Optional[decimal.Decimal] = None
     ipoSubscriptionShort: Optional[decimal.Decimal] = None
+    physDel: Optional[decimal.Decimal] = None
+    physDelLong: Optional[decimal.Decimal] = None
+    physDelShort: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -467,6 +485,16 @@ class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     realizedPnlYTD: Optional[decimal.Decimal] = None
     realizedCapitalGainsPnlYTD: Optional[decimal.Decimal] = None
     realizedFxPnlYTD: Optional[decimal.Decimal] = None
+    brokerFees: Optional[decimal.Decimal] = None
+    brokerFeesSec: Optional[decimal.Decimal] = None
+    brokerFeesCom: Optional[decimal.Decimal] = None
+    brokerFeesMTD: Optional[decimal.Decimal] = None
+    brokerFeesYTD: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -507,6 +535,11 @@ class CashReportCurrency(FlexElement):
     dividends: Optional[decimal.Decimal] = None
     dividendsSec: Optional[decimal.Decimal] = None
     dividendsCom: Optional[decimal.Decimal] = None
+    brokerFees: Optional[decimal.Decimal] = None
+    brokerFeesSec: Optional[decimal.Decimal] = None
+    brokerFeesCom: Optional[decimal.Decimal] = None
+    brokerFeesMTD: Optional[decimal.Decimal] = None
+    brokerFeesYTD: Optional[decimal.Decimal] = None
     brokerInterest: Optional[decimal.Decimal] = None
     brokerInterestSec: Optional[decimal.Decimal] = None
     brokerInterestCom: Optional[decimal.Decimal] = None
@@ -725,6 +758,11 @@ class StatementOfFundsLine(FlexElement):
     tradeCode: Optional[str] = None
     levelOfDetail: Optional[str] = None
     transactionID: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -800,6 +838,11 @@ class OpenPosition(FlexElement):
     unrealizedCapitalGainsPnl: Optional[decimal.Decimal] = None
     unrealizedlFxPnl: Optional[decimal.Decimal] = None
     vestingDate: Optional[datetime.date] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1612,6 +1655,7 @@ class Transfer(FlexElement):
     reportDate: Optional[datetime.date] = None
     underlyingConid: Optional[str] = None
     date: Optional[datetime.date] = None
+    dateTime: Optional[datetime.datetime] = None
     account: Optional[str] = None
     quantity: Optional[decimal.Decimal] = None
     transferPrice: Optional[decimal.Decimal] = None
@@ -1638,6 +1682,11 @@ class Transfer(FlexElement):
     pnlAmountInBase: Optional[decimal.Decimal] = None
     fxPnl: Optional[decimal.Decimal] = None
     transactionID: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1787,6 +1836,11 @@ class CashTransaction(FlexElement):
     acctAlias: Optional[str] = None
     model: Optional[str] = None
     levelOfDetail: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1896,6 +1950,11 @@ class OpenDividendAccrual(FlexElement):
     toAcct: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1992,6 +2051,11 @@ class FIFOPerformanceSummaryUnderlying(FlexElement):
     unrealizedLTLoss: Optional[decimal.Decimal] = None
     costAdj: Optional[decimal.Decimal] = None
     code: Tuple[enums.Code, ...] = ()
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2025,6 +2089,11 @@ class NetStockPosition(FlexElement):
     sharesBorrowed: Optional[decimal.Decimal] = None
     sharesLent: Optional[decimal.Decimal] = None
     netShares: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
