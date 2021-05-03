@@ -3,12 +3,12 @@ Release process:
     1.  Update ibflex.__version__.__version__
     2.  Change download_url below
     3.  Commit changes & push
-    4.  `git tag` the release
-    5.  `git push --tags`
-    6.  Verify that new tag shows at https://github.com/csingley/ibflex/releases
-    7.  `python setup.py sdist`
-    8.  `twine upload --repository-url https://test.pypi.org/legacy/ dist/*`
-    9.  Check https://test.pypi.org/project/ibflex
+    4.  Test: `python setup.py sdist`
+    5.  Test: `twine upload --repository-url https://test.pypi.org/legacy/ dist/*`
+    6.  Test result: Check https://test.pypi.org/project/ibflex
+    7.  `git tag` the release
+    8.  `git push --tags`
+    9.  Verify that new tag shows at https://github.com/csingley/ibflex/releases
     10. `twine upload dist/*`
     11. `make clean`
     12. Change download_url back to master; commit & push
@@ -62,6 +62,7 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     keywords=["Interactive Brokers", "ibkr", "flex", "xml"],
     extras_require={
