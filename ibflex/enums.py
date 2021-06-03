@@ -66,6 +66,7 @@ class Code(enum.Enum):
     ETF = "ETF"                   # ETF Creation/Redemption
     EXPIRED = "Ep"                # Resulted from an Expired Position
     EXERCISE = "Ex"               # Exercise
+    FP = "FP"                     # FP
     GUARANTEED = "G"              # Trade in Guaranteed Account Segment
     HIGHESTCOST = "HC"            # Highest Cost tax lot-matching method
     HFINVESTMENT = "HFI"          # Investment Transferred to Hedge Fund
