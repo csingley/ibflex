@@ -625,6 +625,7 @@ class OptionEAETestCase(unittest.TestCase):
          'securityIDType="" cusip="" isin="" underlyingConid="80789235" '
          'underlyingSymbol="VXX" issuer="" multiplier="100" strike="20" '
          'expiry="2011-08-05" putCall="C" principalAdjustFactor="" date="2011-08-05" '
+         'listingExchange="IBIS" underlyingSecurityID="" underlyingListingExchange="" '
          'transactionType="Assignment" quantity="20" tradePrice="0.0000" '
          'markPrice="0.0000" proceeds="0.00" commisionsAndTax="0.00" '
          'costBasis="21,792.73" realizedPnl="0.00" fxPnl="0.00" mtmPnl="20,620.00" '
@@ -649,6 +650,9 @@ class OptionEAETestCase(unittest.TestCase):
         self.assertEqual(instance.isin, None)
         self.assertEqual(instance.underlyingConid, "80789235")
         self.assertEqual(instance.underlyingSymbol, "VXX")
+        self.assertEqual(instance.listingExchange, "IBIS")
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
         self.assertEqual(instance.issuer, None)
         self.assertEqual(instance.multiplier, decimal.Decimal("100"))
         self.assertEqual(instance.strike, decimal.Decimal("20"))
