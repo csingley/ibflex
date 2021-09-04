@@ -199,6 +199,7 @@ class OptionAction(enum.Enum):
     EXPIRE = "Expiration"
     SELL = "Sell"
     BUY = "Buy"
+    CASHSETTLEMENT = "Cash Settlement"
 
 
 @enum.unique

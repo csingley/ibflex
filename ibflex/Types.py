@@ -1368,6 +1368,9 @@ class OptionEAE(FlexElement):
     securityIDType: Optional[str] = None
     cusip: Optional[str] = None
     isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     issuer: Optional[str] = None
