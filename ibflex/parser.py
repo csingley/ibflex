@@ -359,29 +359,29 @@ def convert_enum(Type, value):
 
 
 ATTRIB_CONVERTERS = {
-    str: convert_string,
-    Optional[str]: convert_string,
-    int: convert_int,
-    Optional[int]: make_optional(convert_int),
-    bool: convert_bool,
-    Optional[bool]: make_optional(convert_bool),
-    decimal.Decimal: convert_decimal,
-    Optional[decimal.Decimal]: make_optional(convert_decimal),
-    datetime.date: convert_date,
-    Optional[datetime.date]: make_optional(convert_date),
-    datetime.time: convert_time,
-    Optional[datetime.time]: make_optional(convert_time),
-    datetime.datetime: convert_datetime,
-    Optional[datetime.datetime]: make_optional(convert_datetime),
-    Tuple[str, ...]: convert_sequence,
-    Tuple[enums.Code, ...]: convert_code_sequence,
+    "str": convert_string,
+    "Optional[str]": convert_string,
+    "int": convert_int,
+    "Optional[int]": make_optional(convert_int),
+    "bool": convert_bool,
+    "Optional[bool]": make_optional(convert_bool),
+    "decimal.Decimal": convert_decimal,
+    "Optional[decimal.Decimal]": make_optional(convert_decimal),
+    "datetime.date": convert_date,
+    "Optional[datetime.date]": make_optional(convert_date),
+    "datetime.time": convert_time,
+    "Optional[datetime.time]": make_optional(convert_time),
+    "datetime.datetime": convert_datetime,
+    "Optional[datetime.datetime]": make_optional(convert_datetime),
+    "Tuple[str, ...]": convert_sequence,
+    "Tuple[enums.Code, ...]": convert_code_sequence,
 }
 """Map of FlexElement attribute type hint to corresponding converter function.
 """
 
 ATTRIB_CONVERTERS.update(
     {
-        Optional[Enum]: functools.partial(convert_enum, Type=Enum)
+        f"Optional[enums.{Enum.__name__}]": functools.partial(convert_enum, Type=Enum)
         for Enum in enums.ENUMS
     }
 )

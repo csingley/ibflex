@@ -1,13 +1,17 @@
 # coding: utf-8
 """ Unit tests for ibflex.parser module """
 
+# PEP 563 compliance
+# https://www.python.org/dev/peps/pep-0563/#resolving-type-hints-at-runtime
+from __future__ import annotations
+
 import unittest
 from unittest.mock import patch, sentinel
 import xml.etree.ElementTree as ET
 import datetime
 import decimal
 import enum
-import typing
+from typing import Tuple, Optional
 import functools
 
 from ibflex import parser, Types, enums
@@ -131,7 +135,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
             datetime: datetime.datetime
             date: datetime.date
             time: datetime.time
-            sequence: typing.Tuple[str, ...]
+            sequence: Tuple[str, ...]
 
         #  Return (attr_name, type-converted value)
 
@@ -179,19 +183,19 @@ class ParseElementAttrTestCase(unittest.TestCase):
 
         class TestClass:
             string: str
-            optstring: typing.Optional[str]
+            optstring: Optional[str]
             integer: int
-            optinteger: typing.Optional[int]
+            optinteger: Optional[int]
             boolean: bool
-            optboolean: typing.Optional[bool]
+            optboolean: Optional[bool]
             decimal: decimal.Decimal
-            optdecimal: typing.Optional[decimal.Decimal]
+            optdecimal: Optional[decimal.Decimal]
             datetime: datetime.datetime
-            optdatetime: typing.Optional[datetime.datetime]
+            optdatetime: Optional[datetime.datetime]
             date: datetime.date
-            optdate: typing.Optional[datetime.date]
+            optdate: Optional[datetime.date]
             time: datetime.time
-            opttime: typing.Optional[datetime.time]
+            opttime: Optional[datetime.time]
 
         #  Strings always return None if empty, whether or not hinted Optional.
         self.assertEqual(
@@ -252,7 +256,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
 
         class TestClass:
             foo: str
-            sequence: typing.Tuple[str, ...]
+            sequence: Tuple[str, ...]
 
         self.assertEqual(
             parser.parse_element_attr(TestClass, "foo", "A,B,C"),
@@ -278,12 +282,12 @@ class ParseElementAttrTestCase(unittest.TestCase):
             BAR = "2"
 
         class TestClass:
-            foobar: typing.Optional[TestEnum] = None
+            foobar: Optional[TestEnum] = None
 
         #  Enum must be added to ATTRIB_CONVERTERS in order to be converted.
         with patch.dict(
             "ibflex.parser.ATTRIB_CONVERTERS",
-            {typing.Optional[TestEnum]: functools.partial(parser.convert_enum, Type=TestEnum)}
+            {"Optional[TestEnum]": functools.partial(parser.convert_enum, Type=TestEnum)}
         ):
             self.assertEqual(
                 parser.parse_element_attr(TestClass, "foobar", "1"),

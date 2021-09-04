@@ -540,7 +540,8 @@ class TradeTestCase(unittest.TestCase):
          'exchOrderId="N/A" extExecID="N/A" orderTime="" openDateTime="" '
          'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
          'levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" '
-         'orderType="" traderID="" isAPIOrder="N" />')
+         'orderType="" traderID="" isAPIOrder="N" accruedInt="0" serialNumber="" '
+         'deliveryType="" commodityType="" fineness="0.0" weight="0.0 ()" />')
     )
 
     def testParse(self):
@@ -614,6 +615,12 @@ class TradeTestCase(unittest.TestCase):
         self.assertEqual(instance.orderType, None)
         self.assertEqual(instance.traderID, None)
         self.assertEqual(instance.isAPIOrder, False)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+        self.assertEqual(instance.serialNumber, None)
+        self.assertEqual(instance.deliveryType, None)
+        self.assertEqual(instance.commodityType, None)
+        self.assertEqual(instance.fineness, decimal.Decimal("0"))
+        self.assertEqual(instance.weight, "0.0 ()")
 
 
 class OptionEAETestCase(unittest.TestCase):
@@ -1606,6 +1613,57 @@ class TradesOrderTestCase(unittest.TestCase):
         self.assertEqual(instance.isAPIOrder, None)
         self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
 
+class OptionEAEBuyTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<OptionEAE accountId="U123456" acctAlias="ibflex testing" model="" '
+         'currency="USD" fxRateToBase="1" assetCategory="STK" '
+         'symbol="PSTH" '
+         'description="PERSHING SQUARE TONTINE -A" conid="91900358" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="80789235" '
+         'underlyingSymbol="PSTH" issuer="" multiplier="" strike="" '
+         'expiry="" putCall="" principalAdjustFactor="" date="2011-08-05" '
+         'transactionType="Buy" quantity="100" tradePrice="25.0000" '
+         'markPrice="0.0000" proceeds="-2500.00" commisionsAndTax="0.00" '
+         'costBasis="2500.00" realizedPnl="0.00" fxPnl="0.00" mtmPnl="-118.00" '
+         'tradeID="" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.OptionEAE)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex testing")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
+        self.assertEqual(instance.symbol, "PSTH")
+        self.assertEqual(instance.description, "PERSHING SQUARE TONTINE -A")
+        self.assertEqual(instance.conid, "91900358")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.underlyingConid, "80789235")
+        self.assertEqual(instance.underlyingSymbol, "PSTH")
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, None)
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.date, datetime.date(2011, 8, 5))
+        self.assertEqual(instance.transactionType, enums.OptionAction.BUY)
+        self.assertEqual(instance.quantity, decimal.Decimal("100"))
+        self.assertEqual(instance.tradePrice, decimal.Decimal("25.0000"))
+        self.assertEqual(instance.markPrice, decimal.Decimal("0.0000"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("-2500.00"))
+        self.assertEqual(instance.commisionsAndTax, decimal.Decimal("0.00"))
+        self.assertEqual(instance.costBasis, decimal.Decimal("2500.00"))
+        self.assertEqual(instance.realizedPnl, decimal.Decimal("0.00"))
+        self.assertEqual(instance.fxPnl, decimal.Decimal("0.00"))
+        self.assertEqual(instance.mtmPnl, decimal.Decimal("-118.00"))
+        self.assertEqual(instance.tradeID, None)
 
 
 if __name__ == '__main__':
