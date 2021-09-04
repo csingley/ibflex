@@ -5,6 +5,7 @@
 
 # web client
 requests
+types-requests
 
 # test running
 nose
