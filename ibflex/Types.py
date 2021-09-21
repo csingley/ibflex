@@ -87,6 +87,7 @@ __all__ = [
     "SalesTax",
     "DebitCardActivity",
     "SymbolSummary",
+    "AssetSummary",
     "Order"
 ]
 
@@ -1040,6 +1041,7 @@ class Lot(FlexElement):
     sedol: Optional[str] = None
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
+    accruedInt: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1157,6 +1159,104 @@ class SymbolSummary(FlexElement):
     allocatedTo: Optional[str] = None
     accruedInt: Optional[decimal.Decimal] = None
 
+@dataclass(frozen=True)
+class AssetSummary(FlexElement):
+    """ Wrapped in <TradeConfirms> """
+
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    multiplier: Optional[decimal.Decimal] = None
+    strike: Optional[decimal.Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[decimal.Decimal] = None
+    transactionType: Optional[enums.TradeType] = None
+    tradeID: Optional[str] = None
+    orderID: Optional[decimal.Decimal] = None
+    execID: Optional[str] = None
+    brokerageOrderID: Optional[str] = None
+    orderReference: Optional[str] = None
+    volatilityOrderLink: Optional[str] = None
+    clearingFirmID: Optional[str] = None
+    origTradePrice: Optional[decimal.Decimal] = None
+    TradePrice: Optional[decimal.Decimal] = None
+    tradeMoney: Optional[decimal.Decimal] = None
+    taxes: Optional[decimal.Decimal] = None
+    origTradeDate: Optional[datetime.date] = None
+    origTradeID: Optional[str] = None
+    tradePrice: Optional[decimal.Decimal] = None
+    #  Despite the name, `orderTime` actually contains date/time data.
+    orderTime: Optional[datetime.datetime] = None
+    exchOrderId: Optional[str] = None
+    dateTime: Optional[datetime.datetime] = None
+    fxRateToBase: Optional[decimal.Decimal] = None
+    reportDate: Optional[datetime.date] = None
+    ibExecID: Optional[str] = None
+    settleDateTarget: Optional[datetime.date] = None
+    cost: Optional[decimal.Decimal] = None
+    extExecID: Optional[str] = None
+    openDateTime: Optional[datetime.datetime] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    whenRealized: Optional[datetime.datetime] = None
+    whenReopened: Optional[datetime.datetime] = None
+    changeInPrice: Optional[decimal.Decimal] = None
+    changeInQuantity: Optional[decimal.Decimal] = None
+    ibOrderID: Optional[str] = None
+    origOrderID: Optional[str] = None
+    transactionID: Optional[str] = None
+    tradeDate: Optional[datetime.date] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    notes: Optional[str] = None
+    fxPnl: Optional[decimal.Decimal] = None
+    mtmPnl: Optional[decimal.Decimal] = None
+    fifoPnlRealized: Optional[decimal.Decimal] = None
+    closePrice: Optional[decimal.Decimal] = None
+    exchange: Optional[str] = None
+    ibCommission: Optional[decimal.Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    netCash: Optional[decimal.Decimal] = None
+    buySell: Optional[enums.BuySell] = None
+    quantity: Optional[decimal.Decimal] = None
+    price: Optional[decimal.Decimal] = None
+    amount: Optional[decimal.Decimal] = None
+    proceeds: Optional[decimal.Decimal] = None
+    commission: Optional[decimal.Decimal] = None
+    brokerExecutionCommission: Optional[decimal.Decimal] = None
+    brokerClearingCommission: Optional[decimal.Decimal] = None
+    thirdPartyExecutionCommission: Optional[decimal.Decimal] = None
+    thirdPartyClearingCommission: Optional[decimal.Decimal] = None
+    thirdPartyRegulatoryCommission: Optional[decimal.Decimal] = None
+    otherCommission: Optional[decimal.Decimal] = None
+    commissionCurrency: Optional[str] = None
+    tax: Optional[decimal.Decimal] = None
+    code: Tuple[enums.Code, ...] = ()
+    orderType: Optional[enums.OrderType] = None
+    levelOfDetail: Optional[str] = None
+    traderID: Optional[str] = None
+    isAPIOrder: Optional[bool] = None
+    allocatedTo: Optional[str] = None
+    accruedInt: Optional[decimal.Decimal] = None
+    deliveryType: Optional[str] = None
+    serialNumber: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 @dataclass(frozen=True)
 class Order(FlexElement):

@@ -1455,7 +1455,120 @@ class SymbolSummaryTestCase(unittest.TestCase):
         self.assertEqual(instance.allocatedTo, None)
         self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
 
+class AssetSummaryTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<AssetSummary accountId="ABCDXYZ" acctAlias="" model="" '
+         'currency="" fxRateToBase="" assetCategory="STK" symbol="" '
+         'description="" conid="" securityID="" securityIDType="" cusip="" '
+         'isin="" listingExchange="" underlyingConid="" underlyingSymbol="" '
+         'underlyingSecurityID="" underlyingListingExchange="" issuer="" '
+         'multiplier="" strike="" expiry="" tradeID="" putCall="" reportDate="" '
+         'principalAdjustFactor="" dateTime="" tradeDate="" settleDateTarget="" '
+         'transactionType="" exchange="" quantity="123" tradePrice="" '
+         'tradeMoney="" proceeds="-123.456" taxes="-1.123" '
+         'ibCommission="-1123.123" ibCommissionCurrency="" netCash="" '
+         'closePrice="" openCloseIndicator="" notes="" cost="" fifoPnlRealized="" '
+         'fxPnl="" mtmPnl="" origTradePrice="" origTradeDate="" origTradeID="" '
+         'origOrderID="" clearingFirmID="" transactionID="" buySell="" ibOrderID="" '
+         'ibExecID="" brokerageOrderID="" orderReference="" volatilityOrderLink="" '
+         'exchOrderId="" extExecID="" orderTime="" openDateTime="" '
+         'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
+         'levelOfDetail="ASSET_SUMMARY" changeInPrice="" changeInQuantity="" '
+         'orderType="" traderID="" isAPIOrder="" accruedInt="" serialNumber="" '
+         'deliveryType="" commodityType="" fineness="" weight="" />'))
 
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.AssetSummary)
+        self.assertEqual(instance.accountId, "ABCDXYZ")
+        self.assertEqual(instance.acctAlias, None)
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, None)
+        self.assertEqual(instance.fxRateToBase, None)
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
+        self.assertEqual(instance.symbol, None)
+        self.assertEqual(instance.description, None)
+        self.assertEqual(instance.conid, None)
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, None)
+        self.assertEqual(instance.underlyingConid, None)
+        self.assertEqual(instance.underlyingSymbol, None)
+        self.assertEqual(instance.underlyingSecurityID, None)
+        self.assertEqual(instance.underlyingListingExchange, None)
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, None)
+        self.assertEqual(instance.strike, None)
+        self.assertEqual(instance.expiry, None)
+        self.assertEqual(instance.tradeID, None)
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.reportDate, None)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.dateTime, None)
+        self.assertEqual(instance.tradeDate, None)
+        self.assertEqual(instance.settleDateTarget, None)
+        self.assertEqual(instance.transactionType, None)
+        self.assertEqual(instance.exchange, None)
+        self.assertEqual(instance.quantity, decimal.Decimal("123"))
+        self.assertEqual(instance.tradePrice, None)
+        self.assertEqual(instance.tradeMoney, None)
+        self.assertEqual(instance.orderID, None)
+        self.assertEqual(instance.execID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.origTradePrice, None)
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        #  Despite the name, `orderTime` actually contains date/time data.
+        self.assertEqual(instance.orderTime, None)
+        self.assertEqual(instance.buySell, None)
+        self.assertEqual(instance.proceeds, decimal.Decimal("-123.456"))
+        self.assertEqual(instance.taxes, decimal.Decimal("-1.123"))
+        self.assertEqual(instance.ibCommission, decimal.Decimal("-1123.123"))
+        self.assertEqual(instance.ibCommissionCurrency, None)
+        self.assertEqual(instance.netCash, None)
+        self.assertEqual(instance.openCloseIndicator, None)
+        self.assertEqual(instance.notes, None)
+        self.assertEqual(instance.cost, None)
+        self.assertEqual(instance.fifoPnlRealized, None)
+        self.assertEqual(instance.fxPnl, None)
+        self.assertEqual(instance.mtmPnl, None)
+        self.assertEqual(instance.origTradePrice, None)
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        self.assertEqual(instance.origOrderID, None)
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.transactionID, None)
+        self.assertEqual(instance.buySell, None)
+        self.assertEqual(instance.ibOrderID, None)
+        self.assertEqual(instance.ibExecID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.exchOrderId, None)
+        self.assertEqual(instance.extExecID, None)
+        self.assertEqual(instance.orderTime, None)
+        self.assertEqual(instance.openDateTime, None)
+        self.assertEqual(instance.holdingPeriodDateTime, None)
+        self.assertEqual(instance.whenRealized, None)
+        self.assertEqual(instance.whenReopened, None)
+        self.assertEqual(instance.levelOfDetail, "ASSET_SUMMARY")
+        self.assertEqual(instance.changeInPrice, None)
+        self.assertEqual(instance.changeInQuantity, None)
+        self.assertEqual(instance.orderType, None)
+        self.assertEqual(instance.traderID, None)
+        self.assertEqual(instance.isAPIOrder, None)
+        self.assertEqual(instance.accruedInt, None)
+        self.assertEqual(instance.serialNumber, None)
+        self.assertEqual(instance.deliveryType, None)
+        self.assertEqual(instance.commodityType, None)
+        self.assertEqual(instance.fineness, None)
+        self.assertEqual(instance.weight, None)
+ 
 class ChangeInNAVTestCase(unittest.TestCase):
 
     data = ET.fromstring(
