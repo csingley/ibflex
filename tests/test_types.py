@@ -1525,8 +1525,7 @@ class AssetSummaryTestCase(unittest.TestCase):
         self.assertEqual(instance.origTradeID, None)
         #  Despite the name, `orderTime` actually contains date/time data.
         self.assertEqual(instance.orderTime, None)
-        self.assertEqual(instance.buySell, enums.BuySell.BUY)
-        self.assertEqual(instance.quantity, decimal.Decimal("123"))
+        self.assertEqual(instance.buySell, None)
         self.assertEqual(instance.proceeds, decimal.Decimal("-123.456"))
         self.assertEqual(instance.taxes, decimal.Decimal("-1.123"))
         self.assertEqual(instance.ibCommission, decimal.Decimal("-1123.123"))
