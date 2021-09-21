@@ -1041,7 +1041,7 @@ class Lot(FlexElement):
     sedol: Optional[str] = None
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
-    accruedInt: Optional[Decimal] = None
+    accruedInt: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
