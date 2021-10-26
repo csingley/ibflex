@@ -116,6 +116,7 @@ class AssetClass(enum.Enum):
     FUTURE = "FUT"
     FUTUREOPTION = "FOP"
     CFD = "CFD"
+    FOREXCFD = "FXCFD"
     CRYPTOCURRENCY = "CRYPTO"
     STRUCTUREDPRODUCTS = "IOPT"
     METALS = "CMDTY"
