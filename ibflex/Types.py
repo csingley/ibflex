@@ -1369,6 +1369,7 @@ class TradeConfirm(FlexElement):
     description: Optional[str] = None
     conid: Optional[str] = None
     securityID: Optional[str] = None
+    rfqID: Optional[str] = None
     securityIDType: Optional[str] = None
     cusip: Optional[str] = None
     isin: Optional[str] = None
