@@ -159,6 +159,7 @@ class OrderType(enum.Enum):
     STOP = "STP"
     STOPLIMIT = "STPLMT"
     MARKETONCLOSE = "MOC"
+    LIMITONCLOSE = "LOC"
     # MULTIPLE is not an actual IB order type. It is a catch-all value to use when an Order has an orderType like "LMT;MKT".
     # This way OrderType can remian a enum and not be a Tuple.
     MULTIPLE = "MULTIPLE"
