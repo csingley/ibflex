@@ -583,6 +583,7 @@ class CashReportCurrency(FlexElement):
     endingSettledCash: Optional[decimal.Decimal] = None
     endingSettledCashSec: Optional[decimal.Decimal] = None
     endingSettledCashCom: Optional[decimal.Decimal] = None
+    endingCashIBUKL: Optional[decimal.Decimal] = None
     clientFeesMTD: Optional[decimal.Decimal] = None
     clientFeesYTD: Optional[decimal.Decimal] = None
     commissionsMTD: Optional[decimal.Decimal] = None
