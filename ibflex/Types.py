@@ -957,7 +957,8 @@ class Trade(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-
+    relatedTradeID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
 
 @dataclass(frozen=True)
 class Lot(FlexElement):
@@ -1448,7 +1449,8 @@ class TradeConfirm(FlexElement):
     acctAlias: Optional[str] = None
     model: Optional[str] = None
     accruedInt: Optional[decimal.Decimal] = None
-
+    relatedTradeID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
 
 @dataclass(frozen=True)
 class OptionEAE(FlexElement):
