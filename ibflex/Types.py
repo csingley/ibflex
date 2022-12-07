@@ -709,6 +709,41 @@ class CashReportCurrency(FlexElement):
     commissionCreditsRedemptionCom: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionMTD: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionYTD: Optional[decimal.Decimal] = None
+    referralFee: Optional[decimal.Decimal] = None
+    referralFeeSec: Optional[decimal.Decimal] = None
+    referralFeeCom: Optional[decimal.Decimal] = None
+    referralFeeMTD: Optional[decimal.Decimal] = None
+    referralFeeYTD: Optional[decimal.Decimal] = None
+    carbonCredits: Optional[decimal.Decimal] = None
+    carbonCreditsSec: Optional[decimal.Decimal] = None
+    carbonCreditsCom: Optional[decimal.Decimal] = None
+    carbonCreditsMTD: Optional[decimal.Decimal] = None
+    carbonCreditsYTD: Optional[decimal.Decimal] = None
+    donations: Optional[decimal.Decimal] = None
+    donationsSec: Optional[decimal.Decimal] = None
+    donationsCom: Optional[decimal.Decimal] = None
+    donationsMTD: Optional[decimal.Decimal] = None
+    donationsYTD: Optional[decimal.Decimal] = None
+    paxosTransfers: Optional[decimal.Decimal] = None
+    paxosTransfersSec: Optional[decimal.Decimal] = None
+    paxosTransfersCom: Optional[decimal.Decimal] = None
+    paxosTransfersMTD: Optional[decimal.Decimal] = None
+    paxosTransfersYTD: Optional[decimal.Decimal] = None
+    slbStartingCashCollateral: Optional[decimal.Decimal] = None
+    slbStartingCashCollateralSec: Optional[decimal.Decimal] = None
+    slbStartingCashCollateralCom: Optional[decimal.Decimal] = None
+    slbNetSecuritiesLentActivity: Optional[decimal.Decimal] = None
+    slbNetSecuritiesLentActivityCom: Optional[decimal.Decimal] = None
+    slbNetSecuritiesLentActivitySec: Optional[decimal.Decimal] = None
+    slbEndingCashCollateral:    Optional[decimal.Decimal] = None
+    slbEndingCashCollateralSec: Optional[decimal.Decimal] = None
+    slbEndingCashCollateralCom: Optional[decimal.Decimal] = None
+    slbNetCash: Optional[decimal.Decimal] = None
+    slbNetCashSec: Optional[decimal.Decimal] = None
+    slbNetCashCom: Optional[decimal.Decimal] = None
+    slbNetSettledCash:  Optional[decimal.Decimal] = None
+    slbNetSettledCashSec: Optional[decimal.Decimal] = None
+    slbNetSettledCashCom: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1043,6 +1078,11 @@ class Lot(FlexElement):
     whenRealized: Optional[datetime.datetime] = None
     whenReopened: Optional[datetime.datetime] = None
     accruedInt: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1874,6 +1914,7 @@ class CorporateAction(FlexElement):
     underlyingConid: Optional[str] = None
     underlyingSecurityID: Optional[str] = None
     underlyingListingExchange: Optional[str] = None
+    actionID: Optional[str] = None
     actionDescription: Optional[str] = None
     dateTime: Optional[datetime.datetime] = None
     amount: Optional[decimal.Decimal] = None
@@ -1900,6 +1941,12 @@ class CorporateAction(FlexElement):
     proceeds: Optional[decimal.Decimal] = None
     value: Optional[decimal.Decimal] = None
     transactionID: Optional[str] = None
+    levelOfDetail: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1939,6 +1986,7 @@ class CashTransaction(FlexElement):
     clientReference: Optional[str] = None
     settleDate: Optional[datetime.date] = None
     acctAlias: Optional[str] = None
+    actionID:   Optional[str] = None
     model: Optional[str] = None
     levelOfDetail: Optional[str] = None
     serialNumber: Optional[str] = None
