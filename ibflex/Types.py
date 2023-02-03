@@ -91,7 +91,6 @@ __all__ = [
     "Order"
 ]
 
-
 import datetime
 import decimal
 from dataclasses import dataclass
@@ -542,12 +541,14 @@ class CashReportCurrency(FlexElement):
     brokerFeesCom: Optional[decimal.Decimal] = None
     brokerFeesMTD: Optional[decimal.Decimal] = None
     brokerFeesYTD: Optional[decimal.Decimal] = None
+    brokerFeesPaxos: Optional[decimal.Decimal] = None
     brokerInterest: Optional[decimal.Decimal] = None
     brokerInterestSec: Optional[decimal.Decimal] = None
     brokerInterestCom: Optional[decimal.Decimal] = None
     bondInterest: Optional[decimal.Decimal] = None
     bondInterestSec: Optional[decimal.Decimal] = None
     bondInterestCom: Optional[decimal.Decimal] = None
+    bondInterestPaxos: Optional[decimal.Decimal] = None
     cashSettlingMtm: Optional[decimal.Decimal] = None
     cashSettlingMtmSec: Optional[decimal.Decimal] = None
     cashSettlingMtmCom: Optional[decimal.Decimal] = None
@@ -575,75 +576,106 @@ class CashReportCurrency(FlexElement):
     fxTranslationGainLoss: Optional[decimal.Decimal] = None
     fxTranslationGainLossSec: Optional[decimal.Decimal] = None
     fxTranslationGainLossCom: Optional[decimal.Decimal] = None
+    fxTranslationGainLossPaxos: Optional[decimal.Decimal] = None
     otherFees: Optional[decimal.Decimal] = None
     otherFeesSec: Optional[decimal.Decimal] = None
     otherFeesCom: Optional[decimal.Decimal] = None
     endingCash: Optional[decimal.Decimal] = None
     endingCashSec: Optional[decimal.Decimal] = None
     endingCashCom: Optional[decimal.Decimal] = None
+    endingCashPaxos: Optional[decimal.Decimal] = None
     endingSettledCash: Optional[decimal.Decimal] = None
     endingSettledCashSec: Optional[decimal.Decimal] = None
     endingSettledCashCom: Optional[decimal.Decimal] = None
+    endingSettledCashPaxos: Optional[decimal.Decimal] = None
     endingCashIBUKL: Optional[decimal.Decimal] = None
     clientFeesMTD: Optional[decimal.Decimal] = None
     clientFeesYTD: Optional[decimal.Decimal] = None
+    clientFeesPaxos: Optional[decimal.Decimal] = None
     commissionsMTD: Optional[decimal.Decimal] = None
     commissionsYTD: Optional[decimal.Decimal] = None
+    commissionsPaxos: Optional[decimal.Decimal] = None
     billableCommissionsMTD: Optional[decimal.Decimal] = None
     billableCommissionsYTD: Optional[decimal.Decimal] = None
+    billableCommissionsPaxos: Optional[decimal.Decimal] = None
     depositWithdrawalsMTD: Optional[decimal.Decimal] = None
     depositWithdrawalsYTD: Optional[decimal.Decimal] = None
+    depositWithdrawalsPaxos: Optional[decimal.Decimal] = None
     depositsMTD: Optional[decimal.Decimal] = None
     depositsYTD: Optional[decimal.Decimal] = None
+    depositsPaxos: Optional[decimal.Decimal] = None
     withdrawalsMTD: Optional[decimal.Decimal] = None
     withdrawalsYTD: Optional[decimal.Decimal] = None
+    withdrawalsPaxos: Optional[decimal.Decimal] = None
     accountTransfersMTD: Optional[decimal.Decimal] = None
     accountTransfersYTD: Optional[decimal.Decimal] = None
+    accountTransfersPaxos: Optional[decimal.Decimal] = None
     internalTransfersMTD: Optional[decimal.Decimal] = None
     internalTransfersYTD: Optional[decimal.Decimal] = None
+    internalTransfersPaxos: Optional[decimal.Decimal] = None
+    paxosTransfersPaxos: Optional[decimal.Decimal] = None
     excessFundSweep: Optional[decimal.Decimal] = None
     excessFundSweepSec: Optional[decimal.Decimal] = None
     excessFundSweepCom: Optional[decimal.Decimal] = None
     excessFundSweepMTD: Optional[decimal.Decimal] = None
     excessFundSweepYTD: Optional[decimal.Decimal] = None
+    excessFundSweepPaxos: Optional[decimal.Decimal] = None
     dividendsMTD: Optional[decimal.Decimal] = None
     dividendsYTD: Optional[decimal.Decimal] = None
+    dividendsPaxos: Optional[decimal.Decimal] = None
     insuredDepositInterestMTD: Optional[decimal.Decimal] = None
     insuredDepositInterestYTD: Optional[decimal.Decimal] = None
+    insuredDepositInteresPaxos: Optional[decimal.Decimal] = None
     brokerInterestMTD: Optional[decimal.Decimal] = None
     brokerInterestYTD: Optional[decimal.Decimal] = None
+    brokerInterestPaxos: Optional[decimal.Decimal] = None
     bondInterestMTD: Optional[decimal.Decimal] = None
     bondInterestYTD: Optional[decimal.Decimal] = None
     cashSettlingMtmMTD: Optional[decimal.Decimal] = None
     cashSettlingMtmYTD: Optional[decimal.Decimal] = None
+    cashSettlingMtmPaxos: Optional[decimal.Decimal] = None
     realizedVmMTD: Optional[decimal.Decimal] = None
     realizedVmYTD: Optional[decimal.Decimal] = None
+    realizedVmPaxos: Optional[decimal.Decimal] = None
     cfdChargesMTD: Optional[decimal.Decimal] = None
     cfdChargesYTD: Optional[decimal.Decimal] = None
+    cfdChargesPaxos: Optional[decimal.Decimal] = None
     netTradesSalesMTD: Optional[decimal.Decimal] = None
     netTradesSalesYTD: Optional[decimal.Decimal] = None
+    netTradesSalesPaxos: Optional[decimal.Decimal] = None
     advisorFeesMTD: Optional[decimal.Decimal] = None
     advisorFeesYTD: Optional[decimal.Decimal] = None
+    advisorFeePaxos: Optional[decimal.Decimal] = None
     feesReceivablesMTD: Optional[decimal.Decimal] = None
     feesReceivablesYTD: Optional[decimal.Decimal] = None
+    feesReceivablesPaxos: Optional[decimal.Decimal] = None
     netTradesPurchasesMTD: Optional[decimal.Decimal] = None
     netTradesPurchasesYTD: Optional[decimal.Decimal] = None
+    netTradesPurchasesPaxos: Optional[decimal.Decimal] = None
     paymentInLieuMTD: Optional[decimal.Decimal] = None
     paymentInLieuYTD: Optional[decimal.Decimal] = None
+    paymentInLieuPaxos: Optional[decimal.Decimal] = None
     transactionTaxMTD: Optional[decimal.Decimal] = None
     transactionTaxYTD: Optional[decimal.Decimal] = None
+    transactionTaxPaxos: Optional[decimal.Decimal] = None
     taxReceivablesMTD: Optional[decimal.Decimal] = None
     taxReceivablesYTD: Optional[decimal.Decimal] = None
+    taxReceivablesPaxos: Optional[decimal.Decimal] = None
     withholdingTaxMTD: Optional[decimal.Decimal] = None
     withholdingTaxYTD: Optional[decimal.Decimal] = None
+    withholdingTaxPaxos: Optional[decimal.Decimal] = None
     withholding871mMTD: Optional[decimal.Decimal] = None
     withholding871mYTD: Optional[decimal.Decimal] = None
+    withholding871mPaxos: Optional[decimal.Decimal] = None
     withholdingCollectedTaxMTD: Optional[decimal.Decimal] = None
     withholdingCollectedTaxYTD: Optional[decimal.Decimal] = None
+    withholdingCollectedTaxPaxos: Optional[decimal.Decimal] = None
     salesTaxMTD: Optional[decimal.Decimal] = None
     salesTaxYTD: Optional[decimal.Decimal] = None
+    salesTaxPaxos: Optional[decimal.Decimal] = None
     otherFeesMTD: Optional[decimal.Decimal] = None
     otherFeesYTD: Optional[decimal.Decimal] = None
+    otherFeesPaxos: Optional[decimal.Decimal] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
     avgCreditBalance: Optional[decimal.Decimal] = None
@@ -655,15 +687,18 @@ class CashReportCurrency(FlexElement):
     linkingAdjustments: Optional[decimal.Decimal] = None
     linkingAdjustmentsSec: Optional[decimal.Decimal] = None
     linkingAdjustmentsCom: Optional[decimal.Decimal] = None
+    linkingAdjustmentsPaxos: Optional[decimal.Decimal] = None
     insuredDepositInterest: Optional[decimal.Decimal] = None
     insuredDepositInterestSec: Optional[decimal.Decimal] = None
     insuredDepositInterestCom: Optional[decimal.Decimal] = None
+    insuredDepositInterestPaxos: Optional[decimal.Decimal] = None
     realizedVm: Optional[decimal.Decimal] = None
     realizedVmSec: Optional[decimal.Decimal] = None
     realizedVmCom: Optional[decimal.Decimal] = None
     advisorFees: Optional[decimal.Decimal] = None
     advisorFeesSec: Optional[decimal.Decimal] = None
     advisorFeesCom: Optional[decimal.Decimal] = None
+    advisorFeesPaxos: Optional[decimal.Decimal] = None
     taxReceivables: Optional[decimal.Decimal] = None
     taxReceivablesSec: Optional[decimal.Decimal] = None
     taxReceivablesCom: Optional[decimal.Decimal] = None
@@ -679,38 +714,46 @@ class CashReportCurrency(FlexElement):
     other: Optional[decimal.Decimal] = None
     otherSec: Optional[decimal.Decimal] = None
     otherCom: Optional[decimal.Decimal] = None
+    otherPaxos: Optional[decimal.Decimal] = None
     levelOfDetail: Optional[str] = None
     debitCardActivity: Optional[decimal.Decimal] = None
     debitCardActivitySec: Optional[decimal.Decimal] = None
     debitCardActivityCom: Optional[decimal.Decimal] = None
     debitCardActivityMTD: Optional[decimal.Decimal] = None
     debitCardActivityYTD: Optional[decimal.Decimal] = None
+    debitCardActivityPaxos: Optional[decimal.Decimal] = None
     billPay: Optional[decimal.Decimal] = None
     billPaySec: Optional[decimal.Decimal] = None
     billPayCom: Optional[decimal.Decimal] = None
     billPayMTD: Optional[decimal.Decimal] = None
     billPayYTD: Optional[decimal.Decimal] = None
+    billPayPaxos: Optional[decimal.Decimal] = None
     realizedForexVm: Optional[decimal.Decimal] = None
     realizedForexVmSec: Optional[decimal.Decimal] = None
     realizedForexVmCom: Optional[decimal.Decimal] = None
     realizedForexVmMTD: Optional[decimal.Decimal] = None
     realizedForexVmYTD: Optional[decimal.Decimal] = None
+    realizedForexVmPaxos: Optional[decimal.Decimal] = None
     ipoSubscription: Optional[decimal.Decimal] = None
     ipoSubscriptionSec: Optional[decimal.Decimal] = None
     ipoSubscriptionCom: Optional[decimal.Decimal] = None
     ipoSubscriptionMTD: Optional[decimal.Decimal] = None
     ipoSubscriptionYTD: Optional[decimal.Decimal] = None
+    ipoSubscriptionPaxos: Optional[decimal.Decimal] = None
     billableSalesTax: Optional[decimal.Decimal] = None
     billableSalesTaxSec: Optional[decimal.Decimal] = None
     billableSalesTaxCom: Optional[decimal.Decimal] = None
     billableSalesTaxMTD: Optional[decimal.Decimal] = None
     billableSalesTaxYTD: Optional[decimal.Decimal] = None
+    billableSalesTaxPaxos: Optional[decimal.Decimal] = None
     commissionCreditsRedemption: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionSec: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionCom: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionMTD: Optional[decimal.Decimal] = None
     commissionCreditsRedemptionYTD: Optional[decimal.Decimal] = None
+    commissionCreditsRedemptionPaxos: Optional[decimal.Decimal] = None
     referralFee: Optional[decimal.Decimal] = None
+    referralFeePaxos: Optional[decimal.Decimal] = None
     referralFeeSec: Optional[decimal.Decimal] = None
     referralFeeCom: Optional[decimal.Decimal] = None
     referralFeeMTD: Optional[decimal.Decimal] = None
@@ -720,11 +763,13 @@ class CashReportCurrency(FlexElement):
     carbonCreditsCom: Optional[decimal.Decimal] = None
     carbonCreditsMTD: Optional[decimal.Decimal] = None
     carbonCreditsYTD: Optional[decimal.Decimal] = None
+    carbonCreditsPaxos: Optional[decimal.Decimal] = None
     donations: Optional[decimal.Decimal] = None
     donationsSec: Optional[decimal.Decimal] = None
     donationsCom: Optional[decimal.Decimal] = None
     donationsMTD: Optional[decimal.Decimal] = None
     donationsYTD: Optional[decimal.Decimal] = None
+    donationsPaxos: Optional[decimal.Decimal] = None
     paxosTransfers: Optional[decimal.Decimal] = None
     paxosTransfersSec: Optional[decimal.Decimal] = None
     paxosTransfersCom: Optional[decimal.Decimal] = None
@@ -733,18 +778,23 @@ class CashReportCurrency(FlexElement):
     slbStartingCashCollateral: Optional[decimal.Decimal] = None
     slbStartingCashCollateralSec: Optional[decimal.Decimal] = None
     slbStartingCashCollateralCom: Optional[decimal.Decimal] = None
+    slbStartingCashCollateralPaxos: Optional[decimal.Decimal] = None
     slbNetSecuritiesLentActivity: Optional[decimal.Decimal] = None
     slbNetSecuritiesLentActivityCom: Optional[decimal.Decimal] = None
     slbNetSecuritiesLentActivitySec: Optional[decimal.Decimal] = None
-    slbEndingCashCollateral:    Optional[decimal.Decimal] = None
+    slbNetSecuritiesLentActivityPaxos: Optional[decimal.Decimal] = None
+    slbEndingCashCollateral: Optional[decimal.Decimal] = None
     slbEndingCashCollateralSec: Optional[decimal.Decimal] = None
     slbEndingCashCollateralCom: Optional[decimal.Decimal] = None
+    slbEndingCashCollateralPaxos: Optional[decimal.Decimal] = None
     slbNetCash: Optional[decimal.Decimal] = None
     slbNetCashSec: Optional[decimal.Decimal] = None
     slbNetCashCom: Optional[decimal.Decimal] = None
-    slbNetSettledCash:  Optional[decimal.Decimal] = None
+    slbNetCashPaxos: Optional[decimal.Decimal] = None
+    slbNetSettledCash: Optional[decimal.Decimal] = None
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
+    slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -997,6 +1047,7 @@ class Trade(FlexElement):
     relatedTradeID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
 
+
 @dataclass(frozen=True)
 class Lot(FlexElement):
     """ Wrapped in <Trades> """
@@ -1202,6 +1253,7 @@ class SymbolSummary(FlexElement):
     allocatedTo: Optional[str] = None
     accruedInt: Optional[decimal.Decimal] = None
 
+
 @dataclass(frozen=True)
 class AssetSummary(FlexElement):
     """ Wrapped in <TradeConfirms> """
@@ -1300,6 +1352,7 @@ class AssetSummary(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+
 
 @dataclass(frozen=True)
 class Order(FlexElement):
@@ -1493,6 +1546,7 @@ class TradeConfirm(FlexElement):
     accruedInt: Optional[decimal.Decimal] = None
     relatedTradeID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+
 
 @dataclass(frozen=True)
 class OptionEAE(FlexElement):
@@ -1989,7 +2043,7 @@ class CashTransaction(FlexElement):
     clientReference: Optional[str] = None
     settleDate: Optional[datetime.date] = None
     acctAlias: Optional[str] = None
-    actionID:   Optional[str] = None
+    actionID: Optional[str] = None
     model: Optional[str] = None
     levelOfDetail: Optional[str] = None
     serialNumber: Optional[str] = None
