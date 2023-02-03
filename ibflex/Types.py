@@ -507,6 +507,7 @@ class CashReportCurrency(FlexElement):
     fromDate: Optional[datetime.date] = None
     toDate: Optional[datetime.date] = None
     startingCash: Optional[decimal.Decimal] = None
+    startingCashPaxos: Optional[decimal.Decimal] = None
     startingCashSec: Optional[decimal.Decimal] = None
     startingCashCom: Optional[decimal.Decimal] = None
     clientFees: Optional[decimal.Decimal] = None
