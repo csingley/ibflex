@@ -32,7 +32,7 @@ import typing
 
 
 @enum.unique
-class CashAction(enum.Enum):
+class CashAction(str, enum.Enum):
     DEPOSITWITHDRAW = "Deposits & Withdrawals"
     BROKERINTPAID = "Broker Interest Paid"
     BROKERINTRCVD = "Broker Interest Received"
@@ -46,67 +46,67 @@ class CashAction(enum.Enum):
 
 
 @enum.unique
-class Code(enum.Enum):
+class Code(str, enum.Enum):
     """Used for both `code` and `notes` attributes.
     """
     ASSIGNMENT = "A"
-    AUTOEXERCISE = "AEx"          # Automatic exercise for dividend-related recommendation
-    ADJUSTMENT = "Adj"            # Adjustment
-    ALLOCATION = "Al"             # Allocation
-    AWAY = "Aw"                   # Away Trade
-    BUYIN = "B"                   # Automatic Buy-in
-    BORROW = "Bo"                 # Direct Borrow
-    CLOSING = "C"                 # Closing Trade
-    CASHDELIVERY = "CD"           # Cash Delivery
-    COMPLEX = "CP"                # Complex Position
-    CANCEL = "Ca"                 # Cancelled
-    CORRECT = "Co"                # Corrected Trade
-    CROSSING = "Cx"               # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
-    DUAL = "D"                    # IB acted as Dual Agent, UNIQUE TO TRADE CONFIRM REPORT
-    ETF = "ETF"                   # ETF Creation/Redemption
-    EXPIRED = "Ep"                # Resulted from an Expired Position
-    EXERCISE = "Ex"               # Exercise
-    GUARANTEED = "G"              # Trade in Guaranteed Account Segment
-    HIGHESTCOST = "HC"            # Highest Cost tax lot-matching method
-    HFINVESTMENT = "HFI"          # Investment Transferred to Hedge Fund
-    HFREDEMPTION = "HFR"          # Redemption from Hedge Fund
-    INTERNAL = "I"                # Internal Transfer
-    AFFILIATE = "IA"              # This transaction was executed against an IB affiliate
-    INVESTOR = "INV"              # Investment Transfer from Investor
-    MARGINLOW = "L"               # Ordered by IB (Margin Violation)
-    WASHSALE = "LD"               # Adjusted by Loss Disallowed from Wash Sale
-    LIFO = "LI"                   # Last In, First Out (LIFO) tax lot-matching method
-    LTCG = "LT"                   # Long-term P/L
-    LOAN = "Lo"                   # Direct Loan
-    MANUAL = "M"                  # Entered manually by IB
-    MANUALEXERCISE = "MEx"        # Manual exercise for dividend-related recommendation
-    MAXLOSS = "ML"                # Maximize Losses tax basis election
-    MAXLTCG = "MLG"               # Maximize Long-Term Gain tax lot-matching method
-    MINLTCG = "MLL"               # Maximize Long-Term Loss tax lot-matching method
-    MAXSTCG = "MSG"               # Maximize Short-Term Gain tax lot-matching method
-    MINSTCG = "MSL"               # Maximize Short-Term Loss tax lot-matching method
-    OPENING = "O"                 # Opening Trade
-    PARTIAL = "P"                 # Partial Execution
+    AUTOEXERCISE = "AEx"  # Automatic exercise for dividend-related recommendation
+    ADJUSTMENT = "Adj"  # Adjustment
+    ALLOCATION = "Al"  # Allocation
+    AWAY = "Aw"  # Away Trade
+    BUYIN = "B"  # Automatic Buy-in
+    BORROW = "Bo"  # Direct Borrow
+    CLOSING = "C"  # Closing Trade
+    CASHDELIVERY = "CD"  # Cash Delivery
+    COMPLEX = "CP"  # Complex Position
+    CANCEL = "Ca"  # Cancelled
+    CORRECT = "Co"  # Corrected Trade
+    CROSSING = "Cx"  # Part or all of this transaction was a Crossing executed as dual agent by IB for two IB customers
+    DUAL = "D"  # IB acted as Dual Agent, UNIQUE TO TRADE CONFIRM REPORT
+    ETF = "ETF"  # ETF Creation/Redemption
+    EXPIRED = "Ep"  # Resulted from an Expired Position
+    EXERCISE = "Ex"  # Exercise
+    GUARANTEED = "G"  # Trade in Guaranteed Account Segment
+    HIGHESTCOST = "HC"  # Highest Cost tax lot-matching method
+    HFINVESTMENT = "HFI"  # Investment Transferred to Hedge Fund
+    HFREDEMPTION = "HFR"  # Redemption from Hedge Fund
+    INTERNAL = "I"  # Internal Transfer
+    AFFILIATE = "IA"  # This transaction was executed against an IB affiliate
+    INVESTOR = "INV"  # Investment Transfer from Investor
+    MARGINLOW = "L"  # Ordered by IB (Margin Violation)
+    WASHSALE = "LD"  # Adjusted by Loss Disallowed from Wash Sale
+    LIFO = "LI"  # Last In, First Out (LIFO) tax lot-matching method
+    LTCG = "LT"  # Long-term P/L
+    LOAN = "Lo"  # Direct Loan
+    MANUAL = "M"  # Entered manually by IB
+    MANUALEXERCISE = "MEx"  # Manual exercise for dividend-related recommendation
+    MAXLOSS = "ML"  # Maximize Losses tax basis election
+    MAXLTCG = "MLG"  # Maximize Long-Term Gain tax lot-matching method
+    MINLTCG = "MLL"  # Maximize Long-Term Loss tax lot-matching method
+    MAXSTCG = "MSG"  # Maximize Short-Term Gain tax lot-matching method
+    MINSTCG = "MSL"  # Maximize Short-Term Loss tax lot-matching method
+    OPENING = "O"  # Opening Trade
+    PARTIAL = "P"  # Partial Execution
     FRACRISKLESSPRINCIPAL = "RP"  # IB acted as riskless principal for the fractional share portion of this trade
-    FRACPRINCIPAL = "FP"          # IB acted as principal for the fractional share portion of this trade
-    PRICEIMPROVEMENT = "PI"       # Price Improvement
-    POSTACCRUAL = "Po"            # Interest or Dividend Accrual Posting
-    PRINCIPAL = "Pr"              # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
-    REINVESTMENT = "R"            # Dividend Reinvestment
-    REDEMPTION = "RED"            # Redemption to Investor
-    REVERSE = "Re"                # Interest or Dividend Accrual Reversal
-    REIMBURSEMENT = "Ri"          # Reimbursement
-    SOLICITEDIB = "SI"            # This order was solicited by Interactive Brokers
-    SPECIFICLOT = "SL"            # Specific Lot tax lot-matching method
-    SOLICITEDOTHER = "SO"         # This order was marked as solicited by your Introducing Broker
-    SHORTENEDSETTLEMENT = "SS"    # Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
-    STCG = "ST"                   # Short-term P/L
-    STOCKYIELD = "SY"             # Positions that may be eligible for Stock Yield.
-    TRANSFER = "T"                # Transfer
+    FRACPRINCIPAL = "FP"  # IB acted as principal for the fractional share portion of this trade
+    PRICEIMPROVEMENT = "PI"  # Price Improvement
+    POSTACCRUAL = "Po"  # Interest or Dividend Accrual Posting
+    PRINCIPAL = "Pr"  # Part or all of this transaction was executed by the Exchange as a Crossing by IB against an IB affiliate and is therefore classified as a Principal and not an agency trade
+    REINVESTMENT = "R"  # Dividend Reinvestment
+    REDEMPTION = "RED"  # Redemption to Investor
+    REVERSE = "Re"  # Interest or Dividend Accrual Reversal
+    REIMBURSEMENT = "Ri"  # Reimbursement
+    SOLICITEDIB = "SI"  # This order was solicited by Interactive Brokers
+    SPECIFICLOT = "SL"  # Specific Lot tax lot-matching method
+    SOLICITEDOTHER = "SO"  # This order was marked as solicited by your Introducing Broker
+    SHORTENEDSETTLEMENT = "SS"  # Customer designated this trade for shortened settlement and so is subject to execution at prices above the prevailing market
+    STCG = "ST"  # Short-term P/L
+    STOCKYIELD = "SY"  # Positions that may be eligible for Stock Yield.
+    TRANSFER = "T"  # Transfer
 
 
 @enum.unique
-class AssetClass(enum.Enum):
+class AssetClass(str, enum.Enum):
     CASH = "CASH"
     BILL = "BILL"
     BOND = "BOND"
@@ -126,7 +126,7 @@ class AssetClass(enum.Enum):
 
 
 @enum.unique
-class TradeType(enum.Enum):
+class TradeType(str, enum.Enum):
     EXCHTRADE = "ExchTrade"
     TRADECANCEL = "TradeCancel"
     FRACSHARE = "FracShare"
@@ -137,7 +137,7 @@ class TradeType(enum.Enum):
 
 
 @enum.unique
-class BuySell(enum.Enum):
+class BuySell(str, enum.Enum):
     BUY = "BUY"
     CANCELBUY = "BUY (Ca.)"
     SELL = "SELL"
@@ -145,7 +145,7 @@ class BuySell(enum.Enum):
 
 
 @enum.unique
-class OpenClose(enum.Enum):
+class OpenClose(str, enum.Enum):
     OPEN = "O"
     CLOSE = "C"
     OPENCLOSE = "C;O"
@@ -153,7 +153,7 @@ class OpenClose(enum.Enum):
 
 
 @enum.unique
-class OrderType(enum.Enum):
+class OrderType(str, enum.Enum):
     LIMIT = "LMT"
     MARKET = "MKT"
     STOP = "STP"
@@ -166,7 +166,7 @@ class OrderType(enum.Enum):
 
 
 @enum.unique
-class Reorg(enum.Enum):
+class Reorg(str, enum.Enum):
     BONDCONVERSION = "BC"
     BONDMATURITY = "BM"
     CONTRACTSOULTE = "CA"
@@ -202,7 +202,7 @@ class Reorg(enum.Enum):
 
 
 @enum.unique
-class OptionAction(enum.Enum):
+class OptionAction(str, enum.Enum):
     ASSIGN = "Assignment"
     EXERCISE = "Exercise"
     EXPIRE = "Expiration"
@@ -212,37 +212,37 @@ class OptionAction(enum.Enum):
 
 
 @enum.unique
-class LongShort(enum.Enum):
+class LongShort(str, enum.Enum):
     LONG = "Long"
     SHORT = "Short"
 
 
 @enum.unique
-class ToFrom(enum.Enum):
+class ToFrom(str, enum.Enum):
     TO = "To"
     FROM = "From"
 
 
 @enum.unique
-class TransferType(enum.Enum):
+class TransferType(str, enum.Enum):
     INTERNAL = "INTERNAL"
     ACATS = "ACATS"
 
 
 @enum.unique
-class InOut(enum.Enum):
+class InOut(str, enum.Enum):
     IN = "IN"
     OUT = "OUT"
 
 
 @enum.unique
-class DeliveredReceived(enum.Enum):
+class DeliveredReceived(str, enum.Enum):
     DELIVERED = "Delivered"
     RECEIVED = "Received"
 
 
 @enum.unique
-class PutCall(enum.Enum):
+class PutCall(str, enum.Enum):
     PUT = "P"
     CALL = "C"
 
@@ -265,7 +265,6 @@ ENUMS = [
     PutCall,
 ]
 """Used by ibflex.parser.ATTRIB_CONVERTERS"""
-
 
 EnumType = typing.Union[
     typing.Optional[CashAction],
