@@ -1546,6 +1546,7 @@ class TradeConfirm(FlexElement):
     accruedInt: Optional[decimal.Decimal] = None
     relatedTradeID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    blockID: Optional[str] = None
 
 
 @dataclass(frozen=True)
