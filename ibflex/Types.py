@@ -1046,6 +1046,7 @@ class Trade(FlexElement):
     weight: Optional[str] = None
     relatedTradeID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    origTransactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
