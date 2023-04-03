@@ -1047,6 +1047,7 @@ class Trade(FlexElement):
     relatedTradeID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
     origTransactionID: Optional[str] = None
+    subCategory: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1593,7 +1594,8 @@ class OptionEAE(FlexElement):
     tradeID: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
-
+    relatedTradeID: Optional[str] = None
+    subCategory: Optional[str] = None
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _OptionEAE = OptionEAE
