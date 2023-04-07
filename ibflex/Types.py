@@ -1863,6 +1863,7 @@ class Transfer(FlexElement):
     date: Optional[datetime.date] = None
     dateTime: Optional[datetime.datetime] = None
     account: Optional[str] = None
+    deliveringBroker: Optional[str] = None
     quantity: Optional[decimal.Decimal] = None
     transferPrice: Optional[decimal.Decimal] = None
     positionAmount: Optional[decimal.Decimal] = None
