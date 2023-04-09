@@ -771,6 +771,35 @@ class TradeTransferTestCase(unittest.TestCase):
         self.assertEqual(instance.levelOfDetail, "TRADE_TRANSFERS")
 
 
+class FxTransactionTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<FxTransaction accountId="U123456" acctAlias="ibflex test" model="" '
+         'assetCategory="CASH" reportDate="2023-01-05" functionalCurrency="CAD" '
+         'fxCurrency="USD" activityDescription="Net cash activity" dateTime="2023-01-05" '
+         'quantity="55.94" proceeds="75.904986" cost="-75.904986" realizedPL="0" code="O" '
+         'levelOfDetail="TRANSACTION" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.FxTransaction)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.assetCategory, enums.AssetClass.CASH)
+        self.assertEqual(instance.reportDate, datetime.date(2023, 1, 5))
+        self.assertEqual(instance.functionalCurrency, "CAD")
+        self.assertEqual(instance.fxCurrency, "USD")
+        self.assertEqual(instance.activityDescription, "Net cash activity")
+        self.assertEqual(instance.dateTime, datetime.datetime(2023, 1, 5))
+        self.assertEqual(instance.quantity, decimal.Decimal("55.94"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("75.904986"))
+        self.assertEqual(instance.cost, decimal.Decimal("-75.904986"))
+        self.assertEqual(instance.realizedPL, decimal.Decimal("0"))
+        self.assertEqual(instance.code, (enums.Code.OPENING, ))
+        self.assertEqual(instance.levelOfDetail, "TRANSACTION")
+
+
 class CashTransactionTestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<CashTransaction accountId="U123456" acctAlias="ibflex test" model="" '

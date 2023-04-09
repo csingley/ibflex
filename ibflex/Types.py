@@ -76,6 +76,7 @@ __all__ = [
     "SLBActivity",
     "Transfer",
     "CorporateAction",
+    "FxTransaction",
     "CashTransaction",
     "ChangeInDividendAccrual",
     "OpenDividendAccrual",
@@ -154,7 +155,7 @@ class FlexStatement(FlexElement):
     # Not a typo - they really spell it "Excercises"
     PendingExcercises: Tuple = ()  # TODO
     TradeTransfers: Tuple["TradeTransfer", ...] = ()
-    FxTransactions: Tuple = ()  # TODO
+    FxTransactions: Tuple["FxTransaction", ...] = ()
     UnbookedTrades: Tuple = ()  # TODO
     RoutingCommissions: Tuple = ()  # TODO
     IBGNoteTransactions: Tuple = ()  # TODO
@@ -2010,6 +2011,27 @@ class CorporateAction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class FxTransaction(FlexElement):
+    """ Wrapped in <FxTransactions> """
+
+    assetCategory: Optional[enums.AssetClass] = None
+    accountId: Optional[str] = None
+    functionalCurrency: Optional[str] = None
+    fxCurrency: Optional[str] = None
+    quantity: Optional[decimal.Decimal] = None
+    proceeds: Optional[decimal.Decimal] = None
+    cost: Optional[decimal.Decimal] = None
+    realizedPL: Optional[decimal.Decimal] = None
+    activityDescription: Optional[str] = None
+    dateTime: Optional[datetime.datetime] = None
+    code: Tuple[enums.Code, ...] = ()
+    reportDate: Optional[datetime.date] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    levelOfDetail: Optional[str] = None
 
 
 @dataclass(frozen=True)
