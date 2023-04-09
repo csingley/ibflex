@@ -882,6 +882,7 @@ class OpenPosition(FlexElement):
 
     side: Optional[enums.LongShort] = None
     assetCategory: Optional[enums.AssetClass] = None
+    subCategory: Optional[str] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
