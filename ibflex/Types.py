@@ -1599,6 +1599,7 @@ class OptionEAE(FlexElement):
     relatedTradeID: Optional[str] = None
     subCategory: Optional[str] = None
 
+
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _OptionEAE = OptionEAE
 
@@ -2466,6 +2467,7 @@ class SalesTax(FlexElement):
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
     assetCategory: Optional[enums.AssetClass] = None
+    subCategory: Optional[str] = None
     symbol: Optional[str] = None
     description: Optional[str] = None
     conid: Optional[str] = None
@@ -2494,6 +2496,11 @@ class SalesTax(FlexElement):
     salesTax: Optional[decimal.Decimal] = None
     taxableTransactionID: Optional[str] = None
     transactionID: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
 
 
