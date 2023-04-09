@@ -18,3 +18,4 @@ reg_settings.py
 .ycm_extra_conf.py
 /venv/
 **/.DS_Store
+.vscode/
