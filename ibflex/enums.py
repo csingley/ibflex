@@ -227,6 +227,7 @@ class ToFrom(str, enum.Enum):
 class TransferType(str, enum.Enum):
     INTERNAL = "INTERNAL"
     ACATS = "ACATS"
+    ATON = "ATON"
 
 
 @enum.unique
