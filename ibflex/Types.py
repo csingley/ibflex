@@ -1849,6 +1849,7 @@ class Transfer(FlexElement):
     type: Optional[enums.TransferType] = None
     direction: Optional[enums.InOut] = None
     assetCategory: Optional[enums.AssetClass] = None
+    subCategory: Optional[str] = None
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
