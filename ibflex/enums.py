@@ -95,7 +95,7 @@ class Code(str, enum.Enum):
     REINVESTMENT = "R"  # Dividend Reinvestment
     REDEMPTION = "RED"  # Redemption to Investor
     REVERSE = "Re"  # Interest or Dividend Accrual Reversal
-    REIMBURSEMENT = "Ri"  # Reimbursement
+    REIMBURSEMENT = "RI"  # Reimbursement
     SOLICITEDIB = "SI"  # This order was solicited by Interactive Brokers
     SPECIFICLOT = "SL"  # Specific Lot tax lot-matching method
     SOLICITEDOTHER = "SO"  # This order was marked as solicited by your Introducing Broker
