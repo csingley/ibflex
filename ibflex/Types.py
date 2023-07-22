@@ -305,6 +305,12 @@ class ChangeInNAV(FlexElement):
     grantActivity: Optional[decimal.Decimal] = None
     excessFundSweep: Optional[decimal.Decimal] = None
     billableSalesTax: Optional[decimal.Decimal] = None
+    mtmAtPaxos: Optional[decimal.Decimal] = None
+    carbonCredits: Optional[decimal.Decimal] = None
+    donations: Optional[decimal.Decimal] = None
+    paxosTransfers: Optional[decimal.Decimal] = None
+    commissionsAtPaxos: Optional[decimal.Decimal] = None
+    referralFee: Optional[decimal.Decimal] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -795,9 +801,17 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCash: Optional[decimal.Decimal] = None
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
-    slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
-
-
+    referralFeeMTD: Optional[decimal.Decimal] = None
+    referralFeeYTD: Optional[decimal.Decimal] = None
+    carbonCreditsMTD: Optional[decimal.Decimal] = None
+    carbonCreditsYTD: Optional[decimal.Decimal] = None
+    donationsMTD: Optional[decimal.Decimal] = None
+    donationsYTD: Optional[decimal.Decimal] = None
+    paxosTransfersMTD: Optional[decimal.Decimal] = None
+    paxosTransfersYTD: Optional[decimal.Decimal] = None
+    
+    
+    
 @dataclass(frozen=True)
 class StatementOfFundsLine(FlexElement):
     """ Wrapped in <StmtFunds> """
@@ -852,7 +866,7 @@ class StatementOfFundsLine(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-
+    actionID: Optional[str] = None
 
 @dataclass(frozen=True)
 class ChangeInPositionValue(FlexElement):
@@ -1898,6 +1912,7 @@ class Transfer(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    deliveringBroker: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2008,6 +2023,7 @@ class CorporateAction(FlexElement):
     proceeds: Optional[decimal.Decimal] = None
     value: Optional[decimal.Decimal] = None
     transactionID: Optional[str] = None
+    actionID: Optional[str] = None
     levelOfDetail: Optional[str] = None
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
@@ -2083,6 +2099,7 @@ class CashTransaction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    actionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2358,6 +2375,16 @@ class ClientFee(FlexElement):
     tradeID: Optional[str] = None
     execID: Optional[str] = None
     levelOfDetail: Optional[str] = None
+    assetCategory: Optional[str] = None
+    settleDate: Optional[str] = None
+    buySell: Optional[str] = None
+    quantity: Optional[str] = None
+    tradePrice: Optional[str] = None
+    proceeds: Optional[str] = None
+    symbol: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    multiplier: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
 
 
 @dataclass(frozen=True)
