@@ -43,7 +43,7 @@ class CashAction(str, enum.Enum):
     DIVIDEND = "Dividends"
     PAYMENTINLIEU = "Payment In Lieu Of Dividends"
     COMMADJ = "Commission Adjustments"
-
+    ADVISORFEES = "Advisor Fees"
 
 @enum.unique
 class Code(str, enum.Enum):
@@ -228,6 +228,7 @@ class TransferType(str, enum.Enum):
     INTERNAL = "INTERNAL"
     ACATS = "ACATS"
     ATON = "ATON"
+    FOP = "FOP"
 
 
 @enum.unique
