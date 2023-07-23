@@ -801,14 +801,6 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCash: Optional[decimal.Decimal] = None
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
-    referralFeeMTD: Optional[decimal.Decimal] = None
-    referralFeeYTD: Optional[decimal.Decimal] = None
-    carbonCreditsMTD: Optional[decimal.Decimal] = None
-    carbonCreditsYTD: Optional[decimal.Decimal] = None
-    donationsMTD: Optional[decimal.Decimal] = None
-    donationsYTD: Optional[decimal.Decimal] = None
-    paxosTransfersMTD: Optional[decimal.Decimal] = None
-    paxosTransfersYTD: Optional[decimal.Decimal] = None
     
     
     
@@ -1912,7 +1904,6 @@ class Transfer(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-    deliveringBroker: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2023,7 +2014,6 @@ class CorporateAction(FlexElement):
     proceeds: Optional[decimal.Decimal] = None
     value: Optional[decimal.Decimal] = None
     transactionID: Optional[str] = None
-    actionID: Optional[str] = None
     levelOfDetail: Optional[str] = None
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
@@ -2099,7 +2089,6 @@ class CashTransaction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-    actionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
