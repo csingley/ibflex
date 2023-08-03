@@ -164,7 +164,10 @@ class OrderType(enum.Enum):
     # This way OrderType can remian a enum and not be a Tuple.
     MULTIPLE = "MULTIPLE"
     TRAILLMT = "TRAILLMT"
-
+    MIDPX = "MIDPX"
+    TRAIL = "TRAIL"
+    REL = "REL"
+    MIT = "MIT"
 
 @enum.unique
 class Reorg(enum.Enum):
