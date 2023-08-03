@@ -163,6 +163,7 @@ class OrderType(enum.Enum):
     # MULTIPLE is not an actual IB order type. It is a catch-all value to use when an Order has an orderType like "LMT;MKT".
     # This way OrderType can remian a enum and not be a Tuple.
     MULTIPLE = "MULTIPLE"
+    TRAILLMT = "TRAILLMT"
 
 
 @enum.unique
