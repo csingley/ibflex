@@ -525,6 +525,7 @@ class CashReportCurrency(FlexElement):
     billableCommissions: Optional[decimal.Decimal] = None
     billableCommissionsSec: Optional[decimal.Decimal] = None
     billableCommissionsCom: Optional[decimal.Decimal] = None
+    billableSalesTaxIBUKL: Optional[decimal.Decimal] = None
     depositWithdrawals: Optional[decimal.Decimal] = None
     depositWithdrawalsSec: Optional[decimal.Decimal] = None
     depositWithdrawalsCom: Optional[decimal.Decimal] = None
