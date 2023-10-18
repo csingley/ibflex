@@ -2091,6 +2091,7 @@ class CashTransaction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    figi: Optional[str] = None
 
 
 @dataclass(frozen=True)
