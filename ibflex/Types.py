@@ -1057,6 +1057,7 @@ class Trade(FlexElement):
     relatedTransactionID: Optional[str] = None
     origTransactionID: Optional[str] = None
     subCategory: Optional[str] = None
+    figi: Optional[str] = None
 
 
 @dataclass(frozen=True)
