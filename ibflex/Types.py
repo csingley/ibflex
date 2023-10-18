@@ -805,6 +805,7 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
     
     
+    
 @dataclass(frozen=True)
 class StatementOfFundsLine(FlexElement):
     """ Wrapped in <StmtFunds> """
