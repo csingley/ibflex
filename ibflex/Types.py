@@ -802,6 +802,7 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCash: Optional[decimal.Decimal] = None
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
+    slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
     
     
     
@@ -1057,6 +1058,7 @@ class Trade(FlexElement):
     relatedTransactionID: Optional[str] = None
     origTransactionID: Optional[str] = None
     subCategory: Optional[str] = None
+    figi: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2090,6 +2092,7 @@ class CashTransaction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    figi: Optional[str] = None
 
 
 @dataclass(frozen=True)
