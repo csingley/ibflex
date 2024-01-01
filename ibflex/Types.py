@@ -575,6 +575,7 @@ class CashReportCurrency(FlexElement):
     paymentInLieu: Optional[decimal.Decimal] = None
     paymentInLieuSec: Optional[decimal.Decimal] = None
     paymentInLieuCom: Optional[decimal.Decimal] = None
+    paymentInLieuIBUKL:  Optional[decimal.Decimal] = None
     transactionTax: Optional[decimal.Decimal] = None
     transactionTaxSec: Optional[decimal.Decimal] = None
     transactionTaxCom: Optional[decimal.Decimal] = None
