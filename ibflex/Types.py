@@ -2093,6 +2093,7 @@ class CashTransaction(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     figi: Optional[str] = None
+    actionID: Optional[str] = None
 
 
 @dataclass(frozen=True)

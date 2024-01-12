@@ -809,7 +809,8 @@ class CashTransactionTestCase(unittest.TestCase):
          'isin="ANN741081064" underlyingConid="" underlyingSymbol="" issuer="" '
          'multiplier="1" strike="" expiry="" putCall="" principalAdjustFactor="" '
          'dateTime="2015-10-06" amount="27800" type="Dividends" tradeID="" code="" '
-         'transactionID="5767420360" reportDate="2015-10-06" clientReference="" />')
+         'transactionID="5767420360" reportDate="2015-10-06" clientReference="" '
+         'actionID="222598649" />')
     )
 
     def testParse(self):
@@ -844,6 +845,7 @@ class CashTransactionTestCase(unittest.TestCase):
         self.assertEqual(instance.transactionID, "5767420360")
         self.assertEqual(instance.reportDate, datetime.date(2015,10, 6))
         self.assertEqual(instance.clientReference, None)
+        self.assertEqual(instance.actionID, "222598649")
 
 
 class DebitCardActivityTestCase(unittest.TestCase):
