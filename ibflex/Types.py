@@ -946,6 +946,7 @@ class OpenPosition(FlexElement):
     securityID: Optional[str] = None
     cusip: Optional[str] = None
     isin: Optional[str] = None
+    figi: Optional[str] = None
     multiplier: Optional[decimal.Decimal] = None
     position: Optional[decimal.Decimal] = None
     markPrice: Optional[decimal.Decimal] = None
@@ -959,6 +960,7 @@ class OpenPosition(FlexElement):
     holdingPeriodDateTime: Optional[datetime.datetime] = None
     securityIDType: Optional[str] = None
     issuer: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
