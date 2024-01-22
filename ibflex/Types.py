@@ -452,6 +452,7 @@ class EquitySummaryByReportDateInBase(FlexElement):
     physDel: Optional[decimal.Decimal] = None
     physDelLong: Optional[decimal.Decimal] = None
     physDelShort: Optional[decimal.Decimal] = None
+    currency: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -804,6 +805,49 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
     slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
     
+@dataclass(frozen=True)
+class CFDCharge(FlexElement):
+    """ Wrapped in <CFDCharge> """
+
+    assetCategory: Optional[enums.AssetClass] = None
+    accountId: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[decimal.Decimal] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    amount: Optional[decimal.Decimal] = None
+    dateTime: Optional[datetime.datetime] = None
+    sedol: Optional[str] = None
+    symbol: Optional[str] = None
+    securityIDType: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    issuer: Optional[str] = None
+    multiplier: Optional[decimal.Decimal] = None
+    strike: Optional[decimal.Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[decimal.Decimal] = None
+    tradeID: Optional[str] = None
+    code: Tuple[enums.Code, ...] = ()
+    transactionID: Optional[str] = None
+    reportDate: Optional[datetime.date] = None
+    date: Optional[datetime.date] = None
+    received: Optional[decimal.Decimal] = None
+    paid: Optional[decimal.Decimal] = None
+    total: Optional[decimal.Decimal] = None
+    transactionId: Optional[str] = None
+    activityDescription: Optional[str] = None
+    clientReference: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    levelOfDetail: Optional[str] = None
     
     
 @dataclass(frozen=True)
@@ -902,6 +946,7 @@ class OpenPosition(FlexElement):
     securityID: Optional[str] = None
     cusip: Optional[str] = None
     isin: Optional[str] = None
+    figi: Optional[str] = None
     multiplier: Optional[decimal.Decimal] = None
     position: Optional[decimal.Decimal] = None
     markPrice: Optional[decimal.Decimal] = None
@@ -915,6 +960,7 @@ class OpenPosition(FlexElement):
     holdingPeriodDateTime: Optional[datetime.datetime] = None
     securityIDType: Optional[str] = None
     issuer: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
     underlyingConid: Optional[str] = None
     underlyingSymbol: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
