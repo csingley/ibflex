@@ -237,7 +237,7 @@ class CashReportCurrencyTestCase(unittest.TestCase):
          'otherSec="0" otherCom="0" endingCash="51.730897778" '
          'endingCashSec="51.730897778" endingCashCom="0" '
          'endingSettledCash="51.730897778" endingSettledCashSec="51.730897778" '
-         'endingSettledCashCom="0" />')
+         'endingSettledCashCom="0" endingCashIBUKL="0" />')
     )
 
     def testParse(self):
@@ -348,6 +348,7 @@ class CashReportCurrencyTestCase(unittest.TestCase):
         self.assertEqual(instance.endingSettledCash, decimal.Decimal("51.730897778"))
         self.assertEqual(instance.endingSettledCashSec, decimal.Decimal("51.730897778"))
         self.assertEqual(instance.endingSettledCashCom, decimal.Decimal("0"))
+        self.assertEqual(instance.endingCashIBUKL, decimal.Decimal("0"))
 
 
 class StatementOfFundsLineTestCase(unittest.TestCase):
