@@ -623,6 +623,112 @@ class TradeTestCase(unittest.TestCase):
         self.assertEqual(instance.weight, "0.0 ()")
 
 
+class TradeLotTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<Lot accountId="U123456" acctAlias="ibflex test" model="" currency="USD" '
+         'fxRateToBase="1" assetCategory="STK" symbol="VXX   110917C00005000" '
+         'description="VXX 17SEP11 5.0 C" conid="83615386" securityID="" '
+         'securityIDType="" cusip="" isin="" underlyingConid="80789235" '
+         'underlyingSymbol="VXX" issuer="" multiplier="100" strike="5" '
+         'expiry="2011-09-17" putCall="C" principalAdjustFactor="" tradeID="594763148" '
+         'reportDate="2011-08-12" tradeDate="2011-08-11" tradeTime="162000" '
+         'settleDateTarget="2011-08-12" transactionType="BookTrade" exchange="--" '
+         'quantity="3" tradePrice="0" tradeMoney="0" proceeds="-0" taxes="0" '
+         'ibCommission="0" ibCommissionCurrency="USD" netCash="0" '
+         'closePrice="29.130974" openCloseIndicator="C" notes="A" cost="8398.81122" '
+         'fifoPnlRealized="0" fxPnl="0" mtmPnl="8739.2922" origTradePrice="0" '
+         'origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" '
+         'transactionID="2381339439" buySell="BUY" ibOrderID="2381339439" ibExecID="" '
+         'brokerageOrderID="" orderReference="" volatilityOrderLink="" '
+         'exchOrderId="N/A" extExecID="N/A" orderTime="" openDateTime="" '
+         'holdingPeriodDateTime="" whenRealized="" whenReopened="" '
+         'levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" '
+         'orderType="" traderID="" isAPIOrder="N" accruedInt="0" serialNumber="" '
+         'deliveryType="" commodityType="" fineness="0.0" weight="0.0 ()" '
+         'origTransactionID="1234" relatedTransactionID="3456"/>')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.Lot)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.model, None)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal('1'))
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
+        self.assertEqual(instance.symbol, "VXX   110917C00005000")
+        self.assertEqual(instance.description, "VXX 17SEP11 5.0 C")
+        self.assertEqual(instance.conid, "83615386")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, None)
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.underlyingConid, "80789235")
+        self.assertEqual(instance.underlyingSymbol, "VXX")
+        self.assertEqual(instance.issuer, None)
+        self.assertEqual(instance.multiplier, decimal.Decimal('100'))
+        self.assertEqual(instance.strike, decimal.Decimal('5'))
+        self.assertEqual(instance.expiry, datetime.date(2011, 9, 17))
+        self.assertEqual(instance.putCall, enums.PutCall.CALL)
+        self.assertEqual(instance.principalAdjustFactor, None)
+        self.assertEqual(instance.tradeID, "594763148")
+        self.assertEqual(instance.reportDate, datetime.date(2011, 8, 12))
+        self.assertEqual(instance.tradeDate,  datetime.date(2011, 8, 11))
+        self.assertEqual(instance.tradeTime, datetime.time(16, 20, 0))
+        self.assertEqual(instance.settleDateTarget,  datetime.date(2011, 8, 12))
+        self.assertEqual(instance.transactionType, enums.TradeType.BOOKTRADE)
+        self.assertEqual(instance.exchange, None)
+        self.assertEqual(instance.quantity, decimal.Decimal("3"))
+        self.assertEqual(instance.tradePrice, decimal.Decimal("0"))
+        self.assertEqual(instance.tradeMoney, decimal.Decimal("0"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("-0"))
+        self.assertEqual(instance.taxes, decimal.Decimal("0"))
+        self.assertEqual(instance.ibCommission, decimal.Decimal("0"))
+        self.assertEqual(instance.ibCommissionCurrency, "USD")
+        self.assertEqual(instance.netCash, decimal.Decimal("0"))
+        self.assertEqual(instance.closePrice, decimal.Decimal("29.130974"))
+        self.assertEqual(instance.openCloseIndicator, enums.OpenClose.CLOSE)
+        self.assertEqual(instance.notes, (enums.Code.ASSIGNMENT, ))
+        self.assertEqual(instance.cost, decimal.Decimal("8398.81122"))
+        self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("0"))
+        self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
+        self.assertEqual(instance.mtmPnl, decimal.Decimal("8739.2922"))
+        self.assertEqual(instance.origTradePrice, decimal.Decimal("0"))
+        self.assertEqual(instance.origTradeDate, None)
+        self.assertEqual(instance.origTradeID, None)
+        self.assertEqual(instance.origOrderID, "0")
+        self.assertEqual(instance.clearingFirmID, None)
+        self.assertEqual(instance.transactionID, "2381339439")
+        self.assertEqual(instance.buySell, enums.BuySell.BUY)
+        self.assertEqual(instance.ibOrderID, "2381339439")
+        self.assertEqual(instance.ibExecID, None)
+        self.assertEqual(instance.brokerageOrderID, None)
+        self.assertEqual(instance.orderReference, None)
+        self.assertEqual(instance.volatilityOrderLink, None)
+        self.assertEqual(instance.exchOrderId, None)
+        self.assertEqual(instance.extExecID, None)
+        self.assertEqual(instance.orderTime, None)
+        self.assertEqual(instance.openDateTime, None)
+        self.assertEqual(instance.holdingPeriodDateTime, None)
+        self.assertEqual(instance.whenRealized, None)
+        self.assertEqual(instance.whenReopened, None)
+        self.assertEqual(instance.levelOfDetail, "EXECUTION")
+        self.assertEqual(instance.changeInPrice, decimal.Decimal("0"))
+        self.assertEqual(instance.changeInQuantity, decimal.Decimal("0"))
+        self.assertEqual(instance.orderType, None)
+        self.assertEqual(instance.traderID, None)
+        self.assertEqual(instance.isAPIOrder, False)
+        self.assertEqual(instance.accruedInt, decimal.Decimal("0"))
+        self.assertEqual(instance.serialNumber, None)
+        self.assertEqual(instance.deliveryType, None)
+        self.assertEqual(instance.commodityType, None)
+        self.assertEqual(instance.fineness, decimal.Decimal("0"))
+        self.assertEqual(instance.weight, "0.0 ()")
+        self.assertEqual(instance.origTransactionID, "1234")
+        self.assertEqual(instance.relatedTransactionID, "3456")
+
+
 class OptionEAETestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<OptionEAE accountId="U123456" acctAlias="ibflex test" model="" '

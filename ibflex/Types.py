@@ -1250,6 +1250,8 @@ class Lot(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
