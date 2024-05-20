@@ -1138,6 +1138,28 @@ class TransferLot(FlexElement):
     pnlAmount: Optional[decimal.Decimal] = None
     pnlAmountInBase: Optional[decimal.Decimal] = None
     code: Tuple[enums.Code, ...] = ()
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    strike: Optional[decimal.Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[decimal.Decimal] = None
+    accountName: Optional[str] = None
+    positionAmount: Optional[decimal.Decimal] = None
+    positionAmountInBase: Optional[decimal.Decimal] = None
+    cashTransfer: Optional[decimal.Decimal] = None
+    clientReference: Optional[str] = None
+    transactionID: Optional[str] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
