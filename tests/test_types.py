@@ -1004,6 +1004,49 @@ class TransferTestCase(unittest.TestCase):
         self.assertEqual(instance.clientReference, None)
 
 
+class TransferLotTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<TransferLot accountId="U123456" currency="USD" fxRateToBase="1" '
+         'assetCategory="STK" symbol="FMTIF" description="FMI HOLDINGS LTD" '
+         'conid="86544467" securityID="" securityIDType="" cusip="02K123K" '
+         'isin="" listingExchange="NYSE" multiplier="1" reportDate="20110718" '
+         'date="20110718" dateTime="20110718" type="FOP" direction="IN" '
+         'company="HOOLI" account="12345678" deliveringBroker="12345" '
+         'quantity="701.5" transferPrice="0" pnlAmount="0" pnlAmountInBase="0"'
+         ' code="ST" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.TransferLot)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.assetCategory, enums.AssetClass.STOCK)
+        self.assertEqual(instance.symbol, "FMTIF")
+        self.assertEqual(instance.description, "FMI HOLDINGS LTD")
+        self.assertEqual(instance.conid, "86544467")
+        self.assertEqual(instance.securityID, None)
+        self.assertEqual(instance.securityIDType, None)
+        self.assertEqual(instance.cusip, "02K123K")
+        self.assertEqual(instance.isin, None)
+        self.assertEqual(instance.listingExchange, "NYSE")
+        self.assertEqual(instance.multiplier, decimal.Decimal("1"))
+        self.assertEqual(instance.reportDate, datetime.date(2011, 7, 18))
+        self.assertEqual(instance.date, datetime.date(2011, 7, 18))
+        self.assertEqual(instance.dateTime, datetime.datetime(2011, 7, 18, 0, 0, 0))
+        self.assertEqual(instance.type, enums.TransferType.FOP)
+        self.assertEqual(instance.direction, enums.InOut.IN)
+        self.assertEqual(instance.company, 'HOOLI')
+        self.assertEqual(instance.account, "12345678")
+        self.assertEqual(instance.deliveringBroker, "12345")
+        self.assertEqual(instance.quantity, decimal.Decimal("701.5"))
+        self.assertEqual(instance.transferPrice, decimal.Decimal("0"))
+        self.assertEqual(instance.pnlAmount, decimal.Decimal("0"))
+        self.assertEqual(instance.pnlAmountInBase, decimal.Decimal("0"))
+        self.assertEqual(instance.code, (enums.Code.STCG, ))
+
+
 class CorporateActionTestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<CorporateAction accountId="U123456" acctAlias="ibflex test" model="" '

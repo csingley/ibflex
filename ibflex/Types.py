@@ -804,7 +804,8 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
     slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
-    
+
+
 @dataclass(frozen=True)
 class CFDCharge(FlexElement):
     """ Wrapped in <CFDCharge> """
@@ -848,8 +849,8 @@ class CFDCharge(FlexElement):
     acctAlias: Optional[str] = None
     model: Optional[str] = None
     levelOfDetail: Optional[str] = None
-    
-    
+
+
 @dataclass(frozen=True)
 class StatementOfFundsLine(FlexElement):
     """ Wrapped in <StmtFunds> """
@@ -905,6 +906,7 @@ class StatementOfFundsLine(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     actionID: Optional[str] = None
+
 
 @dataclass(frozen=True)
 class ChangeInPositionValue(FlexElement):
@@ -1105,6 +1107,37 @@ class Trade(FlexElement):
     origTransactionID: Optional[str] = None
     subCategory: Optional[str] = None
     figi: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class TransferLot(FlexElement):
+    """ Wrapped in <Transfers> """
+    accountId: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[decimal.Decimal] = None
+    assetCategory: Optional[enums.AssetClass] = None
+    symbol: Optional[str] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    securityIDType: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    listingExchange: Optional[str] = None
+    multiplier: Optional[decimal.Decimal] = None
+    reportDate: Optional[datetime.date] = None
+    date: Optional[datetime.date] = None
+    dateTime: Optional[datetime.datetime] = None
+    type: Optional[enums.TransferType] = None
+    direction: Optional[enums.InOut] = None
+    company: Optional[str] = None
+    account: Optional[str] = None
+    deliveringBroker: Optional[str] = None
+    quantity: Optional[decimal.Decimal] = None
+    transferPrice: Optional[decimal.Decimal] = None
+    pnlAmount: Optional[decimal.Decimal] = None
+    pnlAmountInBase: Optional[decimal.Decimal] = None
+    code: Tuple[enums.Code, ...] = ()
 
 
 @dataclass(frozen=True)
