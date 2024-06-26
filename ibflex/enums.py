@@ -25,6 +25,7 @@ __all__ = [
     "DeliveredReceived",
     "ENUMS",
     "EnumType",
+    "PutCall"
 ]
 
 import enum
@@ -203,6 +204,7 @@ class Reorg(str, enum.Enum):
     MERGER = "TC"
     TENDERISSUE = "TI"
     TENDER = "TO"
+    TBILLMATURITY = "TM"
 
 
 @enum.unique
