@@ -1032,6 +1032,7 @@ class Trade(FlexElement):
     cusip: Optional[str] = None
     isin: Optional[str] = None
     rtn: Optional[str] = None
+    initialInvestment: Optiona[str] = None
     issuerCountryCode: Optional[str] = None
     listingExchange: Optional[str] = None
     multiplier: Optional[decimal.Decimal] = None
