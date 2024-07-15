@@ -906,6 +906,12 @@ class StatementOfFundsLine(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     actionID: Optional[str] = None
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1107,6 +1113,9 @@ class Trade(FlexElement):
     origTransactionID: Optional[str] = None
     subCategory: Optional[str] = None
     figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1252,6 +1261,12 @@ class Lot(FlexElement):
     weight: Optional[str] = None
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1368,6 +1383,13 @@ class SymbolSummary(FlexElement):
     isAPIOrder: Optional[bool] = None
     allocatedTo: Optional[str] = None
     accruedInt: Optional[decimal.Decimal] = None
+    fxRateToBase: Optional[decimal.Decimal] = None
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1468,6 +1490,14 @@ class AssetSummary(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -1563,6 +1593,19 @@ class Order(FlexElement):
     whenReopened: Optional[datetime.datetime] = None
     changeInPrice: Optional[decimal.Decimal] = None
     changeInQuantity: Optional[decimal.Decimal] = None
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1710,6 +1753,17 @@ class OptionEAE(FlexElement):
     model: Optional[str] = None
     relatedTradeID: Optional[str] = None
     subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -2344,6 +2398,18 @@ class SecurityInfo(FlexElement):
     code: Tuple[enums.Code, ...] = ()
     currency: Optional[str] = None
     settlementPolicyMethod: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    relatedTradeID: Optional[str] = None
+    origTransactionID: Optional[str] = None
+    relatedTransactionID: Optional[str] = None
+    rtn: Optional[str] = None
+    initialInvestment: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[str] = None
 
 
 @dataclass(frozen=True)
