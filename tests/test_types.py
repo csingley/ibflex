@@ -746,7 +746,7 @@ class TradeAutoFXTestCase(unittest.TestCase):
         self.assertEqual(instance.currency, "USD")
         self.assertEqual(instance.symbol, "USD.EUR")
         self.assertEqual(instance.description, "USD.EUR")
-        self.assertEqual(instance.dateTime, datetime.datetime(2024, 8, ))
+        self.assertEqual(instance.dateTime, datetime.datetime(2024, 8, 1))
         self.assertEqual(instance.tradeDate,  datetime.date(2024, 8, 1))
         self.assertEqual(instance.quantity, decimal.Decimal("1337.0"))
         self.assertEqual(instance.tradePrice, decimal.Decimal("1.0"))
