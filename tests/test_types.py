@@ -751,7 +751,7 @@ class TradeAutoFXTestCase(unittest.TestCase):
         self.assertEqual(instance.quantity, decimal.Decimal("1337.0"))
         self.assertEqual(instance.tradePrice, decimal.Decimal("1.0"))
         self.assertEqual(instance.proceeds, decimal.Decimal("1337.0"))
-        self.assertEqual(instance.code, (enums.Code.AUTOFX, ))
+        self.assertEqual(instance.notes, (enums.Code.AUTOFX, ))
         self.assertEqual(instance.buySell, enums.BuySell.BUY)
         self.assertEqual(instance.levelOfDetail, "EXECUTION")
         self.assertEqual(instance.assetCategory, enums.AssetClass.CASH)
