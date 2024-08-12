@@ -729,6 +729,34 @@ class TradeLotTestCase(unittest.TestCase):
         self.assertEqual(instance.relatedTransactionID, "3456")
 
 
+class TradeAutoFXTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<Trade currency="USD" symbol="USD.EUR" description="USD.EUR" '
+         'dateTime="2024-08-01;153045" tradeDate="2024-08-01" quantity="1337.0" '
+         'tradePrice="1.0" proceeds="1337.0" ibCommission="0" ibCommissionCurrency="USD" '
+         'notes="AFx" cost="0" buySell="BUY" ibOrderID="1234567890" openDateTime="" '
+         'levelOfDetail="EXECUTION" fxRateToBase="1" assetCategory="CASH" taxes="0" '
+         'closePrice="0" fifoPnlRealized="0" origTradePrice="0" origTradeDate="" '
+         'cusip="" isin="" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.Trade)
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.symbol, "USD.EUR")
+        self.assertEqual(instance.description, "USD.EUR")
+        self.assertEqual(instance.dateTime, datetime.datetime(2024, 8, 1, 15, 30, 45))
+        self.assertEqual(instance.tradeDate,  datetime.date(2024, 8, 1))
+        self.assertEqual(instance.quantity, decimal.Decimal("1337.0"))
+        self.assertEqual(instance.tradePrice, decimal.Decimal("1.0"))
+        self.assertEqual(instance.proceeds, decimal.Decimal("1337.0"))
+        self.assertEqual(instance.notes, (enums.Code.AUTOFX, ))
+        self.assertEqual(instance.buySell, enums.BuySell.BUY)
+        self.assertEqual(instance.levelOfDetail, "EXECUTION")
+        self.assertEqual(instance.assetCategory, enums.AssetClass.CASH)
+
+
 class OptionEAETestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<OptionEAE accountId="U123456" acctAlias="ibflex test" model="" '
@@ -1878,7 +1906,7 @@ class TradesOrderTestCase(unittest.TestCase):
         self.assertEqual(instance.cost, decimal.Decimal("876.9314"))
         self.assertEqual(instance.fifoPnlRealized, decimal.Decimal("0"))
         self.assertEqual(instance.fxPnl, decimal.Decimal("0"))
-        self.assertEqual(instance.mtmPnl, decimal.Decimal("48")) 
+        self.assertEqual(instance.mtmPnl, decimal.Decimal("48"))
         self.assertEqual(instance.origTradePrice, None)
         self.assertEqual(instance.origTradeDate, None)
         self.assertEqual(instance.origTradeID, None)
@@ -1892,7 +1920,7 @@ class TradesOrderTestCase(unittest.TestCase):
         self.assertEqual(instance.exchOrderId, None)
         self.assertEqual(instance.extExecID, None)
         self.assertEqual(instance.orderTime, datetime.datetime(2021, 2, 3, 10, 1, 50))
-        self.assertEqual(instance.openDateTime, None) 
+        self.assertEqual(instance.openDateTime, None)
         self.assertEqual(instance.holdingPeriodDateTime, None)
         self.assertEqual(instance.whenRealized, None)
         self.assertEqual(instance.whenReopened, None)
