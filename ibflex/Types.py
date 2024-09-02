@@ -2251,7 +2251,8 @@ class CashTransaction(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     figi: Optional[str] = None
-
+    issuerCountryCode: Optional[str] = None
+    availableForTradingDate: Optional[datetime.date] = None
 
 @dataclass(frozen=True)
 class DebitCardActivity(FlexElement):
