@@ -1032,6 +1032,7 @@ class Trade(FlexElement):
     cusip: Optional[str] = None
     isin: Optional[str] = None
     rtn: Optional[str] = None
+    initialInvestment: Optional[str] = None
     issuerCountryCode: Optional[str] = None
     listingExchange: Optional[str] = None
     multiplier: Optional[decimal.Decimal] = None
@@ -2198,7 +2199,8 @@ class CashTransaction(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     figi: Optional[str] = None
-
+    issuerCountryCode: Optional[str] = None
+    availableForTradingDate: Optional[datetime.date] = None
 
 @dataclass(frozen=True)
 class DebitCardActivity(FlexElement):

@@ -51,6 +51,7 @@ class Code(str, enum.Enum):
     """
     ASSIGNMENT = "A"
     AUTOEXERCISE = "AEx"  # Automatic exercise for dividend-related recommendation
+    AUTOFX = "AFx" # FX Auto Conversion
     ADJUSTMENT = "Adj"  # Adjustment
     ALLOCATION = "Al"  # Allocation
     AWAY = "Aw"  # Away Trade
