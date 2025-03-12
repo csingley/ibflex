@@ -175,7 +175,7 @@ class FlexStatement(FlexElement):
     TierInterestDetails: Tuple["TierInterestDetail", ...] = ()
     HardToBorrowDetails: Tuple["HardToBorrowDetail", ...] = ()
     HardToBorrowMarkupDetails: Tuple = ()
-    SLBOpenContracts: Tuple = ()  # TODO
+    SLBOpenContracts: Tuple["SLBOpenContract", ...] = ()
     SLBActivities: Tuple["SLBActivity", ...] = ()
     SLBFees: Tuple["SLBFee", ...] = ()
     Transfers: Tuple["Transfer", ...] = ()
@@ -248,6 +248,7 @@ class AccountInformation(FlexElement):
     primaryEmail: Optional[str] = None
     accountRepName: Optional[str] = None
     accountRepPhone: Optional[str] = None
+    lastTradedDate: Optional[datetime.date] = None
 
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
@@ -311,7 +312,9 @@ class ChangeInNAV(FlexElement):
     paxosTransfers: Optional[decimal.Decimal] = None
     commissionsAtPaxos: Optional[decimal.Decimal] = None
     referralFee: Optional[decimal.Decimal] = None
-
+    currency: Optional[str] = None
+    changeInIncentiveCouponAccruals: Optional[decimal.Decimal] = None
+    otherIncome: Optional[decimal.Decimal] = None
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _ChangeInNAV = ChangeInNAV
@@ -364,7 +367,9 @@ class MTMPerformanceSummaryUnderlying(FlexElement):
     weight: Optional[str] = None
     otherWithAccruals: Optional[decimal.Decimal] = None
     totalWithAccruals: Optional[decimal.Decimal] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
 
 @dataclass(frozen=True)
 class EquitySummaryByReportDateInBase(FlexElement):
@@ -459,6 +464,16 @@ class EquitySummaryByReportDateInBase(FlexElement):
     physDelLong: Optional[decimal.Decimal] = None
     physDelShort: Optional[decimal.Decimal] = None
     currency: Optional[str] = None
+    insuredBankDepositRedemptionCashComponentLong: Optional[decimal.Decimal] = None
+    insuredBankDepositRedemptionCashComponentShort: Optional[decimal.Decimal] = None
+    incentiveCouponAccrualsLong: Optional[decimal.Decimal] = None
+    incentiveCouponAccrualsShort: Optional[decimal.Decimal] = None
+    eventContractInterestAccrualsLong: Optional[decimal.Decimal] = None
+    eventContractInterestAccrualsShort: Optional[decimal.Decimal] = None
+    marginFinancingChargeAccrualsLong: Optional[decimal.Decimal] = None
+    marginFinancingChargeAccrualsShort: Optional[decimal.Decimal] = None
+    cryptoLong: Optional[decimal.Decimal] = None
+    cryptoShort: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -688,6 +703,9 @@ class CashReportCurrency(FlexElement):
     salesTaxMTD: Optional[decimal.Decimal] = None
     salesTaxYTD: Optional[decimal.Decimal] = None
     salesTaxPaxos: Optional[decimal.Decimal] = None
+    otherIncome: Optional[decimal.Decimal] = None
+    otherIncomeSec: Optional[decimal.Decimal] = None
+    otherIncomeCom: Optional[decimal.Decimal] = None
     otherFeesMTD: Optional[decimal.Decimal] = None
     otherFeesYTD: Optional[decimal.Decimal] = None
     otherFeesPaxos: Optional[decimal.Decimal] = None
@@ -1038,34 +1056,36 @@ class Trade(FlexElement):
     accountId: Optional[str] = None
     currency: Optional[str] = None
     fxRateToBase: Optional[decimal.Decimal] = None
-    symbol: Optional[str] = None
-    description: Optional[str] = None
-    conid: Optional[str] = None
-    cusip: Optional[str] = None
-    isin: Optional[str] = None
-    listingExchange: Optional[str] = None
-    multiplier: Optional[decimal.Decimal] = None
+    symbol: Optional[str] = None                            # symbol of instrument traded, e.g. AAPL, not unique in IBKR as it can exist on different exchanges: (symbol, Exchange, Currency, Asset Type) is unique
+    conid: Optional[str] = None                             # IBKR identifier of instrument, unique key within IBKR
+    cusip: Optional[str] = None                             # S&P instrument ID, not unique as it is used on different exchanges
+    isin: Optional[str] = None                              # instrument ISIN (ISO standardized instrument ID)
+    figi: Optional[str] = None                              # instrument FIGI (Bloomberg ID - comparable to ISIN)
+    description: Optional[str] = None                       # instrument name, e.g. "Apple Inc."
+    listingExchange: Optional[str] = None                   # exchange, e.g. "NASDAQ"
+    multiplier: Optional[decimal.Decimal] = None            # multiplier of contract traded
     strike: Optional[decimal.Decimal] = None
     expiry: Optional[datetime.date] = None
     putCall: Optional[enums.PutCall] = None
     tradeID: Optional[str] = None
-    reportDate: Optional[datetime.date] = None
-    tradeDate: Optional[datetime.date] = None
-    tradeTime: Optional[datetime.time] = None
-    settleDateTarget: Optional[datetime.date] = None
+    reportDate: Optional[datetime.date] = None              # when the trade was included in IBKR's reporting system (e.g. corrections)
+    tradeDate: Optional[datetime.date] = None               # date of the trade
+    tradeTime: Optional[datetime.time] = None               # timestamp of the trade
+    settleDateTarget: Optional[datetime.date] = None        # expected date of ownership transfer
     exchange: Optional[str] = None
     quantity: Optional[decimal.Decimal] = None
     tradePrice: Optional[decimal.Decimal] = None
-    tradeMoney: Optional[decimal.Decimal] = None
+    tradeMoney: Optional[decimal.Decimal] = None            # TradeMoney = Proceeds + Fees + Commissions
+    proceeds: Optional[decimal.Decimal] = None              # Proceeds = Quantity * TradePrice * Multiplier
+    netCash: Optional[decimal.Decimal] = None               # netCash = TradeMoney - Adjustments (e.g. fees in physical execution of options, or taxes)
+    netCashInBase: Optional[decimal.Decimal] = None         # = NetCash × FX Rate
     taxes: Optional[decimal.Decimal] = None
     ibCommission: Optional[decimal.Decimal] = None
     ibCommissionCurrency: Optional[str] = None
-    netCash: Optional[decimal.Decimal] = None
-    netCashInBase: Optional[decimal.Decimal] = None
-    closePrice: Optional[decimal.Decimal] = None
+    closePrice: Optional[decimal.Decimal] = None           # closing market price of the asset on the trade date
     notes: Tuple[enums.Code, ...] = ()  # separator = ";"
     cost: Optional[decimal.Decimal] = None
-    mtmPnl: Optional[decimal.Decimal] = None
+    mtmPnl: Optional[decimal.Decimal] = None               # PnL at the time of reportins
     origTradePrice: Optional[decimal.Decimal] = None
     origTradeDate: Optional[datetime.date] = None
     origTradeID: Optional[str] = None
@@ -1079,7 +1099,6 @@ class Trade(FlexElement):
     orderTime: Optional[datetime.datetime] = None
     changeInPrice: Optional[decimal.Decimal] = None
     changeInQuantity: Optional[decimal.Decimal] = None
-    proceeds: Optional[decimal.Decimal] = None
     fxPnl: Optional[decimal.Decimal] = None
     clearingFirmID: Optional[str] = None
     #  Effective 2013, every Trade has a `transactionID` attribute that can't
@@ -1095,10 +1114,10 @@ class Trade(FlexElement):
     traderID: Optional[str] = None
     isAPIOrder: Optional[bool] = None
     acctAlias: Optional[str] = None
-    model: Optional[str] = None
+    model: Optional[str] = None                   # some clients use model portfolios in account, i.e. virtual sub-accounts
     securityID: Optional[str] = None
     securityIDType: Optional[str] = None
-    principalAdjustFactor: Optional[decimal.Decimal] = None
+    principalAdjustFactor: Optional[decimal.Decimal] = None   # relevant e.g. in stock splits
     dateTime: Optional[datetime.datetime] = None
     underlyingConid: Optional[str] = None
     underlyingSecurityID: Optional[str] = None
@@ -1118,7 +1137,6 @@ class Trade(FlexElement):
     relatedTransactionID: Optional[str] = None
     origTransactionID: Optional[str] = None
     subCategory: Optional[str] = None
-    figi: Optional[str] = None
     issuerCountryCode: Optional[str] = None
     rtn: Optional[str] = None
     initialInvestment: Optional[decimal.Decimal] = None
@@ -1322,7 +1340,14 @@ class UnbundledCommissionDetail(FlexElement):
     regSection31TransactionFee: Optional[decimal.Decimal] = None
     regOther: Optional[decimal.Decimal] = None
     other: Optional[decimal.Decimal] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None     # 0: Cash settlement, 1: physical settlement
+    commodityType: Optional[str] = None                # z.B. "STK"=Aktie, "BND"=Anleihe, etc.
+    fineness: Optional[decimal.Decimal] = None         # Reinheitsgrad bei Edelmetallen, z.B. 925 für 925 Sterling Silber
+    weight: Optional[decimal.Decimal] = None           # Gewicht - Einheit ist Rohstoffabhängig
 
 @dataclass(frozen=True)
 class SymbolSummary(FlexElement):
@@ -1890,7 +1915,8 @@ class TierInterestDetail(FlexElement):
     code: Tuple[enums.Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
-
+    reportDate: Optional[datetime.date] = None
+    marginBalance: Optional[decimal.Decimal] = None
 
 @dataclass(frozen=True)
 class HardToBorrowDetail(FlexElement):
@@ -1967,7 +1993,17 @@ class SLBActivity(FlexElement):
     markQuantity: Optional[decimal.Decimal] = None
     markPriorPrice: Optional[decimal.Decimal] = None
     markCurrentPrice: Optional[decimal.Decimal] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[decimal.Decimal] = None
 
 @dataclass(frozen=True)
 class SLBFee:
@@ -2015,7 +2051,15 @@ class SLBFee:
     code: Tuple[enums.Code, ...] = ()
     fromAcct: Optional[str] = None
     toAcct: Optional[str] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    uniqueID: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[decimal.Decimal] = None
 
 @dataclass(frozen=True)
 class Transfer(FlexElement):
@@ -2135,7 +2179,14 @@ class PriorPeriodPosition(FlexElement):
     expiry: Optional[datetime.date] = None
     putCall: Optional[enums.PutCall] = None
     principalAdjustFactor: Optional[decimal.Decimal] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[decimal.Decimal] = None
 
 @dataclass(frozen=True)
 class CorporateAction(FlexElement):
@@ -2259,7 +2310,9 @@ class CashTransaction(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     figi: Optional[str] = None
-
+    issuerCountryCode: Optional[str] = None
+    availableForTradingDate: Optional[datetime.datetime] = None
+    exDate: Optional[datetime.datetime] = None
 
 @dataclass(frozen=True)
 class DebitCardActivity(FlexElement):
@@ -2322,7 +2375,16 @@ class ChangeInDividendAccrual(FlexElement):
     toAcct: Optional[str] = None
     acctAlias: Optional[str] = None
     model: Optional[str] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    actionID: Optional[decimal.Decimal] = None  #unique numerical ID
+    levelOfDetail: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[decimal.Decimal] = None
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _ChangeInDividendAccrual = ChangeInDividendAccrual
@@ -2486,7 +2548,9 @@ class FIFOPerformanceSummaryUnderlying(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
 
 @dataclass(frozen=True)
 class NetStockPosition(FlexElement):
@@ -2524,7 +2588,9 @@ class NetStockPosition(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-
+    subCategory: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
 
 @dataclass(frozen=True)
 class ClientFee(FlexElement):
@@ -2703,6 +2769,50 @@ class SalesTax(FlexElement):
     weight: Optional[str] = None
     code: Tuple[enums.Code, ...] = ()
 
+
+@dataclass(frozen=True)
+class SLBOpenContract(FlexElement):
+    accountId: Optional[str] = None
+    acctAlias: Optional[str] = None
+    model: Optional[str] = None
+    currency: Optional[str] = None
+    fxRateToBase: Optional[decimal.Decimal] = None
+    description: Optional[str] = None
+    conid: Optional[str] = None
+    securityID: Optional[str] = None
+    cusip: Optional[str] = None
+    isin: Optional[str] = None
+    assetCategory: Optional[str] = None
+    subCategory: Optional[str] = None
+    symbol: Optional[str] = None
+    securityIDType: Optional[str] = None
+    figi: Optional[str] = None
+    listingExchange: Optional[str] = None
+    underlyingConid: Optional[str] = None
+    underlyingSymbol: Optional[str] = None
+    underlyingSecurityID: Optional[str] = None
+    underlyingListingExchange: Optional[str] = None
+    issuer: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    multiplier: Optional[decimal.Decimal] = None
+    strike: Optional[decimal.Decimal] = None
+    expiry: Optional[datetime.date] = None
+    putCall: Optional[enums.PutCall] = None
+    principalAdjustFactor: Optional[decimal.Decimal] = None
+    date: Optional[datetime.date] = None
+    type: Optional[str] = None
+    slbTransactionId: Optional[str] = None
+    exchange: Optional[str] = None
+    quantity: Optional[decimal.Decimal] = None
+    excessQuantity: Optional[decimal.Decimal] = None
+    feeRate: Optional[decimal.Decimal] = None
+    collateralAmount: Optional[decimal.Decimal] = None
+    levelOfDetail: Optional[str] = None
+    serialNumber: Optional[decimal.Decimal] = None
+    deliveryType: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[decimal.Decimal] = None
+    weight: Optional[decimal.Decimal] = None
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _ClientFeesDetail = ClientFeesDetail
