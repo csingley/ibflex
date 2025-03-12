@@ -186,6 +186,9 @@ class FlexStatement(FlexElement):
     HKIPOOpenSubscriptions: Tuple = ()  # TODO
     CommissionCredits: Tuple = ()  # TODO
     StockGrantActivities: Tuple = ()  # TODO
+    SLBCollaterals: Tuple = ()  # TODO
+    IncentiveCouponAccrualDetails: Tuple = ()  # TODO
+    DepositsOnHold: Tuple = ()  # TODO
 
     def __repr__(self):
         repr = (
