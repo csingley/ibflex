@@ -112,6 +112,7 @@ class FlexQueryResponse(FlexElement):
     queryName: str
     type: str
     FlexStatements: Tuple["FlexStatement", ...]
+    Message: Optional[str] = None
 
     def __repr__(self):
         repr = (
@@ -119,6 +120,7 @@ class FlexQueryResponse(FlexElement):
             f"queryName={self.queryName!r}, "
             f"type={self.type!r}, "
             f"len(FlexStatements)={len(self.FlexStatements)}"
+            f"Message={self.Message!r}"
             ")"
         )
         return repr
