@@ -19,9 +19,9 @@ import requests
 ###############################################################################
 # SERVICE LOCATIONS
 ###############################################################################
-FLEX_URL = 'https://gdcdyn.interactivebrokers.com/Universal/servlet/'
-REQUEST_URL = FLEX_URL + 'FlexStatementService.SendRequest'
-STMT_URL = FLEX_URL + 'FlexStatementService.GetStatement'
+FLEX_URL = 'https://ndcdyn.interactivebrokers.com/AccountManagement/'
+REQUEST_URL = FLEX_URL + 'FlexWebService/SendRequest'
+STMT_URL = FLEX_URL + 'FlexWebService/GetStatement'
 
 
 ###############################################################################
