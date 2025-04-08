@@ -173,6 +173,8 @@ def parse_element_attr(
 def prep_date(value: str) -> Tuple[int, int, int]:
     """Returns a tuple of (year, month, day).
     """
+    if value == "MULTI":
+        return None
     date_format = DATE_FORMATS[len(value)][value.count('/')]
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
@@ -189,6 +191,8 @@ def prep_datetime(value: str) -> Tuple[int, ...]:
     """
     #  HACK - some old data has ", " separator instead of ",".
     value = value.replace(", ", ",")
+    if value == "MULTI":
+        return None
 
     def merge_date_time(datestr: str, timestr: str) -> Tuple[int, ...]:
         """Convert presplit date/time strings into args ready for datetime().
