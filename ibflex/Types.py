@@ -1427,6 +1427,39 @@ class SymbolSummary(FlexElement):
     relatedTradeID: Optional[str] = None
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    settleDateTarget: Optional[datetime.date] = None
+    tradePrice: Optional[decimal.Decimal] = None
+    TradePrice: Optional[decimal.Decimal] = None
+    tradeMoney: Optional[decimal.Decimal] = None
+    taxes: Optional[decimal.Decimal] = None
+    ibCommission: Optional[decimal.Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    netCash: Optional[decimal.Decimal] = None
+    closePrice: Optional[decimal.Decimal] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    notes: Optional[str] = None
+    cost: Optional[decimal.Decimal] = None
+    fifoPnlRealized: Optional[decimal.Decimal] = None
+    mtmPnl: Optional[decimal.Decimal] = None
+    origOrderID: Optional[str] = None
+    ibOrderID: Optional[str] = None
+    transactionID: Optional[str] = None
+    ibExecID: Optional[str] = None
+    rtn: Optional[str] = None
+    exchOrderId: Optional[str] = None
+    extExecID: Optional[str] = None
+    openDateTime: Optional[datetime.datetime] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    whenRealized: Optional[datetime.datetime] = None
+    whenReopened: Optional[datetime.datetime] = None
+    changeInPrice: Optional[decimal.Decimal] = None
+    changeInQuantity: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[decimal.Decimal] = None
+    serialNumber: Optional[str] = None
+    deliveryType: Optional[str] = None
+    commodityType: Optional[str] = None
+    fineness: Optional[str] = None
+    weight: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -2486,6 +2519,7 @@ class SecurityInfo(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    securityType: Optional[str] = None
 
 
 @dataclass(frozen=True)
