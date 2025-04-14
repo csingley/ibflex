@@ -833,6 +833,7 @@ class CashReportCurrency(FlexElement):
     slbNetSettledCashSec: Optional[decimal.Decimal] = None
     slbNetSettledCashCom: Optional[decimal.Decimal] = None
     slbNetSettledCashPaxos: Optional[decimal.Decimal] = None
+    otherIncomePaxos: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
