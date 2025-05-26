@@ -463,6 +463,7 @@ CURRENCY_CODES = ISO4217 + (
     "CNH",           # RMB traded in HK
     "BASE_SUMMARY",  # Fake currency code used in IB NAV/Performance reports
     "",              # Lot element allows blank currency ?!
+    "RUS",           # Appears with placeholder rate -1 in some list of rates. 
 )
 
 

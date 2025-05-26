@@ -709,6 +709,8 @@ class CashReportCurrency(FlexElement):
     salesTaxYTD: Optional[decimal.Decimal] = None
     salesTaxPaxos: Optional[decimal.Decimal] = None
     otherIncome: Optional[decimal.Decimal] = None
+    otherIncomeMTD: Optional[decimal.Decimal] = None
+    otherIncomeYTD: Optional[decimal.Decimal] = None
     otherIncomeSec: Optional[decimal.Decimal] = None
     otherIncomeCom: Optional[decimal.Decimal] = None
     otherFeesMTD: Optional[decimal.Decimal] = None
@@ -1397,7 +1399,9 @@ class SymbolSummary(FlexElement):
     dateTime: Optional[datetime.datetime] = None
     reportDate: Optional[datetime.date] = None
     settleDate: Optional[datetime.date] = None
+    taxes: Optional[decimal.Decimal] = None
     tradeDate: Optional[datetime.date] = None
+    tradePrice: Optional[decimal.Decimal] = None    
     exchange: Optional[str] = None
     buySell: Optional[enums.BuySell] = None
     quantity: Optional[decimal.Decimal] = None
@@ -1427,6 +1431,10 @@ class SymbolSummary(FlexElement):
     relatedTradeID: Optional[str] = None
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    ibCommission: Optional[decimal.Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    netCash: Optional[decimal.Decimal] = None
+    netCashInBase: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -2122,7 +2130,8 @@ class Transfer(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
-
+    figi: Optional[str] = None
+    settleDate: Optional[datetime.date] = None 
 
 @dataclass(frozen=True)
 class UnsettledTransfer(FlexElement):
