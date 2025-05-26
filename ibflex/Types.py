@@ -2160,7 +2160,11 @@ class Transfer(FlexElement):
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
     figi: Optional[str] = None
-    settleDate: Optional[datetime.date] = None 
+    settleDate: Optional[datetime.date] = None
+    issuerCountryCode: Optional[str] = None
+    levelOfDetail: Optional[str] = None
+    positionInstructionID: Optional[str] = None
+    positionInstructionSetID: Optional[str] = None
 
 @dataclass(frozen=True)
 class UnsettledTransfer(FlexElement):
