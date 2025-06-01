@@ -170,9 +170,11 @@ def parse_element_attr(
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
 #  These are just implementation details for converters and don't need testing.
 ###############################################################################
-def prep_date(value: str) -> Tuple[int, int, int]:
+def prep_date(value: str) -> Optional[Tuple[int, int, int]]:
     """Returns a tuple of (year, month, day).
     """
+    if value == "MULTI":
+        return None  # Summaries have MULTI as date value.
     date_format = DATE_FORMATS[len(value)][value.count('/')]
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
@@ -184,9 +186,11 @@ def prep_time(value: str) -> Tuple[int, int, int]:
     return datetime.datetime.strptime(value, time_format).timetuple()[3:6]
 
 
-def prep_datetime(value: str) -> Tuple[int, ...]:
+def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
     """Returns a tuple of (year, month, day, hour, minute, second).
     """
+    if value == "MULTI":
+        return None  # Summaries have MULTI as date value.
     #  HACK - some old data has ", " separator instead of ",".
     value = value.replace(", ", ",")
 
@@ -463,6 +467,7 @@ CURRENCY_CODES = ISO4217 + (
     "CNH",           # RMB traded in HK
     "BASE_SUMMARY",  # Fake currency code used in IB NAV/Performance reports
     "",              # Lot element allows blank currency ?!
+    "RUS",           # Appears with placeholder rate -1 in some list of rates. 
 )
 
 
