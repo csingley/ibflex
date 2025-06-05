@@ -243,7 +243,7 @@ class TransferType(str, enum.Enum):
 class InOut(str, enum.Enum):
     IN = "IN"
     OUT = "OUT"
-    NONE = "-"
+    UNKNOWN = "-"
 
 
 @enum.unique
