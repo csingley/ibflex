@@ -1784,6 +1784,7 @@ class OptionEAE(FlexElement):
     commisionsAndTax: Optional[decimal.Decimal] = None
     costBasis: Optional[decimal.Decimal] = None
     realizedPnl: Optional[decimal.Decimal] = None
+    capitalGainsPnl: Optional[decimal.Decimal] = None
     fxPnl: Optional[decimal.Decimal] = None
     mtmPnl: Optional[decimal.Decimal] = None
     tradeID: Optional[str] = None
