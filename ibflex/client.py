@@ -136,8 +136,6 @@ def request_statement(
     """First part of the 2-step download process.
     """
     url = url or REQUEST_URL
-    ### AKE FIX
-    url = 'https://ndcdyn.interactivebrokers.com/portal.flexweb/api/v1/flexQuery'
     response = submit_request(url, token, query=query_id)
     stmt_access = parse_stmt_response(response)
     if isinstance(stmt_access, StatementError):
