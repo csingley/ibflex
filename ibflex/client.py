@@ -19,10 +19,13 @@ import requests
 ###############################################################################
 # SERVICE LOCATIONS
 ###############################################################################
+# FLEX_URL = "https://ndcdyn.interactivebrokers.com/AccountManagement/FlexWebService/"
+# REQUEST_URL = FLEX_URL + "SendRequest"
+# STMT_URL = FLEX_URL + "GetStatement"
+
 FLEX_URL = "https://gdcdyn.interactivebrokers.com/Universal/servlet/"
 REQUEST_URL = FLEX_URL + "FlexStatementService.SendRequest"
 STMT_URL = FLEX_URL + "FlexStatementService.GetStatement"
-
 
 ###############################################################################
 # ERRORS
@@ -86,6 +89,12 @@ class BadResponseError(IbflexClientError):
         super(BadResponseError, self).__init__(response.content)
 
 
+class StatementGenerationTimeout(IbflexClientError):
+    """Exception raised when the Flex server says it is generating the response,
+    but does not finish generating the statement in a timely fashion.
+    """
+
+
 class ResponseCodeError(IbflexClientError):
     """
     Exception raised when Flex server returns a response with an error code.
@@ -117,7 +126,7 @@ class StatementError:
 ###############################################################################
 # FUNCTIONS
 ###############################################################################
-def download(token: str, query_id: str) -> bytes:
+def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
     """2-step FlexQueryReport download process.
 
     Args:
@@ -127,14 +136,20 @@ def download(token: str, query_id: str) -> bytes:
     """
     stmt_access = request_statement(token, query_id)
     status = 0
+    tries = 0
     while status is not True:
         time.sleep(status)
+        tries += 1
         response = submit_request(
             url=stmt_access.Url or STMT_URL,
             token=token,
             query=stmt_access.ReferenceCode,
         )
         status = check_statement_response(response)
+        if max_tries and tries >= max_tries:
+            raise StatementGenerationTimeout(
+                f"Statement generation did not complete after {max_tries} tries."
+            )
     return response.content
 
 
@@ -158,7 +173,7 @@ def submit_request(url: str, token: str, query: str) -> requests.Response:
 
     Retry with a progressive timeout window.
     """
-    MAX_REQUESTS = 3
+    MAX_REQUESTS = 5
     TIMEOUT_INCREMENT = 5
 
     response = None
@@ -176,6 +191,14 @@ def submit_request(url: str, token: str, query: str) -> requests.Response:
                 raise
             else:
                 print("Request Timeout, re-sending...")
+                time.sleep(1)
+                req_count += 1
+        except requests.exceptions.ConnectionError:
+            if req_count >= MAX_REQUESTS:
+                raise
+            else:
+                print("Connection Error, re-sending...")
+                time.sleep(1)
                 req_count += 1
 
     return response
