@@ -317,8 +317,17 @@ def prep_code_sequence(value: str) -> Iterable[enums.Code]:
 
     Empty string input interpreted as null data; returns empty list.
     """
+    if value == "":
+        return
+    try:
+        yield enums.Code(value)
+        return
+    except ValueError:
+        pass
     sep = ";" if ";" in value else ","
-    return (enums.Code(v) for v in value.split(sep) if v) if value != "" else []
+    for v in value.split(sep):
+        if v:
+            yield enums.Code(v)
 
 
 ###############################################################################

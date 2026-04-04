@@ -108,6 +108,7 @@ class Code(enum.Enum):
     FPP = "FP;P"
     FOREIGNTAXPAID = "FP"  # Foreign Tax Paid
     LOANFEE = "LF"  # Loan Fee
+    PRP = "P;RP"
 
 
 @enum.unique
@@ -121,6 +122,13 @@ class AssetClass(enum.Enum):
     FUTURE = "FUT"
     FUTUREOPTION = "FOP"
     CFD = "CFD"
+    FOREXCFD = "FXCFD"
+    CRYPTOCURRENCY = "CRYPTO"
+    STRUCTUREDPRODUCTS = "IOPT"
+    METALS = "CMDTY"
+    OPTIONSONFUTURES = "FSFOP"
+    OPTIONSFUTURESSTYLE = "FSOPT"
+    MUTUALFUND = "FUND"
 
 
 @enum.unique
@@ -153,7 +161,13 @@ class OpenClose(enum.Enum):
 class OrderType(enum.Enum):
     LIMIT = "LMT"
     MARKET = "MKT"
+    STOP = "STP"
+    STOPLIMIT = "STPLMT"
     MARKETONCLOSE = "MOC"
+    LIMITONCLOSE = "LOC"
+    # MULTIPLE is not an actual IB order type. It is a catch-all value to use when an Order has an orderType like "LMT;MKT".
+    # This way OrderType can remian a enum and not be a Tuple.
+    MULTIPLE = "MULTIPLE"
 
 
 @enum.unique
@@ -198,6 +212,8 @@ class OptionAction(enum.Enum):
     EXERCISE = "Exercise"
     EXPIRE = "Expiration"
     SELL = "Sell"
+    BUY = "Buy"
+    CASHSETTLEMENT = "Cash Settlement"
 
 
 @enum.unique
