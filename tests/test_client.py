@@ -28,6 +28,15 @@ RESPONSE_FAIL = (
 )
 
 
+RESPONSE_BUSY_1001 = (
+    '<FlexStatementResponse timestamp="28 August, 2012 10:37 AM EDT">'
+    '<Status>Warn</Status>'
+    '<ErrorCode>1001</ErrorCode>'
+    '<ErrorMessage>Statement could not be generated at this time. Please try again shortly.</ErrorMessage>'
+    '</FlexStatementResponse>'
+)
+
+
 FLEX_QUERY_RESPONSE = (
     '<FlexQueryResponse queryName="Test" type="AZ">'
     '<FlexStatements count="1">'
@@ -117,6 +126,54 @@ class RequestStatementTestCase(unittest.TestCase):
         )
         self.assertEqual(output.ReferenceCode, "1234567890")
         self.assertEqual(output.Url, client.STMT_URL)
+
+
+class DownloadRetryTestCase(unittest.TestCase):
+    """Step 1 (SendRequest) transient errors should retry rather than fail fast."""
+
+    def _mock_response_class(self):
+        class MockResponse:
+            def __init__(self, content: str):
+                self._content = content
+
+            @property
+            def content(self) -> bytes:
+                return bytes(self._content, encoding="utf8")
+
+        return MockResponse
+
+    def test_download_retries_1001_then_succeeds(self):
+        MockResponse = self._mock_response_class()
+        # 1st SendRequest: 1001. 2nd SendRequest: success. Then GetStatement.
+        responses = iter([
+            MockResponse(RESPONSE_BUSY_1001),
+            MockResponse(RESPONSE_SUCCESS),
+            MockResponse(FLEX_QUERY_RESPONSE),
+        ])
+
+        with patch("requests.get", side_effect=lambda *a, **kw: next(responses)), \
+             patch("time.sleep") as mock_sleep:
+            output = client.download(token="DEADBEEF", query_id="0987654321")
+
+        self.assertIsInstance(output, bytes)
+        # First sleep is the 1001 backoff (5s), then step-2 polling sleeps with 0.
+        self.assertGreaterEqual(mock_sleep.call_count, 1)
+        self.assertEqual(mock_sleep.call_args_list[0], call(5))
+
+    def test_download_gives_up_after_max_tries_on_1001(self):
+        MockResponse = self._mock_response_class()
+        with patch("requests.get", return_value=MockResponse(RESPONSE_BUSY_1001)), \
+             patch("time.sleep"):
+            with self.assertRaises(client.StatementGenerationTimeout):
+                client.download(token="DEADBEEF", query_id="0987654321", max_tries=3)
+
+    def test_download_fails_fast_on_non_retryable_error(self):
+        MockResponse = self._mock_response_class()
+        with patch("requests.get", return_value=MockResponse(RESPONSE_FAIL)), \
+             patch("time.sleep"):
+            with self.assertRaises(client.ResponseCodeError) as ctx:
+                client.download(token="DEADBEEF", query_id="0987654321")
+            self.assertEqual(ctx.exception.code, "1012")
 
 
 @patch("requests.get", side_effect=mock_response)

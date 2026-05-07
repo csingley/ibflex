@@ -32,6 +32,10 @@ STMT_URL = FLEX_URL + "FlexStatementService.GetStatement"
 # ERRORS
 ###############################################################################
 ERRORS = [
+    (
+        "1001",
+        "Statement could not be generated at this time. Please try again shortly.",
+    ),
     ("1003", "Statement is not available."),
     ("1004", "Statement is incomplete at this time. Please try again shortly."),
     ("1005", "Settlement data is not ready at this time. Please try again shortly."),
@@ -74,6 +78,10 @@ SERVER_BUSY = (
     "1019",
 )
 CLIENT_THROTTLED = ("1018",)
+# Codes that SendRequest (step 1) can return when the statement is not yet
+# ready to be generated. Treated the same way as SERVER_BUSY in step 2:
+# sleep briefly and retry.
+REQUEST_NOT_READY = ("1001",)
 
 
 class IbflexClientError(Exception):
@@ -135,7 +143,7 @@ def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
         query_id: Flex Query ID from
                   Reports > Flex Queries > Custom Flex Queries > Configure.
     """
-    stmt_access = request_statement(token, query_id)
+    stmt_access = _request_statement_with_retry(token, query_id, max_tries)
     status = 0
     tries = 0
     while status is not True:
@@ -152,6 +160,36 @@ def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
                 f"Statement generation did not complete after {max_tries} tries."
             )
     return response.content
+
+
+def _request_statement_with_retry(
+    token: str, query_id: str, max_tries: Optional[int]
+) -> "StatementAccess":
+    """Call request_statement, retrying on transient SendRequest errors.
+
+    SendRequest (step 1) can return REQUEST_NOT_READY / SERVER_BUSY /
+    CLIENT_THROTTLED when the statement is not yet generatable. These are
+    explicit "please try again shortly" responses from IBKR; surface them
+    only if they persist past max_tries.
+    """
+    tries = 0
+    while True:
+        tries += 1
+        try:
+            return request_statement(token, query_id)
+        except ResponseCodeError as e:
+            if e.code in REQUEST_NOT_READY or e.code in SERVER_BUSY:
+                delay = 5
+            elif e.code in CLIENT_THROTTLED:
+                delay = 10
+            else:
+                raise
+            if max_tries and tries >= max_tries:
+                raise StatementGenerationTimeout(
+                    f"Statement request did not complete after {max_tries} tries "
+                    f"(last error: {e})."
+                ) from e
+            time.sleep(delay)
 
 
 def request_statement(
