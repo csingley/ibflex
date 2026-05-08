@@ -292,8 +292,8 @@ def check_statement_response(response: requests.Response) -> Union[bool, int]:
             assert isinstance(error, StatementError)
         except Exception:
             raise BadResponseError(response)
-        if error.ErrorCode in SERVER_BUSY:
-            #  Statement generation in progress. Please try again shortly.
+        if error.ErrorCode in SERVER_BUSY or error.ErrorCode in REQUEST_NOT_READY:
+            #  Statement generation in progress / not yet ready. Please try again shortly.
             return 5
         elif error.ErrorCode in CLIENT_THROTTLED:
             #  Too many requests have been made from this token. Please try again shortly.

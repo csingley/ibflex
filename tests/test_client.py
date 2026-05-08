@@ -77,6 +77,7 @@ class SubmitRequestTestCase(unittest.TestCase):
                 query="0987654321",
             )
 
+        # MAX_REQUESTS=5 → 5 attempts with timeouts 5, 10, 15, 20, 25
         self.assertEqual(
             mock_requests_get.call_args_list,
             [
@@ -84,20 +85,9 @@ class SubmitRequestTestCase(unittest.TestCase):
                     client.REQUEST_URL,
                     params={"v": "3", "t": "DEADBEEF", "q": "0987654321"},
                     headers={"user-agent": "Java"},
-                    timeout=5,
-                ),
-                call(
-                    client.REQUEST_URL,
-                    params={"v": "3", "t": "DEADBEEF", "q": "0987654321"},
-                    headers={"user-agent": "Java"},
-                    timeout=10,
-                ),
-                call(
-                    client.REQUEST_URL,
-                    params={"v": "3", "t": "DEADBEEF", "q": "0987654321"},
-                    headers={"user-agent": "Java"},
-                    timeout=15,
-                ),
+                    timeout=t,
+                )
+                for t in [5, 10, 15, 20, 25]
             ],
         )
 
@@ -166,6 +156,23 @@ class DownloadRetryTestCase(unittest.TestCase):
              patch("time.sleep"):
             with self.assertRaises(client.StatementGenerationTimeout):
                 client.download(token="DEADBEEF", query_id="0987654321", max_tries=3)
+
+    def test_download_retries_1001_from_get_statement(self):
+        MockResponse = self._mock_response_class()
+        # SendRequest succeeds immediately; GetStatement returns 1001 once, then the data.
+        responses = iter([
+            MockResponse(RESPONSE_SUCCESS),
+            MockResponse(RESPONSE_BUSY_1001),
+            MockResponse(FLEX_QUERY_RESPONSE),
+        ])
+
+        with patch("requests.get", side_effect=lambda *a, **kw: next(responses)), \
+             patch("time.sleep") as mock_sleep:
+            output = client.download(token="DEADBEEF", query_id="0987654321")
+
+        self.assertIsInstance(output, bytes)
+        # step-2 loop: first sleep is 0 (status=0 sentinel), second is 5 (1001 backoff)
+        self.assertIn(call(5), mock_sleep.call_args_list)
 
     def test_download_fails_fast_on_non_retryable_error(self):
         MockResponse = self._mock_response_class()
