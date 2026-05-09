@@ -18,7 +18,7 @@ __description__ = (
     ("Parse Interactive Brokers Flex XML reports and convert to Python types"),
 )
 __url__ = "https://github.com/sanjifr3/ibflex"
-__version__ = "0.16.1"
+__version__ = "0.16.2"
 __author__ = "Christopher Singley"
 __author_email__ = "csingley@gmail.com"
 __license__ = "MIT"

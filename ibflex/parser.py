@@ -18,18 +18,18 @@ from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
 from ibflex import Types, enums, utils
 
-logging.basicConfig(
-    filename="ibflex.log",
-    filemode="a",
-    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-    datefmt="%H:%M:%S",
-    level=logging.WARNING,
-)
-
-logging.info("ibkflex Parse STARTED")
-
 logger = logging.getLogger("ibflex")
 logger.setLevel(logging.WARNING)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+            datefmt="%H:%M:%S",
+        )
+    )
+    logger.addHandler(_handler)
+    logger.propagate = False
 
 
 class FlexParserError(Exception):
