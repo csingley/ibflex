@@ -184,9 +184,11 @@ def parse_element_attr(
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
 #  These are just implementation details for converters and don't need testing.
 ###############################################################################
-def prep_date(value: str) -> Tuple[int, int, int]:
+def prep_date(value: str) -> Optional[Tuple[int, int, int]]:
     """Returns a tuple of (year, month, day).
     """
+    if value == "MULTI":
+        return None
     date_format = DATE_FORMATS[len(value)][value.count('/')]
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
@@ -198,9 +200,11 @@ def prep_time(value: str) -> Tuple[int, int, int]:
     return datetime.datetime.strptime(value, time_format).timetuple()[3:6]
 
 
-def prep_datetime(value: str) -> Tuple[int, ...]:
+def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
     """Returns a tuple of (year, month, day, hour, minute, second).
     """
+    if value == "MULTI":
+        return None
     #  HACK - some old data has ", " separator instead of ",".
     value = value.replace(", ", ",")
 
@@ -342,8 +346,8 @@ def make_optional(func):
 
 convert_string = make_optional(make_converter(str, prep=utils.identity_func))
 convert_int = make_converter(int, prep=utils.identity_func)
-# IB sends "Y"/"N" for True/False
-convert_bool = make_converter(bool, prep=lambda x: {"Y": True, "N": False}[x])
+# IB sends "Y"/"N" or "Yes"/"No" for True/False
+convert_bool = make_converter(bool, prep=lambda x: {"Y": True, "N": False, "Yes": True, "No": False}[x])
 # IB sends numeric data with place delimiters (commas)
 convert_decimal = make_converter(
     decimal.Decimal,
@@ -476,6 +480,7 @@ ISO4217 = (
 CURRENCY_CODES = ISO4217 + (
     "CNH",           # RMB traded in HK
     "BASE_SUMMARY",  # Fake currency code used in IB NAV/Performance reports
+    "RUS",           # Russian-related currency code used by IBKR
     "",              # Lot element allows blank currency ?!
 )
 

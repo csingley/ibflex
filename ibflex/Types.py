@@ -478,6 +478,7 @@ class EquitySummaryByReportDateInBase(FlexElement):
     marginFinancingChargeAccrualsShort: Optional[decimal.Decimal] = None
     cryptoLong: Optional[decimal.Decimal] = None
     cryptoShort: Optional[decimal.Decimal] = None
+    liteSurchargeAccruals: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -709,6 +710,8 @@ class CashReportCurrency(FlexElement):
     salesTaxYTD: Optional[decimal.Decimal] = None
     salesTaxPaxos: Optional[decimal.Decimal] = None
     otherIncome: Optional[decimal.Decimal] = None
+    otherIncomeMTD: Optional[decimal.Decimal] = None
+    otherIncomeYTD: Optional[decimal.Decimal] = None
     otherIncomeSec: Optional[decimal.Decimal] = None
     otherIncomeCom: Optional[decimal.Decimal] = None
     otherFeesMTD: Optional[decimal.Decimal] = None
@@ -1144,7 +1147,8 @@ class Trade(FlexElement):
     subCategory: Optional[str] = None
     issuerCountryCode: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
+    positionActionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1296,7 +1300,8 @@ class Lot(FlexElement):
     issuerCountryCode: Optional[str] = None
     relatedTradeID: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
+    positionActionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1427,6 +1432,40 @@ class SymbolSummary(FlexElement):
     relatedTradeID: Optional[str] = None
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
+    positionActionID: Optional[str] = None
+    ibExecID: Optional[str] = None
+    extExecID: Optional[str] = None
+    exchOrderId: Optional[str] = None
+    transactionID: Optional[str] = None
+    openDateTime: Optional[datetime.datetime] = None
+    holdingPeriodDateTime: Optional[datetime.datetime] = None
+    settleDateTarget: Optional[datetime.date] = None
+    taxes: Optional[decimal.Decimal] = None
+    tradePrice: Optional[decimal.Decimal] = None
+    tradeMoney: Optional[decimal.Decimal] = None
+    changeInPrice: Optional[decimal.Decimal] = None
+    changeInQuantity: Optional[decimal.Decimal] = None
+    closePrice: Optional[decimal.Decimal] = None
+    commodityType: Optional[str] = None
+    cost: Optional[decimal.Decimal] = None
+    deliveryType: Optional[str] = None
+    fifoPnlRealized: Optional[decimal.Decimal] = None
+    fineness: Optional[decimal.Decimal] = None
+    ibCommission: Optional[decimal.Decimal] = None
+    ibCommissionCurrency: Optional[str] = None
+    ibOrderID: Optional[str] = None
+    initialInvestment: Optional[bool] = None
+    mtmPnl: Optional[decimal.Decimal] = None
+    netCash: Optional[decimal.Decimal] = None
+    netCashInBase: Optional[decimal.Decimal] = None
+    notes: Optional[str] = None
+    openCloseIndicator: Optional[enums.OpenClose] = None
+    origOrderID: Optional[str] = None
+    rtn: Optional[str] = None
+    serialNumber: Optional[str] = None
+    weight: Optional[str] = None
+    whenRealized: Optional[datetime.datetime] = None
+    whenReopened: Optional[datetime.datetime] = None
 
 
 @dataclass(frozen=True)
@@ -1535,7 +1574,8 @@ class AssetSummary(FlexElement):
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
+    positionActionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1638,12 +1678,13 @@ class Order(FlexElement):
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    positionActionID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -1797,7 +1838,7 @@ class OptionEAE(FlexElement):
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
     commodityType: Optional[str] = None
@@ -2123,6 +2164,12 @@ class Transfer(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    figi: Optional[str] = None
+    settleDate: Optional[datetime.date] = None
+    issuerCountryCode: Optional[str] = None
+    levelOfDetail: Optional[str] = None
+    positionInstructionID: Optional[str] = None
+    positionInstructionSetID: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -2246,6 +2293,9 @@ class CorporateAction(FlexElement):
     commodityType: Optional[str] = None
     fineness: Optional[decimal.Decimal] = None
     weight: Optional[str] = None
+    figi: Optional[str] = None
+    issuerCountryCode: Optional[str] = None
+    costBasis: Optional[decimal.Decimal] = None
 
 
 @dataclass(frozen=True)
@@ -2481,7 +2531,7 @@ class SecurityInfo(FlexElement):
     origTransactionID: Optional[str] = None
     relatedTransactionID: Optional[str] = None
     rtn: Optional[str] = None
-    initialInvestment: Optional[decimal.Decimal] = None
+    initialInvestment: Optional[bool] = None
     serialNumber: Optional[str] = None
     deliveryType: Optional[str] = None
     commodityType: Optional[str] = None
