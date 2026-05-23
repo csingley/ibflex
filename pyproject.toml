@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ibflex"
+version = "0.16"
+description = "Parse Interactive Brokers Flex XML reports and convert to Python types"
+readme = "README.rst"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Christopher Singley", email = "csingley@gmail.com" },
+]
+keywords = ["Interactive Brokers", "ibkr", "flex", "xml"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+    "Topic :: Office/Business",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.optional-dependencies]
+web = ["requests"]
+
+[project.scripts]
+flexget = "ibflex.client:main"
+
+[project.urls]
+Homepage = "https://github.com/csingley/ibflex"
+
+[tool.mypy]
+files = ["ibflex", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
