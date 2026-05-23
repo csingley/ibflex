@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ibflex"
-version = "1.0"
+version = "1.1"
 description = "Parse Interactive Brokers Flex XML reports and convert to Python types"
 readme = "README.rst"
 license = "MIT"
