@@ -468,7 +468,6 @@ class EquitySummaryByReportDateInBase(FlexElement):
     physDel: Optional[decimal.Decimal] = None
     physDelLong: Optional[decimal.Decimal] = None
     physDelShort: Optional[decimal.Decimal] = None
-    currency: Optional[str] = None
     insuredBankDepositRedemptionCashComponentLong: Optional[decimal.Decimal] = None
     insuredBankDepositRedemptionCashComponentShort: Optional[decimal.Decimal] = None
     incentiveCouponAccrualsLong: Optional[decimal.Decimal] = None
