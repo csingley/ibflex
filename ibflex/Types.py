@@ -186,7 +186,7 @@ class FlexStatement(FlexElement):
     ConversionRates: tuple["ConversionRate", ...] = ()
     HKIPOOpenSubscriptions: tuple = ()  # TODO
     CommissionCredits: tuple = ()  # TODO
-    StockGrantActivities: tuple = ()  # TODO
+    StockGrantActivities: tuple["StockGrantActivity", ...] = ()
     SLBCollaterals: tuple = ()  # TODO
     IncentiveCouponAccrualDetails: tuple = ()  # TODO
     DepositsOnHold: tuple = ()  # TODO
@@ -2868,6 +2868,52 @@ class SLBOpenContract(FlexElement):
     commodityType: str | None = None
     fineness: decimal.Decimal | None = None
     weight: decimal.Decimal | None = None
+
+
+@dataclass(frozen=True)
+class StockGrantActivity(FlexElement):
+    """Wrapped in <StockGrantActivities>"""
+
+    accountId: str | None = None
+    acctAlias: str | None = None
+    model: str | None = None
+    currency: str | None = None
+    fxRateToBase: decimal.Decimal | None = None
+    assetCategory: enums.AssetClass | None = None
+    subCategory: str | None = None
+    symbol: str | None = None
+    description: str | None = None
+    conid: str | None = None
+    securityID: str | None = None
+    securityIDType: str | None = None
+    cusip: str | None = None
+    isin: str | None = None
+    figi: str | None = None
+    listingExchange: str | None = None
+    underlyingConid: str | None = None
+    underlyingSymbol: str | None = None
+    underlyingSecurityID: str | None = None
+    underlyingListingExchange: str | None = None
+    issuer: str | None = None
+    issuerCountryCode: str | None = None
+    multiplier: decimal.Decimal | None = None
+    strike: decimal.Decimal | None = None
+    expiry: datetime.date | None = None
+    putCall: enums.PutCall | None = None
+    principalAdjustFactor: decimal.Decimal | None = None
+    reportDate: datetime.date | None = None
+    activityDescription: str | None = None
+    awardDate: datetime.date | None = None
+    vestingDate: datetime.date | None = None
+    quantity: decimal.Decimal | None = None
+    price: decimal.Decimal | None = None
+    value: decimal.Decimal | None = None
+    serialNumber: str | None = None
+    deliveryType: str | None = None
+    commodityType: str | None = None
+    fineness: decimal.Decimal | None = None
+    weight: decimal.Decimal | None = None
+
 
 #  Type alias to work around https://github.com/python/mypy/issues/1775
 _ClientFeesDetail = ClientFeesDetail

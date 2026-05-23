@@ -105,6 +105,8 @@ class Code(str, enum.Enum):
     STCG = "ST"  # Short-term P/L
     STOCKYIELD = "SY"  # Positions that may be eligible for Stock Yield.
     TRANSFER = "T"  # Transfer
+    ADR = "ADR"  # ADR fee
+    LIQUIDATION_FORCED = "LF"  # Liquidation - Loss Flattening
 
 
 @enum.unique
@@ -170,6 +172,7 @@ class OrderType(str, enum.Enum):
     TRAIL = "TRAIL"
     REL = "REL"
     MIT = "MIT"
+    LIT = "LIT"
 
 @enum.unique
 class Reorg(str, enum.Enum):
@@ -237,6 +240,7 @@ class TransferType(str, enum.Enum):
     ACATS = "ACATS"
     ATON = "ATON"
     FOP = "FOP"
+    OTC = "OTC"
 
 
 @enum.unique
