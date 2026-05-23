@@ -9,7 +9,6 @@ import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
 
 # 3rd party imports
 import requests
@@ -100,7 +99,7 @@ class StatementError:
 ###############################################################################
 # FUNCTIONS
 ###############################################################################
-def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
+def download(token: str, query_id: str, max_tries: int | None = 5) -> bytes:
     """2-step FlexQueryReport download process.
 
     Args:
@@ -128,7 +127,7 @@ def download(token: str, query_id: str, max_tries: Optional[int] = 5) -> bytes:
 
 
 def request_statement(
-    token: str, query_id: str, url: Optional[str] = None
+    token: str, query_id: str, url: str | None = None
 ) -> StatementAccess:
     """First part of the 2-step download process.
     """
@@ -173,7 +172,7 @@ def submit_request(url: str, token: str, query: str) -> requests.Response:
 
 def parse_stmt_response(
     response: requests.Response
-) -> Union[StatementAccess, StatementError]:
+) -> StatementAccess | StatementError:
     """Read 1st step response; parse into StatementAccess or StatementError.
     """
     try:
@@ -199,7 +198,7 @@ def parse_stmt_response(
         raise BadResponseError(response=response)
 
 
-def check_statement_response(response: requests.Response) -> Union[bool, int]:
+def check_statement_response(response: requests.Response) -> bool | int:
     """Validate response received from 2nd step of download.
 
     Returns:

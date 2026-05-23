@@ -11,7 +11,6 @@ import enum
 import functools
 import unittest
 import xml.etree.ElementTree as ET
-from typing import Optional, Tuple
 from unittest.mock import patch, sentinel
 
 from ibflex import enums, parser
@@ -135,7 +134,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
             datetime: datetime.datetime
             date: datetime.date
             time: datetime.time
-            sequence: Tuple[str, ...]
+            sequence: tuple[str, ...]
 
         #  Return (attr_name, type-converted value)
 
@@ -183,19 +182,19 @@ class ParseElementAttrTestCase(unittest.TestCase):
 
         class TestClass:
             string: str
-            optstring: Optional[str]
+            optstring: str | None
             integer: int
-            optinteger: Optional[int]
+            optinteger: int | None
             boolean: bool
-            optboolean: Optional[bool]
+            optboolean: bool | None
             decimal: decimal.Decimal
-            optdecimal: Optional[decimal.Decimal]
+            optdecimal: decimal.Decimal | None
             datetime: datetime.datetime
-            optdatetime: Optional[datetime.datetime]
+            optdatetime: datetime.datetime | None
             date: datetime.date
-            optdate: Optional[datetime.date]
+            optdate: datetime.date | None
             time: datetime.time
-            opttime: Optional[datetime.time]
+            opttime: datetime.time | None
 
         #  Strings always return None if empty, whether or not hinted Optional.
         self.assertEqual(
@@ -256,7 +255,7 @@ class ParseElementAttrTestCase(unittest.TestCase):
 
         class TestClass:
             foo: str
-            sequence: Tuple[str, ...]
+            sequence: tuple[str, ...]
 
         self.assertEqual(
             parser.parse_element_attr(TestClass, "foo", "A,B,C"),
@@ -282,12 +281,12 @@ class ParseElementAttrTestCase(unittest.TestCase):
             BAR = "2"
 
         class TestClass:
-            foobar: Optional[TestEnum] = None
+            foobar: TestEnum | None = None
 
         #  Enum must be added to ATTRIB_CONVERTERS in order to be converted.
         with patch.dict(
             "ibflex.parser.ATTRIB_CONVERTERS",
-            {"Optional[TestEnum]": functools.partial(parser.convert_enum, Type=TestEnum)}
+            {"TestEnum | None": functools.partial(parser.convert_enum, Type=TestEnum)}
         ):
             self.assertEqual(
                 parser.parse_element_attr(TestClass, "foobar", "1"),

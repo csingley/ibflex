@@ -13,7 +13,7 @@ import functools
 import itertools
 import warnings
 import xml.etree.ElementTree as ET
-from typing import Any, Callable, Iterable, Optional, Tuple, Union
+from typing import Any, Callable, Iterable
 
 from ibflex import Types, enums, utils
 
@@ -22,10 +22,10 @@ class FlexParserError(Exception):
     """ Error experienced while parsing Flex XML data. """
 
 
-DataType = Union[
-    None, str, int, bool, decimal.Decimal, datetime.date, datetime.time,
-    datetime.datetime, enums.EnumType, Tuple[str, ...], Tuple[enums.Code, ...]
-]
+DataType = (
+    None | str | int | bool | decimal.Decimal | datetime.date | datetime.time
+    | datetime.datetime | enums.EnumType | tuple[str, ...] | tuple[enums.Code, ...]
+)
 """Possible type annotations for class attributes of a FlexElement that is
 a data element (not a container).
 """
@@ -58,7 +58,7 @@ def parse(source) -> Types.FlexQueryResponse:
 
 def parse_element(
     elem: ET.Element
-) -> Optional[Union[Types.FlexElement, Tuple[Types.FlexElement, ...]]]:
+) -> Types.FlexElement | tuple[Types.FlexElement, ...] | None:
     """Distinguish XML data element from container element; dispatch accordingly.
 
     Flex format stores data as XML element attributes, while container elements
@@ -86,7 +86,7 @@ def parse_element(
     return parse_data_element(elem)
 
 
-def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
+def parse_element_container(elem: ET.Element) -> tuple[Types.FlexElement, ...]:
     """Parse XML element container into FlexElement subclass instances.
     """
     tag = elem.tag
@@ -108,7 +108,7 @@ def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
 
 def parse_data_element(
     elem: ET.Element
-) -> Optional[Types.FlexElement]:
+) -> Types.FlexElement | None:
     """Parse an XML data element into a Types.FlexElement subclass instance.
 
     Returns None (with a warning) if the element type is unknown.
@@ -149,7 +149,7 @@ def parse_data_element(
 
 def parse_element_attr(
     Class: Types.FlexElement, name: str, value: str
-) -> Tuple[str, Any]:
+) -> tuple[str, Any]:
     """Convert an XML element attribute into its corresponding Python type,
     based on the FlexElement subclass attribute type hint.
 
@@ -184,7 +184,7 @@ def parse_element_attr(
 #  INPUT VALUE PREP FUNCTIONS FOR DATA CONVERTERS
 #  These are just implementation details for converters and don't need testing.
 ###############################################################################
-def prep_date(value: str) -> Optional[Tuple[int, int, int]]:
+def prep_date(value: str) -> tuple[int, int, int] | None:
     """Returns a tuple of (year, month, day).
     """
     if value == "MULTI":
@@ -193,14 +193,14 @@ def prep_date(value: str) -> Optional[Tuple[int, int, int]]:
     return datetime.datetime.strptime(value, date_format).timetuple()[:3]
 
 
-def prep_time(value: str) -> Tuple[int, int, int]:
+def prep_time(value: str) -> tuple[int, int, int]:
     """Returns a tuple of (hour, minute, second).
     """
     time_format = TIME_FORMATS[len(value)]
     return datetime.datetime.strptime(value, time_format).timetuple()[3:6]
 
 
-def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
+def prep_datetime(value: str) -> tuple[int, ...] | None:
     """Returns a tuple of (year, month, day, hour, minute, second).
     """
     if value == "MULTI":
@@ -208,7 +208,7 @@ def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
     #  HACK - some old data has ", " separator instead of ",".
     value = value.replace(", ", ",")
 
-    def merge_date_time(datestr: str, timestr: str) -> Tuple[int, ...]:
+    def merge_date_time(datestr: str, timestr: str) -> tuple[int, ...]:
         """Convert presplit date/time strings into args ready for datetime().
         """
         prepped_date = prep_date(datestr)
@@ -244,7 +244,7 @@ def prep_datetime(value: str) -> Optional[Tuple[int, ...]]:
 
         def testtimelength(
             value: str, time_length: int
-        ) -> Optional[Tuple[int, ...]]:
+        ) -> tuple[int, ...] | None:
             """Assuming time substring is of given length, try to process value
             into time tuple.
             """
@@ -378,28 +378,28 @@ def convert_enum(Type, value):
 
 ATTRIB_CONVERTERS = {
     "str": convert_string,
-    "Optional[str]": convert_string,
+    "str | None": convert_string,
     "int": convert_int,
-    "Optional[int]": make_optional(convert_int),
+    "int | None": make_optional(convert_int),
     "bool": convert_bool,
-    "Optional[bool]": make_optional(convert_bool),
+    "bool | None": make_optional(convert_bool),
     "decimal.Decimal": convert_decimal,
-    "Optional[decimal.Decimal]": make_optional(convert_decimal),
+    "decimal.Decimal | None": make_optional(convert_decimal),
     "datetime.date": convert_date,
-    "Optional[datetime.date]": make_optional(convert_date),
+    "datetime.date | None": make_optional(convert_date),
     "datetime.time": convert_time,
-    "Optional[datetime.time]": make_optional(convert_time),
+    "datetime.time | None": make_optional(convert_time),
     "datetime.datetime": convert_datetime,
-    "Optional[datetime.datetime]": make_optional(convert_datetime),
-    "Tuple[str, ...]": convert_sequence,
-    "Tuple[enums.Code, ...]": convert_code_sequence,
+    "datetime.datetime | None": make_optional(convert_datetime),
+    "tuple[str, ...]": convert_sequence,
+    "tuple[enums.Code, ...]": convert_code_sequence,
 }
 """Map of FlexElement attribute type hint to corresponding converter function.
 """
 
 ATTRIB_CONVERTERS.update(
     {
-        f"Optional[enums.{Enum.__name__}]": functools.partial(convert_enum, Type=Enum)
+        f"enums.{Enum.__name__} | None": functools.partial(convert_enum, Type=Enum)
         for Enum in enums.ENUMS
     }
 )
