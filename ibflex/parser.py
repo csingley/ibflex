@@ -11,6 +11,7 @@ import datetime
 import decimal
 import functools
 import itertools
+import warnings
 import xml.etree.ElementTree as ET
 from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
@@ -57,7 +58,7 @@ def parse(source) -> Types.FlexQueryResponse:
 
 def parse_element(
     elem: ET.Element
-) -> Union[Types.FlexElement, Tuple[Types.FlexElement, ...]]:
+) -> Optional[Union[Types.FlexElement, Tuple[Types.FlexElement, ...]]]:
     """Distinguish XML data element from container element; dispatch accordingly.
 
     Flex format stores data as XML element attributes, while container elements
@@ -98,31 +99,44 @@ def parse_element_container(elem: ET.Element) -> Tuple[Types.FlexElement, ...]:
         fxlots = (parse_element_container(child) for child in elem)
         return tuple(itertools.chain.from_iterable(fxlots))
 
-    instances = tuple(parse_data_element(child) for child in elem)
+    instances = tuple(
+        inst for child in elem
+        if (inst := parse_data_element(child)) is not None
+    )
     return instances
 
 
 def parse_data_element(
     elem: ET.Element
-) -> Types.FlexElement:
+) -> Optional[Types.FlexElement]:
     """Parse an XML data element into a Types.FlexElement subclass instance.
+
+    Returns None (with a warning) if the element type is unknown.
     """
     #  Look up XML element's matching FlexElement subclass in ibflex.Types.
-    Class = getattr(Types, elem.tag)
+    Class = getattr(Types, elem.tag, None)
+    if Class is None:
+        warnings.warn(f"Unknown element type '{elem.tag}'; skipping")
+        return None
 
-    #  Parse element attributes
-    try:
-        attrs = dict(
-            parse_element_attr(Class, k, v)
-            for k, v in elem.attrib.items()
-        )
-    except KeyError as exc:
-        msg = f"{Class.__name__} has no attribute " + str(exc)
-        raise FlexParserError(msg)
+    #  Parse element attributes, skipping unknown ones with a warning
+    attrs = {}
+    for k, v in elem.attrib.items():
+        try:
+            name, value = parse_element_attr(Class, k, v)
+            attrs[name] = value
+        except KeyError:
+            warnings.warn(
+                f"{Class.__name__} has no attribute '{k}'; skipping"
+            )
 
     #  FlexQueryResponse & FlexStatement are the only data elements
     #  that contain other data elements.
-    contained_elements = {child.tag: parse_element(child) for child in elem}
+    contained_elements = {
+        child.tag: parsed
+        for child in elem
+        if (parsed := parse_element(child)) is not None
+    }
     if contained_elements:
         assert elem.tag in ("FlexQueryResponse", "FlexStatement")
         attrs.update(contained_elements)
