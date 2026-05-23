@@ -14,7 +14,7 @@ RESPONSE_SUCCESS = (
     '<FlexStatementResponse timestamp="28 August, 2012 10:37 AM EDT">'
     '<Status>Success</Status>'
     '<ReferenceCode>1234567890</ReferenceCode>'
-    '<Url>https://gdcdyn.interactivebrokers.com/Universal/servlet/FlexStatementService.GetStatement</Url>'
+    '<Url>https://gdcdyn.interactivebrokers.com/AccountManagement/FlexWebService/GetStatement</Url>'
     '</FlexStatementResponse>'
 )
 
