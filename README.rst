@@ -9,15 +9,14 @@ so it can be conveniently processed and analyzed with Python scripts.
 *N.B. This module has nothing to do with programmatic trading.
 It's about reading brokerage reports.*
 
-``ibflex`` is compatible with Python version 3.7+.  The parser has no
+``ibflex`` is compatible with Python version 3.10+.  The parser has no
 dependencies beyond the Python standard library (although the optional client
 for fetching Flex Statements from Interactive Brokers' server does depend
 on `requests`_ ).
 
-**This module is alpha software!**  It works and it's useful, but the
-API, data structures, etc. are likely to see major changes.  Several XML
-schemata are missing, and a few of the more newly-introduced attributes
-for the existing schemata.  There are probably bugs.
+The parser is lenient by default: unknown XML attributes and element types
+are skipped with a warning rather than raising an error, so new fields added
+by Interactive Brokers won't break your code.
 
 `Pull requests`_ are welcome.  If you're submitting a pull request for an updated
 type, please do me a favor and include a test case based on your real-world data
@@ -118,14 +117,7 @@ them:
     Out[5]: b'<FlexQueryResponse queryName="Get Everything" type="AF">\n<FlexStatements count="1">\n<FlexStatement accountId="U111111" fromDate="2018-01-01" toDate="2018-01-31" period="LastMonth" whenGenerated="2018-02-01;211353">\n'
 
 
-You can also just execute client.main() as a script:
-
-.. code:: bash
-
-    $ python client.py -t 111111111111111111111111 -q 111111 > 2018-01_ibkr.xml
-
-
-Finally, setup.py installs a script at ``~/.local/bin/flexget``... cron-tastic!
+``pip install ibflex[web]`` also installs a ``flexget`` console script:
 
 .. code:: bash
 
@@ -141,7 +133,7 @@ Resources
 
 .. _Pull requests: https://github.com/csingley/ibflex/pull/new/master
 .. _requests: https://github.com/requests/requests
-.. _Interactive Brokers account management: https://gdcdyn.interactivebrokers.com/sso/Login
+.. _Interactive Brokers account management: https://www.interactivebrokers.com/sso/Login
 .. _Activity Flex Query Reference: https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm#reportguide/activity_flex_query_reference.htm
 .. _FlexWeb Service Reference: https://www.interactivebrokers.com/en/software/am/am/reports/flex_web_service_version_3.htm
 .. _capgains: https://github.com/csingley/capgains
