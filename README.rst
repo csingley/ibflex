@@ -124,6 +124,24 @@ them:
     $ flexget -t 111111111111111111111111 -q 111111 > 2018-01_ibkr.xml
 
 
+Releasing
+=========
+Releases are published to PyPI automatically via GitHub Actions using
+`trusted publishing`_ (OIDC).  No API tokens are needed.
+
+To cut a release:
+
+1. Bump the version in ``pyproject.toml`` and ``ibflex/__version__.py``.
+2. Commit, push to ``master``.
+3. Create a GitHub release with a tag matching the version (e.g. ``v1.1``).
+
+The ``Publish to PyPI`` workflow will build and upload the package.
+
+Any repository collaborator who can create a GitHub release **and** has access
+to the ``pypi`` deployment environment can publish.  Environment access is
+managed under Settings → Environments → pypi.
+
+
 Resources
 =========
 * Interactive Brokers `Activity Flex Query Reference`_
@@ -136,5 +154,6 @@ Resources
 .. _Interactive Brokers account management: https://www.interactivebrokers.com/sso/Login
 .. _Activity Flex Query Reference: https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm#reportguide/activity_flex_query_reference.htm
 .. _FlexWeb Service Reference: https://www.interactivebrokers.com/en/software/am/am/reports/flex_web_service_version_3.htm
+.. _trusted publishing: https://docs.pypi.org/trusted-publishers/
 .. _capgains: https://github.com/csingley/capgains
 .. _ib-flex-analyzer: https://github.com/wesm/ib-flex-analyzer
