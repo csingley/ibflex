@@ -5,16 +5,16 @@
 # https://www.python.org/dev/peps/pep-0563/#resolving-type-hints-at-runtime
 from __future__ import annotations
 
-import unittest
-from unittest.mock import patch, sentinel
-import xml.etree.ElementTree as ET
 import datetime
 import decimal
 import enum
-from typing import Tuple, Optional
 import functools
+import unittest
+import xml.etree.ElementTree as ET
+from typing import Optional, Tuple
+from unittest.mock import patch, sentinel
 
-from ibflex import parser, Types, enums
+from ibflex import enums, parser
 
 
 @patch("ibflex.parser.parse_element_container")

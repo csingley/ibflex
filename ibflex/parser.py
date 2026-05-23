@@ -7,12 +7,12 @@ Flex report configuration needed by this module:
     Date format: choose yyyy-MM-dd
     Trades: uncheck "Symbol Summary", "Asset Class", "Orders"
 """
-import xml.etree.ElementTree as ET
 import datetime
 import decimal
-import itertools
 import functools
-from typing import Tuple, Union, Optional, Any, Callable, Iterable
+import itertools
+import xml.etree.ElementTree as ET
+from typing import Any, Callable, Iterable, Optional, Tuple, Union
 
 from ibflex import Types, enums, utils
 

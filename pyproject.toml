@@ -47,3 +47,10 @@ files = ["ibflex", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"ibflex/__init__.py" = ["F401", "F403"]

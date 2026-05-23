@@ -2,11 +2,10 @@
 """ Unit tests for ibflex.Types module """
 
 # stdlib imports
-import unittest
-import xml.etree.ElementTree as ET
 import datetime
 import decimal
-
+import unittest
+import xml.etree.ElementTree as ET
 
 # local imports
 from ibflex import Types, enums, parser

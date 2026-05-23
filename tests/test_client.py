@@ -1,14 +1,14 @@
 # coding: utf-8
 """ Unit tests for ibflex.parser module """
 
-import unittest
-from unittest.mock import Mock, patch, call
 import datetime
+import unittest
 from io import BytesIO
+from unittest.mock import Mock, call, patch
 
 import requests
-from ibflex import client, parser, Types
 
+from ibflex import Types, client, parser
 
 RESPONSE_SUCCESS = (
     '<FlexStatementResponse timestamp="28 August, 2012 10:37 AM EDT">'

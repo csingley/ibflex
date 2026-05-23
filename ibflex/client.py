@@ -5,16 +5,14 @@ Download Flex queries without logging into Account Management web page.
 https://www.interactivebrokers.com/en/software/am/am/reports/flex_web_service_version_3.htm
 """
 # stdlib imports
-from dataclasses import dataclass
-import xml.etree.ElementTree as ET
-from datetime import datetime
 import time
-from typing import Union, Optional
-
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional, Union
 
 # 3rd party imports
 import requests
-
 
 ###############################################################################
 # SERVICE LOCATIONS

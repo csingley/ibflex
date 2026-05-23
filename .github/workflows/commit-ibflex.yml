@@ -19,7 +19,9 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -e ".[web]"
-        pip install pytest mypy types-requests
+        pip install pytest mypy types-requests ruff
+    - name: Lint with ruff
+      run: ruff check
     - name: Static analysis with mypy
       run: mypy
     - name: Test with pytest

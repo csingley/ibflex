@@ -1,4 +1,5 @@
 test:
+	ruff check
 	mypy
 	pytest
 
