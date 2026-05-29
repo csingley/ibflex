@@ -123,6 +123,24 @@ class ParseDataElementTestCase(unittest.TestCase):
         #  Only FlexQueryResponse & FlexStatement may have contained elements.
         pass
 
+    def testUnknownChildElementIsSkipped(self):
+        """Unknown child elements in FlexQueryResponse are skipped with a warning.
+
+        IBKR sometimes includes a <Message> child element alongside <FlexStatements>.
+        The parser should skip unknown child tags (same as it does for unknown attributes)
+        rather than blowing up with a FlexParserError.
+        """
+        xml = (
+            b'<FlexQueryResponse queryName="TestQuery" type="AF">'
+            b'<FlexStatements count="0"></FlexStatements>'
+            b'<Message>Informational message from IBKR</Message>'
+            b'</FlexQueryResponse>'
+        )
+        # Should not raise FlexParserError
+        result = parser.parse(xml)
+        self.assertEqual(result.queryName, "TestQuery")
+        self.assertEqual(result.FlexStatements, ())
+
 
 class ParseElementAttrTestCase(unittest.TestCase):
     def testBasicType(self):

@@ -130,49 +130,30 @@ def parse_data_element(elem: ET.Element) -> Types.FlexElement:
     #  Look up XML element's matching FlexElement subclass in ibflex.Types.
     Class = getattr(Types, elem.tag)
 
-    ## sanjifr3
-
-    # Added
-    #  Parse element attributes
+    #  Parse element attributes, skipping unknown ones with a warning.
     attrs = dict()
     for k, v in elem.attrib.items():
         try:
-            if k == "SLBCollaterals":
-                print(v)
             k, v = parse_element_attr(Class, k, v)
-            if k == "SLBCollaterals":
-                print(v)
             attrs[k] = v
         except KeyError as exc:
             msg = f"{Class.__name__} has no attribute " + str(exc)
             logger.warning(msg)
             continue
-    # \Added
-    # Removed
-    # try:
-    #     attrs = dict(parse_element_attr(Class, k, v) for k, v in elem.attrib.items())
-    # except KeyError as exc:
-    #     msg = f"{Class.__name__} has no attribute " + str(exc)
-    #     raise FlexParserError(msg)
-    # \Removed
 
     #  FlexQueryResponse & FlexStatement are the only data elements
-    #  that contain other data elements.
-    old_attrs = attrs.copy()
+    #  that contain other data elements.  Skip unknown child tags with a warning
+    #  (same policy as unknown attributes above).
     contained_elements = {child.tag: parse_element(child) for child in elem}
     if contained_elements:
         assert elem.tag in ("FlexQueryResponse", "FlexStatement")
-        attrs.update(contained_elements)
+        valid_fields = set(Class.__dataclass_fields__.keys())
+        for tag, value in contained_elements.items():
+            if tag in valid_fields:
+                attrs[tag] = value
+            else:
+                logger.warning(f"{Class.__name__} has no field for child element <{tag}>")
 
-    ## sanjifr3
-
-    # Added
-    # for key in ["SLBCollaterals", "AssetSummary"]:
-    #     if key in attrs:
-    #         try:
-    #             return Class(**attrs)
-    #         except Exception as exc:
-    #             del attrs[key]
     try:
         return Class(**attrs)
     except Exception as exc:
