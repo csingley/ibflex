@@ -173,6 +173,7 @@ class OrderType(str, enum.Enum):
     REL = "REL"
     MIT = "MIT"
     LIT = "LIT"
+    SNAPMID = "SNAPMID"
 
 @enum.unique
 class Reorg(str, enum.Enum):
