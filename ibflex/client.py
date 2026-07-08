@@ -17,7 +17,7 @@ import requests
 # SERVICE LOCATIONS
 ###############################################################################
 REQUEST_URL = 'https://ndcdyn.interactivebrokers.com/AccountManagement/FlexWebService/SendRequest'
-STMT_URL = 'https://gdcdyn.interactivebrokers.com/AccountManagement/FlexWebService/GetStatement'
+STMT_URL = 'https://ndcdyn.interactivebrokers.com/AccountManagement/FlexWebService/GetStatement'
 
 
 ###############################################################################
@@ -131,7 +131,7 @@ def download(
         time.sleep(status)
         tries += 1
         response = submit_request(
-            url=stmt_access.Url or STMT_URL,
+            url=STMT_URL,
             token=token,
             query=stmt_access.ReferenceCode,
         )
