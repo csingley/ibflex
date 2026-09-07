@@ -2796,6 +2796,7 @@ class SalesTax(FlexElement):
     securityIDType: str | None = None
     cusip: str | None = None
     isin: str | None = None
+    figi: str | None = None
     listingExchange: str | None = None
     underlyingConid: str | None = None
     underlyingSecurityID: str | None = None
