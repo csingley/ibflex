@@ -485,6 +485,7 @@ class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     """Wrapped in <MTDYTDPerformanceSummary>"""
 
     assetCategory: enums.AssetClass | None = None
+    subCategory: enums.SubCategory | None = None
     accountId: str | None = None
     acctAlias: str | None = None
     model: str | None = None
@@ -494,6 +495,7 @@ class MTDYTDPerformanceSummaryUnderlying(FlexElement):
     securityID: str | None = None
     cusip: str | None = None
     isin: str | None = None
+    figi: str | None = None
     listingExchange: str | None = None
     underlyingConid: str | None = None
     underlyingSecurityID: str | None = None
