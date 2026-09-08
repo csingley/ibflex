@@ -130,6 +130,14 @@ class AssetClass(str, enum.Enum):
 
 
 @enum.unique
+class SubCategory(str, enum.Enum):
+    COMMON = "COMMON"
+    ADR = "ADR"
+    P = "P"
+    C = "C"
+
+
+@enum.unique
 class TradeType(str, enum.Enum):
     EXCHTRADE = "ExchTrade"
     TRADECANCEL = "TradeCancel"
@@ -267,6 +275,7 @@ ENUMS = [
     CashAction,
     Code,
     AssetClass,
+    SubCategory,
     TradeType,
     BuySell,
     OpenClose,
