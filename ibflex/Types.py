@@ -182,6 +182,7 @@ class FlexStatement(FlexElement):
     Transfers: tuple["Transfer", ...] = ()
     ChangeInDividendAccruals: tuple["_ChangeInDividendAccrual", ...] = ()
     OpenDividendAccruals: tuple["OpenDividendAccrual", ...] = ()
+    MutualFundDividendDetails: tuple["MutualFundDividendDetail", ...] = ()
     SecuritiesInfo: tuple["SecurityInfo", ...] = ()
     ConversionRates: tuple["ConversionRate", ...] = ()
     HKIPOOpenSubscriptions: tuple = ()  # TODO
@@ -2492,6 +2493,52 @@ class OpenDividendAccrual(FlexElement):
     commodityType: str | None = None
     fineness: decimal.Decimal | None = None
     weight: str | None = None
+
+
+@dataclass(frozen=True)
+class MutualFundDividendDetail(FlexElement):
+    """Wrapped in <MutualFundDividendDetails>"""
+
+    accountId: str | None = None
+    acctAlias: str | None = None
+    model: str | None = None
+    currency: str | None = None
+    fxRateToBase: decimal.Decimal | None = None
+    assetCategory: enums.AssetClass | None = None
+    subCategory: str | None = None
+    symbol: str | None = None
+    description: str | None = None
+    conid: str | None = None
+    securityID: str | None = None
+    securityIDType: str | None = None
+    cusip: str | None = None
+    isin: str | None = None
+    figi: str | None = None
+    listingExchange: str | None = None
+    underlyingConid: str | None = None
+    underlyingSymbol: str | None = None
+    underlyingSecurityID: str | None = None
+    underlyingListingExchange: str | None = None
+    issuer: str | None = None
+    issuerCountryCode: str | None = None
+    multiplier: decimal.Decimal | None = None
+    strike: decimal.Decimal | None = None
+    expiry: datetime.date | None = None
+    putCall: enums.PutCall | None = None
+    principalAdjustFactor: decimal.Decimal | None = None
+    reportDate: datetime.date | None = None
+    accrualStartDate: datetime.date | None = None
+    accrualEndDate: datetime.date | None = None
+    positionDate: datetime.date | None = None
+    reinvestmentPrice: decimal.Decimal | None = None
+    adjustedPosition: decimal.Decimal | None = None
+    rate: decimal.Decimal | None = None
+    amount: decimal.Decimal | None = None
+    serialNumber: decimal.Decimal | None = None
+    deliveryType: decimal.Decimal | None = None
+    commodityType: str | None = None
+    fineness: decimal.Decimal | None = None
+    weight: decimal.Decimal | None = None
 
 
 @dataclass(frozen=True)

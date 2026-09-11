@@ -1228,6 +1228,42 @@ class CorporateActionTestCase(unittest.TestCase):
         self.assertEqual(instance.type, enums.Reorg.MERGER)
 
 
+class MutualFundDividendDetailTestCase(unittest.TestCase):
+    data = ET.fromstring(
+        ('<MutualFundDividendDetail accountId="U123456" acctAlias="ibflex test" '
+         'currency="USD" fxRateToBase="1" assetCategory="FUND" subCategory="" '
+         'symbol="" conid="" securityID="" securityIDType="" cusip="" isin="" '
+         'figi="" listingExchange="" underlyingConid="" underlyingSymbol="" '
+         'reportDate="20251103" underlyingSecurityID="" description="" '
+         'underlyingListingExchange="" accrualStartDate="20251001" issuer="" '
+         'accrualEndDate="20251031" issuerCountryCode="" reinvestmentPrice="10.51" '
+         'multiplier="" positionDate="20251001" strike="" adjustedPosition="379.857" '
+         'expiry="" rate="0.001285459" putCall="" amount="0.488290599" '
+         'principalAdjustFactor="" serialNumber="" deliveryType="" commodityType="" '
+         'fineness="" weight="" />')
+    )
+
+    def testParse(self):
+        instance = parser.parse_data_element(self.data)
+        self.assertIsInstance(instance, Types.MutualFundDividendDetail)
+        self.assertEqual(instance.accountId, "U123456")
+        self.assertEqual(instance.acctAlias, "ibflex test")
+        self.assertEqual(instance.currency, "USD")
+        self.assertEqual(instance.fxRateToBase, decimal.Decimal("1"))
+        self.assertEqual(instance.assetCategory, enums.AssetClass.MUTUALFUND)
+        self.assertEqual(instance.symbol, None)
+        self.assertEqual(instance.reportDate, datetime.date(2025, 11, 3))
+        self.assertEqual(instance.accrualStartDate, datetime.date(2025, 10, 1))
+        self.assertEqual(instance.accrualEndDate, datetime.date(2025, 10, 31))
+        self.assertEqual(instance.positionDate, datetime.date(2025, 10, 1))
+        self.assertEqual(instance.reinvestmentPrice, decimal.Decimal("10.51"))
+        self.assertEqual(instance.adjustedPosition, decimal.Decimal("379.857"))
+        self.assertEqual(instance.rate, decimal.Decimal("0.001285459"))
+        self.assertEqual(instance.amount, decimal.Decimal("0.488290599"))
+        self.assertEqual(instance.putCall, None)
+        self.assertEqual(instance.weight, None)
+
+
 class ChangeInDividendAccrualTestCase(unittest.TestCase):
     data = ET.fromstring(
         ('<ChangeInDividendAccrual accountId="U123456" acctAlias="ibflex test" '
