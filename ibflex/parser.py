@@ -132,11 +132,19 @@ def parse_data_element(
 
     #  FlexQueryResponse & FlexStatement are the only data elements
     #  that contain other data elements.
-    contained_elements = {
-        child.tag: parsed
-        for child in elem
-        if (parsed := parse_element(child)) is not None
-    }
+    #  Skip contained elements (i.e. statement sections) that the FlexElement
+    #  subclass has no attribute for, with a warning - just like unknown
+    #  XML attributes above - so that a new section added by IB degrades to
+    #  a warning instead of blowing up the whole parse.
+    contained_elements = {}
+    for child in elem:
+        if child.tag not in Class.__dataclass_fields__:
+            warnings.warn(
+                f"{Class.__name__} has no attribute '{child.tag}'; skipping"
+            )
+            continue
+        if (parsed := parse_element(child)) is not None:
+            contained_elements[child.tag] = parsed
     if contained_elements:
         assert elem.tag in ("FlexQueryResponse", "FlexStatement")
         attrs.update(contained_elements)

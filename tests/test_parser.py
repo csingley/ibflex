@@ -13,7 +13,7 @@ import unittest
 import xml.etree.ElementTree as ET
 from unittest.mock import patch, sentinel
 
-from ibflex import enums, parser
+from ibflex import Types, enums, parser
 
 
 @patch("ibflex.parser.parse_element_container")
@@ -121,6 +121,28 @@ class ParseDataElementTestCase(unittest.TestCase):
     def testContainedElements(self):
         #  Only FlexQueryResponse & FlexStatement may have contained elements.
         pass
+
+    def testUnknownContainedElement(self):
+        #  A statement section that FlexStatement has no attribute for
+        #  (e.g. one IB added after this release) is skipped with a warning,
+        #  not raised as a FlexParserError; the known sections still parse.
+        elem = ET.fromstring(
+            '<FlexStatement accountId="U123456" fromDate="2025-09-11" '
+            'toDate="2026-09-10" period="LastYear" '
+            'whenGenerated="2026-09-11;14:36:05">'
+            '<SomeNewSection><SomeNewSectionRow foo="bar" /></SomeNewSection>'
+            '<CashTransactions>'
+            '<CashTransaction accountId="U123456" currency="USD" amount="100" '
+            'type="Deposits/Withdrawals" reportDate="2026-09-10" />'
+            '</CashTransactions>'
+            '</FlexStatement>'
+        )
+        with self.assertWarns(UserWarning) as cm:
+            instance = parser.parse_data_element(elem)
+        self.assertIn("SomeNewSection", str(cm.warning))
+        self.assertIsInstance(instance, Types.FlexStatement)
+        self.assertEqual(len(instance.CashTransactions), 1)
+        self.assertEqual(instance.CashTransactions[0].amount, decimal.Decimal("100"))
 
 
 class ParseElementAttrTestCase(unittest.TestCase):
