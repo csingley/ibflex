@@ -68,6 +68,7 @@ class Code(str, enum.Enum):
     ETF = "ETF"  # ETF Creation/Redemption
     EXPIRED = "Ep"  # Resulted from an Expired Position
     EXERCISE = "Ex"  # Exercise
+    MUTUALFUNDEXCHANGE = "XCH"  # Mutual fund exchange (FUND trade routed via FUNDSERV)
     GUARANTEED = "G"  # Trade in Guaranteed Account Segment
     HIGHESTCOST = "HC"  # Highest Cost tax lot-matching method
     HFINVESTMENT = "HFI"  # Investment Transferred to Hedge Fund
@@ -133,6 +134,7 @@ class AssetClass(str, enum.Enum):
 class SubCategory(str, enum.Enum):
     COMMON = "COMMON"
     ADR = "ADR"
+    ETF = "ETF"
     P = "P"
     C = "C"
 
