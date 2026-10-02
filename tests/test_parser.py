@@ -297,9 +297,13 @@ class ParseElementAttrTestCase(unittest.TestCase):
                 ("foobar", TestEnum.BAR)
             )
 
-            #  Illegal enum values raise FlexParserError
-            with self.assertRaises(parser.FlexParserError):
-                parser.parse_element_attr(TestClass, "foobar", "3")
+            #  Unknown enum values (e.g. new categories added by IBKR
+            #  upstream) pass through as plain strings with a warning.
+            with self.assertWarns(UserWarning):
+                self.assertEqual(
+                    parser.parse_element_attr(TestClass, "foobar", "3"),
+                    ("foobar", "3")
+                )
 
     def testCurrency(self):
         """parse_element_attr() checks attributes named 'currency' vs ISO4217.

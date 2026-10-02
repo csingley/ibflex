@@ -132,11 +132,15 @@ def parse_data_element(
 
     #  FlexQueryResponse & FlexStatement are the only data elements
     #  that contain other data elements.
-    contained_elements = {
-        child.tag: parsed
-        for child in elem
-        if (parsed := parse_element(child)) is not None
-    }
+    #  Skip sections the class has no field for (e.g. a statement section IB
+    #  added after this release), with a warning instead of failing the parse.
+    contained_elements = {}
+    for child in elem:
+        if child.tag not in Class.__dataclass_fields__:
+            warnings.warn(f"{Class.__name__} has no attribute '{child.tag}'; skipping")
+            continue
+        if (parsed := parse_element(child)) is not None:
+            contained_elements[child.tag] = parsed
     if contained_elements:
         assert elem.tag in ("FlexQueryResponse", "FlexStatement")
         attrs.update(contained_elements)
@@ -295,7 +299,7 @@ def prep_code_sequence(value: str) -> Iterable[enums.Code]:
     """
     sep = ";" if ";" in value else ","
     return (
-        enums.Code(v)
+        convert_enum(Type=enums.Code, value=v)
         for v in value.split(sep)
         if v
     ) if value != "" else []
@@ -373,7 +377,14 @@ def convert_enum(Type, value):
     #  Enums bind custom names to the IB-supplied values.
     #  To convert, just do a by-value lookup on the incoming string.
     #  https://docs.python.org/3/library/enum.html#programmatic-access-to-enumeration-members-and-their-attributes
-    return Type(value) if value != "" else None
+    try:
+        return Type(value) if value != "" else None
+    except ValueError:
+        warnings.warn(
+            f"{value!r} is not a valid {Type.__name__}."
+            " Possibly a new update from IBKR; passing through as a plain string"
+        )
+        return value
 
 
 ATTRIB_CONVERTERS = {
