@@ -156,6 +156,8 @@ class BuySell(str, enum.Enum):
     CANCELBUY = "BUY (Ca.)"
     SELL = "SELL"
     CANCELSELL = "SELL (Ca.)"
+    EXCHANGEBUY = "EXCHANGE BUY"
+    EXCHANGESELL = "EXCHANGE SELL"
 
 
 @enum.unique
