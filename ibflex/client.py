@@ -106,6 +106,7 @@ def download(
     period: int | None = None,
     fd: str | None = None,
     td: str | None = None,
+    timeout: float = 5,
 ) -> bytes:
     """2-step FlexQueryReport download process.
 
@@ -121,9 +122,10 @@ def download(
                 365 days apart), sent as the ``fd``/``td`` SendRequest
                 parameters; must be given together. ``period`` and
                 ``fd``/``td`` are mutually exclusive.
+        timeout: Seconds to wait for the first attempt of each HTTP request
     """
     stmt_access = request_statement(
-        token, query_id, period=period, fd=fd, td=td
+        token, query_id, period=period, fd=fd, td=td, timeout=timeout
     )
     status = 0
     tries = 0
@@ -134,6 +136,7 @@ def download(
             url=stmt_access.Url or STMT_URL,
             token=token,
             query=stmt_access.ReferenceCode,
+            timeout_increment=timeout,
         )
         status = check_statement_response(response)
         if max_tries and tries > max_tries:
@@ -150,6 +153,7 @@ def request_statement(
     period: int | None = None,
     fd: str | None = None,
     td: str | None = None,
+    timeout: float = 5,
 ) -> StatementAccess:
     """First part of the 2-step download process.
 
@@ -158,7 +162,8 @@ def request_statement(
     """
     url = url or REQUEST_URL
     response = submit_request(
-        url, token, query=query_id, period=period, fd=fd, td=td
+        url, token, query=query_id, period=period, fd=fd, td=td,
+        timeout_increment=timeout
     )
     stmt_access = parse_stmt_response(response)
     if isinstance(stmt_access, StatementError):
@@ -176,6 +181,7 @@ def submit_request(
     period: int | None = None,
     fd: str | None = None,
     td: str | None = None,
+    timeout_increment: float = 5,
 ) -> requests.Response:
     """Post a query to an API access point, along with an authentication token.
 
@@ -192,8 +198,6 @@ def submit_request(
         raise ValueError("Pass both `fd` and `td`, or neither")
 
     MAX_REQUESTS = 3
-    TIMEOUT_INCREMENT = 5
-
     params = {"v": "3", "t": token, "q": query}
     if period is not None:
         params["p"] = str(period)
@@ -210,7 +214,7 @@ def submit_request(
                 url,
                 params=params,
                 headers={"user-agent": "Java"},
-                timeout=req_count * TIMEOUT_INCREMENT,
+                timeout=req_count * timeout_increment,
             )
         except requests.exceptions.Timeout:
             if req_count >= MAX_REQUESTS:
