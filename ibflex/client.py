@@ -133,7 +133,7 @@ def download(
         time.sleep(status)
         tries += 1
         response = submit_request(
-            url=STMT_URL,
+            url=stmt_access.Url or STMT_URL,
             token=token,
             query=stmt_access.ReferenceCode,
             timeout_increment=timeout,
@@ -242,6 +242,9 @@ def parse_stmt_response(
         datetime_ = datetime.strptime(timestamp, '%d %B, %Y %I:%M %p %z')
 
         data = {child.tag: child.text for child in elem}
+        # Live responses use <Url>, but IB docs show <url>; accept either
+        if "url" in data:
+            data["Url"] = data.pop("url")
         status = data.pop("Status")
         assert status in {"Success", "Fail", "Warn"}
         Type = {
