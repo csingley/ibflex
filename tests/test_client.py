@@ -14,7 +14,7 @@ RESPONSE_SUCCESS = (
     '<FlexStatementResponse timestamp="28 August, 2012 10:37 AM EDT">'
     '<Status>Success</Status>'
     '<ReferenceCode>1234567890</ReferenceCode>'
-    '<Url>https://gdcdyn.interactivebrokers.com/AccountManagement/FlexWebService/GetStatement</Url>'
+    '<Url>https://ndcdyn.interactivebrokers.com/AccountManagement/FlexWebService/GetStatement</Url>'
     '</FlexStatementResponse>'
 )
 
@@ -116,6 +116,15 @@ class RequestStatementTestCase(unittest.TestCase):
                 datetime.timedelta(hours=-4)))
         )
         self.assertEqual(output.ReferenceCode, "1234567890")
+        self.assertEqual(output.Url, client.STMT_URL)
+
+
+class ParseStmtResponseTestCase(unittest.TestCase):
+    def test_lowercase_url_element(self):
+        response = Mock()
+        response.content = RESPONSE_SUCCESS.replace("Url>", "url>").encode()
+        output = client.parse_stmt_response(response)
+        self.assertIsInstance(output, client.StatementAccess)
         self.assertEqual(output.Url, client.STMT_URL)
 
 
